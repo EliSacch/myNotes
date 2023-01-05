@@ -12,6 +12,7 @@ A web app for your notes and lists
   - [User Stories](#user-stories)
   - [Flow Chart](#flow-chart)
   - [Wireframes](#wireframes)
+  - [Design](#design)
 
 - [Features](#features)
 
@@ -36,10 +37,14 @@ A web app for your notes and lists
 
 
 ### User Stories
-- As a ######t owner I want:
-    - #######
-    - #######
-    - #######
+- As a first time use I want:
+    - To understand the purpose of the website.
+    - To easily understand how to use it.
+    - To have a clear a compact design to quickly take notes without eccessive navigation.
+- As a frequent user I want:
+    - To have a personal profile where I can save my notes.
+    - To be able to access my notes from all my devices.
+
 
 ### Flow Chart
 
@@ -69,6 +74,12 @@ To develop a program that answers all the needs identified above, I have created
 ![Add list](media/wireframes/desktop-list.png)
 
 </details>
+
+### Design
+
+For the color I opted for a neutral palette
+
+![Color Palette](media/palette.png)
 
 ## Features 
 
@@ -143,6 +154,10 @@ The live version of this program is available on Heroku.
 [Back to the top](#myNotes)
 
 ## Credits 
+
+### Design
+
+- The color palette was generated using [My color Space](https://mycolor.space/)
 
 ### Code
 

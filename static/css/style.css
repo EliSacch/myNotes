@@ -1,3 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200;0,300;0,400;0,600;0,1000;1,200;1,300;1,400;1,600&family=Shadows+Into+Light&display=swap');
+
+:root {
+    --clr-primary: #F8F7F3;
+    --clr-secondary: #E0DBC4;
+    --clr-ternary: #009179;
+    --clr-dark: #3B3A37;
+
+    --font-basic: 'Mulish', sans-serif;
+    --font-decorative: 'Shadows Into Light', cursive;
+}
+ 
 body {
-    background-color: rgb(136, 136, 226);
+    background-color: var(--clr-primary);
+    color: var(--clr-dark);
+    font-family: var(--font-basic);
 }
