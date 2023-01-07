@@ -53,6 +53,7 @@ header {
     padding: 1em;
     background-color: var(--clr-dark);
     color: var(--clr-primary);
+    z-index: 1;
 }
 
 #logo {
@@ -140,10 +141,10 @@ main {
 }
 
 .note {
+    position: relative;
     max-width: 400px;
     padding: 1em;
     background-color: var(--clr-light);
-    box-shadow: 5px 5px 5px rgb(0 0 0 / 0.2);
 }
 
 .note > * {
@@ -173,6 +174,25 @@ main {
     margin-left: 1em;
     cursor: pointer;
 }
+
+.note::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    top: 16px;
+    box-shadow: 5px 5px 5px rgb(0 0 0 / 0.2);
+}
+
+.note::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-width: 0 20px 20px 0;
+    border-style: solid;
+    border-color: var(--clr-ternary) var(--clr-primary);
+    box-shadow: -3px 3px 3px rgb(0 0 0 / 0.2);
+  }
 
 /* --------------------------- Media queries */
 
