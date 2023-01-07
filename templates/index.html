@@ -2,5 +2,26 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>My notes - dashboard</h1>
+    
+<main>
+
+    <div class="note">
+        <h2 class="note-title">
+            Here is one note
+        </h2>
+        <div class="note-body">
+            <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores nihil totam, similique natus eveniet amet
+                exercitationem iusto perferendis, facilis deleniti, dolor eum id dignissimos explicabo pariatur voluptatem? Sed
+                accusamus harum ipsam corrupti, expedita architecto?
+            </p>
+        </div>
+        <div class="note-footer">
+            <span>Timestamp</span>
+            <button aria-label="edit"><i class="fa-solid fa-pencil"></i></button>
+            <button aria-label="delete"><i class="fa-solid fa-trash-can"></i></button>
+        </div>
+    </div>
+
+</main>
 {% endblock %}

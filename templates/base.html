@@ -30,11 +30,11 @@
         </div>
 
         <nav>
-            <button id="options-toggler" aria-controls="options" aria-expanded="false"><i class="fa-solid fa-plus"></i></button>
+            <button id="options-toggler" aria-label="Open options" aria-controls="options" aria-expanded="false"><i class="fa-solid fa-plus"></i></button>
             <ul id="options">
                 <li><a href="{{ url_for('add') }}" class="center-items">Add note</a></li>
                 <li><a href="{{ url_for('add') }}" class="center-items">Add list</a></li>
-                <li><a href="{{ url_for('add') }}" class="center-items">Dashboard</a></li>
+                <li><a href="{{ url_for('index') }}" class="center-items">Dashboard</a></li>
             </ul>
         </nav>
 

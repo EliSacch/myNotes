@@ -4,10 +4,11 @@
 /* --------------------------- General */
 
 :root {
-    --clr-primary: #F8F7F3;
-    --clr-secondary: #E0DBC4;
-    --clr-ternary: #009179;
-    --clr-dark: #3B3A37;
+    --clr-primary: rgb(248, 247, 243);
+    --clr-secondary: rgb(224, 219, 196);
+    --clr-ternary: rgb(0, 145, 121);
+    --clr-dark: rgb(59, 58, 55);
+    --clr-light: rgb(190, 225, 218);
 
     --font-basic: 'Mulish', sans-serif;
     --font-decorative: 'Shadows Into Light', cursive;
@@ -58,6 +59,7 @@ header {
     height: 99%;
     position: relative;
     font-family: var(--font-decorative);
+    font-style: italic;
     letter-spacing: 3px;
     padding: 0 1em;
     border-bottom: 1px solid var(--clr-primary);
@@ -77,6 +79,7 @@ header {
     margin-right: 2em;
     border: 2px solid var(--clr-ternary);
     border-radius: 50%;
+    cursor: pointer;
     color: var(--clr-primary);
     background-color: inherit;
     transition: 1s;
@@ -125,6 +128,51 @@ nav a:hover::after {
     width: 100%;
 }
 
+
+/* --------------------------- Notes dashboard */
+
+main {
+    width: 90%;
+    margin: 1em auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1em;
+}
+
+.note {
+    max-width: 400px;
+    padding: 1em;
+    background-color: var(--clr-light);
+    box-shadow: 5px 5px 5px rgb(0 0 0 / 0.2);
+}
+
+.note > * {
+    padding-block: .5em;
+}
+
+.note > h2 {
+    font-family: var(--font-decorative);
+    font-weight: 500;
+    letter-spacing: 2px;
+}
+
+.note-footer {
+    display: flex;
+    border-top: 1px dotted var(--clr-dark);
+}
+
+.note-footer > span {
+    margin-right: auto;
+}
+
+.note-footer > button {
+    background-color: transparent;
+    color: var(--clr-ternary);
+    border: none;
+    font-size: 1.2em;
+    margin-left: 1em;
+    cursor: pointer;
+}
 
 /* --------------------------- Media queries */
 
