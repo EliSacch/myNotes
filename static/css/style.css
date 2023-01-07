@@ -1,4 +1,7 @@
+/* --------------------------- Import google fonts */
 @import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200;0,300;0,400;0,600;0,1000;1,200;1,300;1,400;1,600&family=Shadows+Into+Light&display=swap');
+
+/* --------------------------- General */
 
 :root {
     --clr-primary: #F8F7F3;
@@ -9,9 +12,130 @@
     --font-basic: 'Mulish', sans-serif;
     --font-decorative: 'Shadows Into Light', cursive;
 }
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+* a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style-type: none;
+}
  
 body {
     background-color: var(--clr-primary);
     color: var(--clr-dark);
     font-family: var(--font-basic);
+    min-height: 100vh;
+}
+
+.center-items {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --------------------------- Header */
+
+header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 1em;
+    background-color: var(--clr-dark);
+    color: var(--clr-primary);
+}
+
+#logo {
+    height: 99%;
+    position: relative;
+    font-family: var(--font-decorative);
+    letter-spacing: 3px;
+    padding: 0 1em;
+    border-bottom: 1px solid var(--clr-primary);
+}
+
+#logo > i {
+    position: absolute;
+    right: -1.3em;
+    bottom: 0;
+    font-size: 1.7em;
+    opacity: .7;
+}
+
+#options-toggler {
+    width: 35px;
+    aspect-ratio: 1/1;
+    margin-right: 2em;
+    border: 2px solid var(--clr-ternary);
+    border-radius: 50%;
+    color: var(--clr-primary);
+    background-color: inherit;
+    transition: 1s;
+}
+
+#options-toggler:hover,
+#options-toggler:focus {
+    background-color: var(--clr-ternary);
+}
+
+#options-toggler[aria-expanded="true"] {
+    transform: rotate(45deg);
+}
+
+#options {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+}
+
+nav a {
+    position: relative;
+    font-weight: bold;
+    padding: 1em 2em;
+    background-color: transparent;
+    isolation: isolate;
+}
+
+nav a::before,
+nav a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--clr-dark);
+    z-index: -1;
+    transition: 1s;
+}
+
+nav a::after {
+    width: 0;
+    background-color: var(--clr-ternary);
+}
+
+nav a:hover::after {
+    width: 100%;
+}
+
+
+/* --------------------------- Media queries */
+
+@media screen and (max-width: 400px) {
+    #logo {
+        font-size: .9em;
+    }
+    #options-toggler {
+        margin-right: 1em;
+    }
+    #options {
+        width: 100%;
+    }
 }
