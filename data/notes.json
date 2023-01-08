@@ -1,0 +1,17 @@
+[
+    {
+        "title": "This is a note",
+        "body": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores nihil totam, similique natus eveniet amet exercitationem iusto perferendis, facilis deleniti, dolor eum id dignissimos explicabo pariatur voluptatem? Sed accusamus harum ipsam corrupti, expedita architecto?",
+        "timestamp": "08/01/2023"
+    },
+    {
+        "title": "Second note",
+        "body": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores nihil totam, similique natus eveniet amet exercitationem iusto perferendis, facilis deleniti, dolor eum id dignissimos explicabo pariatur voluptatem? Sed accusamus harum ipsam corrupti, expedita architecto?",
+        "timestamp": "08/01/2023"
+    },
+    {
+        "title": "This is another note",
+        "body": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores nihil totam, similique natus eveniet amet exercitationem iusto perferendis, facilis deleniti, dolor eum id dignissimos explicabo pariatur voluptatem? Sed accusamus harum ipsam corrupti, expedita architecto?",
+        "timestamp": "08/01/2023"
+    }
+]

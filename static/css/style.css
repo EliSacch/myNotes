@@ -145,6 +145,7 @@ main {
     max-width: 400px;
     padding: 1em;
     background-color: var(--clr-light);
+    isolation: isolate;
 }
 
 .note > * {
@@ -181,6 +182,7 @@ main {
     inset: 0;
     top: 16px;
     box-shadow: 5px 5px 5px rgb(0 0 0 / 0.2);
+    z-index: -1;
 }
 
 .note::after {
@@ -197,6 +199,10 @@ main {
 /* --------------------------- Media queries */
 
 @media screen and (max-width: 400px) {
+
+    main {
+        grid-template-columns: 1fr;
+    }
     #logo {
         font-size: .9em;
     }
