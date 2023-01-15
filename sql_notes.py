@@ -2,7 +2,7 @@ import os
 import urllib.parse as up
 import psycopg2
 from sqlalchemy import (
-    func, Column, Float, ForeignKey, Integer, String
+    func, Column, Float, ForeignKey, Integer, String, Boolean, JSON
 )
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.declarative import declarative_base
@@ -14,10 +14,11 @@ Base = declarative_base()
 
 # Create a class-based model for the "Note" database
 class Note(Base):
-    __tablename__ = "Note"
+    __tablename__ = "List"
     NoteId = Column(Integer, primary_key=True)
+    IsList = Column(Boolean, unique=False, default=True)
     Title = Column(String)
-    Content = Column(ARRAY(String),nullable=False)
+    Content = Column(ARRAY(JSON))
 
 
 # Create a new instance of sessionamaker, then point to our engine
@@ -32,7 +33,13 @@ Base.metadata.create_all(db)
 # Create records in our database
 new_note = Note(
     Title = "First note",
-    Content = ["Text note random"]
+    IsList = False,
+    Content = [
+        {
+            "checked": False,
+            "content": "Test test test"
+        }
+    ]
 )
 
 
@@ -46,9 +53,17 @@ session.commit()
 
 # Query the database
 notes = session.query(Note)
-for note in notes:
-    print(
-        note.NoteId,
-        note.Title + " | ",
-        note.Content
-    )
+
+def get_notes():
+    results = []
+
+    for note in notes:
+        new = {
+            "Id": note.NoteId,
+            "Type": note.IsList,
+            "Title": note.Title,
+            "Content": note.Content
+        }
+        results.append(new.copy()) 
+
+    return results

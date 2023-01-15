@@ -1,15 +1,16 @@
 import os
 import json
 from flask import Flask, render_template
+from sql_notes import get_notes
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def index():
-    data = []
-    with open("data/notes.json", "r") as json_data:
-        data = json.load(json_data)
+    data = get_notes()
     return render_template("index.html", page_title="Dashboard", notes=data)
+
 
 @app.route("/add")
 def add():
