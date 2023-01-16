@@ -2,7 +2,7 @@ import os
 import urllib.parse as up
 import psycopg2
 from sqlalchemy import (
-    func, Column, Float, ForeignKey, Integer, String, Boolean, JSON
+    inspect, func, Column, Float, ForeignKey, Integer, String, Boolean, JSON
 )
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.declarative import declarative_base
@@ -14,7 +14,7 @@ Base = declarative_base()
 
 # Create a class-based model for the "Note" database
 class Note(Base):
-    __tablename__ = "List"
+    __tablename__ = "Notes"
     NoteId = Column(Integer, primary_key=True)
     IsList = Column(Boolean, unique=False, default=True)
     Title = Column(String)
@@ -33,7 +33,7 @@ Base.metadata.create_all(db)
 # Create records in our database
 new_note = Note(
     Title = "First note",
-    IsList = False,
+    IsList = True,
     Content = [
         {
             "checked": False,
@@ -55,15 +55,20 @@ session.commit()
 notes = session.query(Note)
 
 def get_notes():
-    results = []
+    inspector = inspect(db.engine)
+    if inspector.has_table("Notes") == True:
+        results = []
 
-    for note in notes:
-        new = {
-            "Id": note.NoteId,
-            "Type": note.IsList,
-            "Title": note.Title,
-            "Content": note.Content
-        }
-        results.append(new.copy()) 
+        for note in notes:
+            new = {
+                "Id": note.NoteId,
+                "List": note.IsList,
+                "Title": note.Title,
+                "Content": note.Content
+            }
+            results.append(new) 
 
-    return results
+        return results
+    else:
+        print('error')
+        return None
