@@ -21,11 +21,11 @@
                     {{ item.content }}</p>
                     {% endfor %}
                 {% else %}
-                    <p>{{ note.Content[0] }}</p>
+                    <p>{{ note.Content[0].content }}</p>
                 {% endif %}
                 </div>
                 <div class="note-footer">
-                    <span>18/12/91</span>
+                    <span>{{ note.CreatedAt }}</span>
                     <button class="edit-btn" aria-label="edit"><i class="fa-solid fa-pencil"></i></button>
                     <button class="delete-btn" aria-label="delete"><i class="fa-solid fa-trash-can"></i></button>
                 </div>

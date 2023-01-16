@@ -1,12 +1,10 @@
-import os
-import urllib.parse as up
-import psycopg2
 from sqlalchemy import (
-    inspect, func, Column, Float, ForeignKey, Integer, String, Boolean, JSON
+    inspect, func, Column, DateTime, Integer, String, Boolean, JSON
 )
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from datetime import datetime
 from creds import database_credentials
 
 db = database_credentials()
@@ -17,34 +15,21 @@ class Note(Base):
     __tablename__ = "Notes"
     NoteId = Column(Integer, primary_key=True)
     IsList = Column(Boolean, unique=False, default=True)
-    Title = Column(String)
+    Title = Column(String(200))
     Content = Column(ARRAY(JSON))
+    CreatedAt = Column(DateTime, default=datetime.utcnow)
 
 
 # Create a new instance of sessionamaker, then point to our engine
 Session = sessionmaker(db)
+
+
 # Open an actual session by calling the subclass defined above
 session = Session()
 
 
 # Creating the database using the declative_base subclass
 Base.metadata.create_all(db)
-
-# Create records in our database
-new_note = Note(
-    Title = "First note",
-    IsList = True,
-    Content = [
-        {
-            "checked": False,
-            "content": "Test test test"
-        }
-    ]
-)
-
-
-# Add each instance of our Note into the session
-session.add(new_note)
 
 
 # Commit our session to the database
