@@ -196,6 +196,25 @@ main {
     box-shadow: -3px 3px 3px rgb(0 0 0 / 0.2);
   }
 
+
+/* --------------------------- Forms */
+
+#errorMsg {
+    color: red;
+}
+
+#addNew {
+    width: fit-content;
+    margin: 1em auto;
+    padding: 2em;
+    background-color: var(--clr-secondary);
+}
+
+.list-item {
+    display: flex;
+    gap: 1em;
+}
+
 /* --------------------------- Media queries */
 
 @media screen and (max-width: 400px) {

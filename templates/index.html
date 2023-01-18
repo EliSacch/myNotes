@@ -16,7 +16,7 @@
                 </h2>
                 <div class="note-body">
                 {% if note.List == True %}    
-                    {% for item in note.Content %}                   
+                    {% for item in note.Content %}                  
                     <p>{{ item.checked }}</br>
                     {{ item.content }}</p>
                     {% endfor %}

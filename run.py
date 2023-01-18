@@ -51,7 +51,12 @@ def addList():
         )
         # Add each instance of our Note into the session
         session.add(new_note)
-        session.commit()
+        try:
+            session.commit()
+        except:
+            session.rollback()
+            errorMsg = "There was an error submitting this request. Please, try again."
+            return render_template("addList.html", page_title="Add new list", action="/addList", message=errorMsg)
 
     return render_template("addList.html", page_title="Add new list", action="/addList")
 

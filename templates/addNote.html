@@ -1,13 +1,6 @@
-{% extends "base.html" %}
-
-{% block content %}
-
-    {% include "form.html" %}
+{% extends "form.html" %}
 
     {% block noteContent %}
     <label for="content">Content:</label><br>
     <input type="text" id="content" name="content">
     {% endblock %}
-    
-{% endblock %}
-</html>

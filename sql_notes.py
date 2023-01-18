@@ -15,7 +15,7 @@ class Note(Base):
     __tablename__ = "Notes"
     NoteId = Column(Integer, primary_key=True)
     IsList = Column(Boolean, unique=False, default=True)
-    Title = Column(String(200))
+    Title = Column(String(50))
     Content = Column(ARRAY(JSON))
     CreatedAt = Column(DateTime, default=datetime.utcnow)
 
