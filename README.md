@@ -14,6 +14,8 @@ A web app for your notes and lists
   - [Wireframes](#wireframes)
   - [Design](#design)
 
+- [Architecture](#architecture)
+
 - [Features](#features)
 
 - [Testing](#testing)
@@ -81,8 +83,11 @@ For the color I opted for a neutral palette
 
 ![Color Palette](media/palette.png)
 
-## Features 
+## Architecture
 
+App built following the Application Factory Pattern
+
+## Features 
 
 ## Testing 
 
@@ -177,10 +182,10 @@ The app requires `DATABASE_URL` to connect to PostgreSQL. Store it in the hostin
 
 ### Main languages
 
-    - HTML
-    - CSS
     - Flask
     - Python
+    - Postgres
+    - OAuth
 
 ### Python Libraries
 
