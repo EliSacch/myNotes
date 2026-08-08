@@ -1,18 +1,46 @@
-from flask import Blueprint, jsonify, render_template, request
-from sqlalchemy import text
-from sqlalchemy.exc import SQLAlchemyError
+import hmac
+import re
+import secrets
+
+from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
+from sqlalchemy import func, text
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from werkzeug.security import generate_password_hash
 
 from app.extensions import db, login_manager
-from app.models import Note
+from app.models import Note, User
 
 notes_bp = Blueprint("notes", __name__)
 auth_bp = Blueprint("auth", __name__)
 health_bp = Blueprint("health", __name__)
 
+USERNAME_PATTERN = re.compile(r"^[A-Za-z0-9_]+$")
+EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+COMMON_PASSWORDS = {"password", "password123", "qwerty", "letmein", "12345678"}
+
 
 @login_manager.user_loader
 def load_user(user_id):
-    return None
+    try:
+        return db.session.get(User, int(user_id))
+    except (TypeError, ValueError):
+        return None
+
+
+def _register_context(errors=None, username="", email=""):
+    csrf_token = session.get("register_csrf_token")
+    if not csrf_token:
+        csrf_token = secrets.token_urlsafe(32)
+        session["register_csrf_token"] = csrf_token
+
+    return {
+        "action": url_for("auth.register"),
+        "csrf_token": csrf_token,
+        "email": email,
+        "errors": errors or [],
+        "title": "Create your account",
+        "username": username,
+    }
 
 @health_bp.route("/health/db")
 def health_db_check():
@@ -24,7 +52,99 @@ def health_db_check():
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
-    return render_template("form/register.html", title="Create your account", action="/register")
+    if request.method == "GET":
+        return render_template("form/register.html", **_register_context())
+
+    username = (request.form.get("username") or "").strip()
+    email = (request.form.get("email") or "").strip().lower()
+    password = request.form.get("password") or ""
+    confirm_password = request.form.get("confirm_password") or ""
+    errors = []
+
+    submitted_token = request.form.get("csrf_token", "")
+    stored_token = session.get("register_csrf_token", "")
+    if not (
+        isinstance(submitted_token, str)
+        and isinstance(stored_token, str)
+        and hmac.compare_digest(submitted_token, stored_token)
+    ):
+        errors.append("Your form has expired. Please try again.")
+
+    if not 3 <= len(username) <= 50:
+        errors.append("Username must be between 3 and 50 characters.")
+    elif not USERNAME_PATTERN.fullmatch(username):
+        errors.append("Username may contain only letters, numbers, and underscores.")
+
+    if len(email) > 100 or not EMAIL_PATTERN.fullmatch(email):
+        errors.append("Enter a valid email address.")
+
+    if not 12 <= len(password) <= 128:
+        errors.append("Password must be between 12 and 128 characters.")
+    if password != confirm_password:
+        errors.append("Passwords do not match.")
+    if password.casefold() in COMMON_PASSWORDS:
+        errors.append("Choose a less common password.")
+    if password and not any(character.islower() for character in password):
+        errors.append("Password must include a lowercase letter.")
+    if password and not any(character.isupper() for character in password):
+        errors.append("Password must include an uppercase letter.")
+    if password and not any(character.isdigit() for character in password):
+        errors.append("Password must include a number.")
+    if password and not any(not character.isalnum() for character in password):
+        errors.append("Password must include a symbol.")
+    if username and username.casefold() in password.casefold():
+        errors.append("Password must not contain your username.")
+    email_local_part = email.partition("@")[0]
+    if email_local_part and email_local_part.casefold() in password.casefold():
+        errors.append("Password must not contain your email address.")
+
+    if not errors:
+        username_exists = db.session.scalar(
+            db.select(User.id).where(func.lower(User.username) == username.lower())
+        )
+        email_exists = db.session.scalar(
+            db.select(User.id).where(func.lower(User.email) == email)
+        )
+        if username_exists or email_exists:
+            errors.append("Unable to create an account with those details.")
+
+    if errors:
+        return render_template(
+            "form/register.html",
+            **_register_context(errors, username, email),
+        )
+
+    new_user = User(
+        username=username,
+        email=email,
+        password_hash=generate_password_hash(password),
+    )
+    db.session.add(new_user)
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return render_template(
+            "form/register.html",
+            **_register_context(
+                ["Unable to create an account with those details."],
+                username,
+                email,
+            ),
+        )
+    except SQLAlchemyError:
+        db.session.rollback()
+        return render_template(
+            "form/register.html",
+            **_register_context(
+                ["There was an error submitting this request. Please, try again."],
+                username,
+                email,
+            ),
+        )
+
+    session.pop("register_csrf_token", None)
+    return redirect(url_for("notes.index"))
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():

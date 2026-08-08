@@ -12,8 +12,10 @@ def create_app():
         static_folder="../static",
     )
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["DATABASE_URL"]
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -27,7 +29,4 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(health_bp)
 
-    with app.app_context():
-        db.create_all()
-    
     return app

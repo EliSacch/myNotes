@@ -139,10 +139,14 @@ The live version of this program is available on Heroku.
     - Create a new vistual environment `python3 -m venv .`
     - Activate virtual environment `source ./bin/activate`
     - Install packages from requirements.txt `pip install -r requirements.txt`
-    - Create a PostgreSQL database and configure its URL. Copy `.env.example` to a local `.env` file, replace the placeholder values, then load it with `export DATABASE_URL="$(grep '^DATABASE_URL=' .env | cut -d= -f2-)"`.
-    - Alternatively, set `DATABASE_URL` directly in your terminal. Its expected format is `postgresql+psycopg2://USERNAME:PASSWORD@HOST:5432/DATABASE_NAME`.
-
-    - 
+    - Create a PostgreSQL database and configure its URL. Copy `.env.example` to a local `.env` file, then replace the `DATABASE_URL` and `SECRET_KEY` placeholder values.
+    - Load both values into your terminal:
+      ```bash
+      export DATABASE_URL="$(grep '^DATABASE_URL=' .env | cut -d= -f2-)"
+      export SECRET_KEY="$(grep '^SECRET_KEY=' .env | cut -d= -f2-)"
+      ```
+    - Alternatively, set `DATABASE_URL` and `SECRET_KEY` directly in your terminal. The database URL format is `postgresql+psycopg2://USERNAME:PASSWORD@HOST:5432/DATABASE_NAME`.
+    - Create or update the database schema with `flask --app run db upgrade`.
     - Run locally using `python run.py`.
 
 
@@ -162,10 +166,27 @@ The live version of this program is available on Heroku.
   - Login with new user `/opt/homebrew/opt/postgresql@18/bin/psql -U mynotes_user -d mynotes -W`
 
 
+### Database migrations
+
+Database schema changes are tracked with Flask-Migrate and Alembic. Run all migration commands after loading `DATABASE_URL` and `SECRET_KEY`.
+
+1. Update the SQLAlchemy model(s).
+2. Generate a migration:
+   ```bash
+   flask --app run db migrate -m "describe the schema change"
+   ```
+3. Review the new file in `migrations/versions/` before applying it.
+4. Apply the migration:
+   ```bash
+   flask --app run db upgrade
+   ```
+
+Never edit an already-applied migration. Create a new migration for every later schema change, and back up production data before running `db upgrade`.
+
 
 ### Environment variables
 
-The app requires `DATABASE_URL` to connect to PostgreSQL. Store it in the hosting provider's secret/configuration settings when deploying; never commit an actual connection URL or password. The committed `.env.example` only documents the required format.
+The app requires `DATABASE_URL` to connect to PostgreSQL and `SECRET_KEY` to securely sign sessions and CSRF tokens. Store both in the hosting provider's secret/configuration settings when deploying; never commit an actual connection URL, password, or secret key. The committed `.env.example` only documents the required format.
 
 [Back to the top](#myNotes)
 
