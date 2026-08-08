@@ -2,7 +2,7 @@ import os
 
 from flask import Flask
 
-from app.extensions import db, migrate
+from app.extensions import db, migrate, login_manager
 
 
 def create_app():
@@ -11,15 +11,23 @@ def create_app():
         template_folder="../templates",
         static_folder="../static",
     )
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["DATABASE_URL"]
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     db.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = "auth.login"
     migrate.init_app(app, db)
 
     from app import models  # noqa: F401
-    from app.routes import notes_bp
+    from app.routes import notes_bp, auth_bp, health_bp
 
     app.register_blueprint(notes_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(health_bp)
 
+    with app.app_context():
+        db.create_all()
+    
     return app

@@ -1,11 +1,27 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, jsonify, render_template, request
+from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.extensions import db
+from app.extensions import db, login_manager
 from app.models import Note
 
 notes_bp = Blueprint("notes", __name__)
+auth_bp = Blueprint("auth", __name__)
+health_bp = Blueprint("health", __name__)
 
+
+@login_manager.user_loader
+def load_user(user_id):
+    return None
+
+@health_bp.route("/health/db")
+def health_db_check():
+    try:
+        db.session.execute(text("SELECT 1"))
+        return jsonify({"db_status": "ok"}), 200
+    except Exception as e:
+        return jsonify({"db_status": "error", "detail": str(e)}), 500
+    
 
 @notes_bp.route("/")
 def index():
