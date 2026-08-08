@@ -151,7 +151,7 @@ The live version of this program is available on Heroku.
 
 
   - To stop running locally
-    - brew services stop postgresql@14
+    - brew services stop postgresql@18
     - Deactivate virtual environment `deactivate`
 
   
