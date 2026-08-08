@@ -101,7 +101,7 @@ For the color I opted for a neutral palette
 - JS testing
 
 
-[Back to the top](#pizza-truck)
+[Back to the top](#myNotes)
 
 ### Validator Testing
 
@@ -128,28 +128,39 @@ The live version of this program is available on Heroku.
 [Click here to open]()
 
 
-### Deployment on Heroku
-
-  - To deply this project on Heroku I followed these steps:
-    - Create an Heroku accoun
-    - Click on Add App
-    - Go to Settings > Config Vars
-    - Add the config KEY and VALUE provided by Code Institute, in order to be able to use the template provided for this project
-    - Click on add buildpack to add python and nodejs
-    - Go to deploy tab
-    - Select GitHub as deploy method
-    - Select the relevant GitHub repository
-    - Click on deploy branch
-
 ### Local Deployment
   - For a local deployment follow these steps:
-    - Create a new directory on your machine, where you want do deploy the files
-    - Open the existing repository in GitHub
-    - Go to the "Code" tab
-    - Click on the "Code" button
-    - Copy the HTTPS link
-    - Open your terminal and run the command __git clone 'link'__
-    - use the link just copied, without quotes, instead of 'link'
+    - Clone the repository
+    - Create a new vistual environment `python3 -m venv .`
+    - Activate virtual environment `source ./bin/activate`
+    - Install packages from requirements.txt `pip install -r requirements.txt`
+    - Create a PostgreSQL database and configure its URL. Copy `.env.example` to a local `.env` file, replace the placeholder values, then load it with `export DATABASE_URL="$(grep '^DATABASE_URL=' .env | cut -d= -f2-)"`.
+    - Alternatively, set `DATABASE_URL` directly in your terminal. Its expected format is `postgresql+psycopg2://USERNAME:PASSWORD@HOST:5432/DATABASE_NAME`.
+
+    - 
+    - Run locally using `python run.py`.
+
+
+  - To stop running locally
+    - brew services stop postgresql@14
+    - Deactivate virtual environment `deactivate`
+
+  
+  #### Create a Postgres Local db for the first time
+  - Install postgresql `brew install postgresql@18`
+  - Start `brew services start postgresql@18`
+  - Login with admin role
+  - Create new user `CREATE ROLE mynotes_user LOGIN;`
+  - Set password `\password mynotes_user`
+  - Create a db `CREATE DATABASE mynotes OWNER mynotes_user;`
+  - Choose a new password when prompted then exit `\q`
+  - Login with new user `/opt/homebrew/opt/postgresql@18/bin/psql -U mynotes_user -d mynotes -W`
+
+
+
+### Environment variables
+
+The app requires `DATABASE_URL` to connect to PostgreSQL. Store it in the hosting provider's secret/configuration settings when deploying; never commit an actual connection URL or password. The committed `.env.example` only documents the required format.
 
 [Back to the top](#myNotes)
 

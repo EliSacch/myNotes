@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
-from creds import database_credentials
+from config import database_credentials
 
 db = database_credentials()
 Base = declarative_base()
@@ -40,7 +40,7 @@ session.commit()
 notes = session.query(Note)
 
 def get_notes():
-    inspector = inspect(db.engine)
+    inspector = inspect(db)
     if inspector.has_table("Notes") == True:
         results = []
 

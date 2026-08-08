@@ -1,2 +1,6 @@
-venv
-creds.py
+bin/
+include/
+lib/
+pyvenv.cfg
+.env
+__pycache__/
