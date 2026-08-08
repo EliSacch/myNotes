@@ -21,6 +21,14 @@ def health_db_check():
         return jsonify({"db_status": "ok"}), 200
     except Exception as e:
         return jsonify({"db_status": "error", "detail": str(e)}), 500
+
+@auth_bp.route("/register", methods=["GET", "POST"])
+def register():
+    return render_template("form/register.html", title="Create your account", action="/register")
+
+@auth_bp.route("/login", methods=["GET", "POST"])
+def login():
+    return render_template("form/login.html", title="Login to your account", action="/login")
     
 
 @notes_bp.route("/")
