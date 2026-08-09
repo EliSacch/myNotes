@@ -1,0 +1,27 @@
+{% macro text_input(name, label, value='', type='text', errors=[], required=false,
+                    pattern=none, autocomplete=none) %}
+<div class="form-control{% if errors %} is-invalid{% endif %}">
+    <label for="{{ name }}">{{ label }}</label><br>
+
+    <input
+        id="{{ name }}"
+        name="{{ name }}"
+        value="{{ value }}"
+        type="{{ type }}"
+        {% if required %}required{% endif %}
+        {% if pattern %}pattern="{{ pattern }}"{% endif %}
+        {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
+        {% if errors %}aria-invalid="true" aria-describedby="{{ name }}-errors"{% endif %}
+    ><br>
+
+    {% if errors %}
+    <div id="{{ name }}-errors" role="alert">
+        <ul>
+            {% for error in errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}

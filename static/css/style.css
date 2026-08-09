@@ -10,6 +10,8 @@
     --clr-dark: rgb(59, 58, 55);
     --clr-light: rgb(190, 225, 218);
 
+    --clr-error: rgb(235, 59, 59);
+
     --font-basic: 'Mulish', sans-serif;
     --font-decorative: 'Shadows Into Light', cursive;
 
@@ -209,7 +211,7 @@ main {
 /* --------------------------- Forms */
 
 #errorMsg {
-    color: red;
+    color: var(--clr-error);
 }
 
 .form-wrapper {
@@ -236,9 +238,20 @@ main {
     gap: 1em;
 }
 
+.form-control {
+    margin-bottom: var(--spacing-l);
+}
+
+.form-control.is-invalid li {
+    color: var(--clr-error);
+}
+
+.form-control.is-invalid input {
+    border-bottom: 1px solid var(--clr-error);
+}
+
 form input {
     width: 100%;
-    margin-bottom: var(--spacing-l);
     border: none;
     border-bottom: 1px dotted var(--clr-dark);
     padding: var(--padding-m);

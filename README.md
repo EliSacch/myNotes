@@ -134,7 +134,7 @@ The live version of this program is available on Heroku.
 
 
 ### Local Deployment
-  - For a local deployment follow these steps:
+  - For first time local deployment follow these steps:
     - Clone the repository
     - Create a new vistual environment `python3 -m venv .`
     - Activate virtual environment `source ./bin/activate`
@@ -149,6 +149,15 @@ The live version of this program is available on Heroku.
     - Create or update the database schema with `flask --app run db upgrade`.
     - Run locally using `python run.py`.
 
+  - For susequent runs simply:
+    - Activate virtual environment `source ./bin/activate`
+    - Load env vars into your terminal:
+      ```bash
+      export DATABASE_URL="$(grep '^DATABASE_URL=' .env | cut -d= -f2-)"
+      export SECRET_KEY="$(grep '^SECRET_KEY=' .env | cut -d= -f2-)"
+      ```
+    - Run locally using `python run.py`.
+
 
   - To stop running locally
     - brew services stop postgresql@18
@@ -158,11 +167,14 @@ The live version of this program is available on Heroku.
   #### Create a Postgres Local db for the first time
   - Install postgresql `brew install postgresql@18`
   - Start `brew services start postgresql@18`
-  - Login with admin role
-  - Create new user `CREATE ROLE mynotes_user LOGIN;`
-  - Set password `\password mynotes_user`
+  - List users `\du+`
+  - Login with admin role `/opt/homebrew/opt/postgresql@18/bin/psql -d postgres`
+  - Check current user `SELECT current_user;`
+  - Create new user `CREATE ROLE mynotes_user LOGIN PASSWORD 'choose-a-new-password';`
   - Create a db `CREATE DATABASE mynotes OWNER mynotes_user;`
-  - Choose a new password when prompted then exit `\q`
+  - Exit `\q`
+  - Restore secure local authentication in `/opt/homebrew/var/postgresql@18/pg_hba.conf` by changing both trust values back to `scram-sha-256`
+  - then restart `brew services restart postgresql@18`
   - Login with new user `/opt/homebrew/opt/postgresql@18/bin/psql -U mynotes_user -d mynotes -W`
 
 
