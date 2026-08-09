@@ -231,13 +231,7 @@ def logout():
 def index():
     notes = db.session.scalars(db.select(Note)).all()
     data = [note.to_dict() for note in notes]
-    print("DARA", data)
-    return render_template(
-        "index.html",
-        page_title="Dashboard",
-        notes=data,
-        csrf_token=_notes_csrf_token(),
-    )
+    return render_template("index.html", page_title="Dashboard", notes=data, csrf_token=_notes_csrf_token())
 
 
 @notes_bp.route("/addNote", methods=["GET", "POST"])

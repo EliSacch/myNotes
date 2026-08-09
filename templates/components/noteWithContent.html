@@ -1,14 +1,7 @@
 {% from "components/noteWrapper.html" import note_wrapper %}
-{% from "components/noteActions.html" import note_actions %}
+{% from "components/noteActions.html" import noteActions %}
 
 {% macro noteWithContent(note) %}
-<!-- {% if note.List == True %}    
-        {% for item in note.Content %}                  
-        <p>{{ item.checked }}</br>
-        {{ item.content }}</p>
-        {% endfor %}
-    {% else %}
-        <p>{{ note.Content[0].content }}</p>
-    {% endif %} -->
-{{ note_wrapper(note.Title, note.Content[0].content, note_actions(note)) }}
+
+{{ note_wrapper(note.Title, note.Content[0].content, noteActions(note)) }}
 {% endmacro %}

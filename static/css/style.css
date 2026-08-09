@@ -79,6 +79,7 @@ main {
 
 .note-footer > span {
     margin-right: auto;
+    opacity: 0.6;
 }
 
 .note-footer > button {
