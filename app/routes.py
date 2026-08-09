@@ -3,9 +3,10 @@ import re
 import secrets
 
 from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
+from flask_login import login_user
 from sqlalchemy import func, text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.extensions import db, login_manager
 from app.models import Note, User
@@ -40,6 +41,20 @@ def _register_context(errors=None, username="", email=""):
         "errors": errors or [],
         "title": "Create your account",
         "username": username,
+    }
+
+def _login_context(errors=None, email=""):
+    csrf_token = session.get("login_csrf_token")
+    if not csrf_token:
+        csrf_token = secrets.token_urlsafe(32)
+        session["login_csrf_token"] = csrf_token
+
+    return {
+        "action": url_for("auth.login"),
+        "csrf_token": csrf_token,
+        "email": email,
+        "errors": errors or [],
+        "title": "Login to your account",
     }
 
 @health_bp.route("/health/db")
@@ -103,7 +118,6 @@ def register():
             errors["password"].append("Password must not contain your email address.")
 
         if not any(errors.values()):
-            print("NO ERRORS")
             username_exists = db.session.scalar(
                 db.select(User.id).where(func.lower(User.username) == username.lower())
             )
@@ -118,7 +132,6 @@ def register():
                     errors["email"].append("Email already exists.")
 
         if any(errors.values()):
-            print("ERRORS", errors)
             return render_template(
                 "form/register.html",
                 **_register_context(errors, username, email),
@@ -131,7 +144,6 @@ def register():
         )
         db.session.add(new_user)
         try:
-            print("COMMITTTT")
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
@@ -150,7 +162,35 @@ def register():
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    return render_template("form/login.html", title="Login to your account", action="/login")
+    errors = {
+        "form": [],
+    }
+    if request.method == "POST":
+        email = (request.form.get("email") or "").strip().lower()
+        password = request.form.get("password") or ""
+
+        submitted_token = request.form.get("csrf_token", "")
+        stored_token = session.get("login_csrf_token", "")
+        if not (
+            isinstance(submitted_token, str)
+            and isinstance(stored_token, str)
+            and hmac.compare_digest(submitted_token, stored_token)
+        ):
+            errors["form"].append("Your form has expired. Please try again.")
+        if not EMAIL_PATTERN.fullmatch(email):
+            errors["form"].append("Enter a valid email address.")
+        if not any(errors.values()):
+            user = db.session.scalar(
+                db.select(User).where(func.lower(User.email) == email)
+            )
+            if user and check_password_hash(user.password_hash, password):
+                login_user(user)
+                return redirect(url_for("notes.index"))
+            else:
+                errors["form"].append("Invalid email or password.")
+        if any(errors.values()):
+            return render_template("form/login.html", **_login_context(errors, email))
+    return render_template("form/login.html", **_login_context())
     
 
 @notes_bp.route("/")

@@ -1,12 +1,37 @@
+{% from "form/inputs/textImput.html" import text_input %}
+
 {% extends "form/formWrapper.html" %}
 
 {% block formContent %}
 <form id="login" action="{{action}}" method="POST">
-    <p id="errorMsg"></p>
-    <label for="email">Email:</label><br>
-    <input type="email" id="email" name="email"><br>
-    <label for="password">Password:</label><br>
-    <input type="password" id="password" name="password"><br>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    {% if errors.form %}
+    <div id="errorMsg" role="alert">
+        <ul>
+            {% for error in errors.form %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {{ text_input(
+        name="email",
+        label="Email",
+        value=email,
+        type="email",
+        required=true,
+        pattern="[^@\s]+@[^@\s]+\.[^@\s]+",
+        autocomplete="email"
+    ) }}
+    
+    {{ text_input(
+        name="password",
+        label="Password",
+        value=password,
+        type="password",
+        required=true,
+        autocomplete="password"
+    ) }}
     <button type="submit">Login</button>
 </form>
 

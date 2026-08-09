@@ -42,6 +42,7 @@
         type="password",
         errors=errors.password,
         autocomplete="new-password"
+        required=true,
     ) }}
     {{ text_input(
         name="confirm_password",
@@ -50,6 +51,7 @@
         type="password",
         errors=errors.confirm_password,
         autocomplete="new-password"
+        required=true,
     ) }}
 
     <button type="submit">Register</button>
