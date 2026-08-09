@@ -99,20 +99,30 @@ $(document).ready(function(){
         const errorField = $('#errorMsg')
 
         if(title.val() === "" || title.val() === null) {
-            errors.push('A title is required.')
+            errors.push("A title is required.")
         }
-
-        if(content.val() === "" || content.val() === null) {
-            errors.push('Some content is required.')
-        }
-
         if (errors.length > 0) {
             e.preventDefault()
             errorField.html(errors.join('<br>'))
         }
-    })
+    });
 
+    /**
+     * 
+     * Cancel note form
+     */
+    $('#note-form-button-cancel').click( () => {
+        $('#errorMsg').html('')
+        $('#addNew').trigger('reset')
+        $('#addNoteForm').addClass('hidden-form')
+
+    });
+
+    /**
+     * 
+     * Add note button
+     */
+    $('#addNoteButton').click( () => {
+        $('#addNoteForm').removeClass('hidden-form')
+    });
 });
-
-
-

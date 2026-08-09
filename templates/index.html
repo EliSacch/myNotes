@@ -17,12 +17,13 @@
         {% endfor %}
     {% endif %}
 
-    {{ noteWithForm({
-        "Title": "",
-        "Form": noteForm("addNew")
-    })
-}}
-
+    <div id="addNoteForm" class="hidden-form">
+        {{ noteWithForm({
+            "Title": "",
+            "Form": noteForm("addNew")
+        })
+        }}
+    </div>
 
 </main>
 {% endblock %}

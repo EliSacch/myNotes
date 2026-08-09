@@ -1,5 +1,3 @@
-/* --------------------------- Forms */
-
 #errorMsg {
     color: var(--clr-error);
 }
@@ -72,6 +70,10 @@
     background-color: var(--clr-dark);
 }
 
+#addNoteForm.hidden-form {
+    display: none;
+}
+
 .note-form-wrapper form {
     display: flex;
     flex-direction: column;
@@ -122,14 +124,14 @@
     transition: .3s;
 }
 
-.note-form-buttons button.note-form-button-save {
+.note-form-buttons button#note-form-button-save {
     font-size: 2em;
 }
 
-.note-form-button-save:hover {
+button#note-form-button-save:hover {
     color: var(--clr-ternary);
 }
-.note-form-button-cancel:hover {
+button#note-form-button-cancel:hover {
     color: var(--clr-error);
 }
 .note-form-buttons button:hover i {
