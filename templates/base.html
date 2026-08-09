@@ -27,33 +27,23 @@
 
     <header>
         <div id="logo">
-            <h1>{{ current_user.username and "'s" or "My" }} Notes</h1>
+            <h1>{{current_user.is_authenticated and current_user.username + "'s" or "My" }} Notes</h1>
             <i class="fa-solid fa-pen-nib"></i>
         </div>
 
         <nav id="auth-nav">
             {% if current_user.is_authenticated %}
-            <a href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            <a href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket" ></i> <span class="lg-only">Logout</span></a>
             {% endif %}
         </nav>
 
-        <!-- <nav id="options-nav">
+        <nav id="options-nav">
             <button id="options-toggler" aria-label="Open options" aria-controls="options" aria-expanded="false"><i class="fa-solid fa-plus"></i></button>
             <ul id="options">
-                <li><a href="{{ url_for('notes.add_note') }}" class="center-items">Add note</a></li>
-                <li><a href="{{ url_for('notes.add_list') }}" class="center-items">Add list</a></li>
+                <li><button class="center-items"><i class="fa-solid fa-pen-nib"></i> </button></li>
+                <li><button class="center-items"><i class="fa-solid fa-list"></i> </button></li>
             </ul>
-        </nav> -->
-
+        </nav>
     </header>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {{ flash_messages(messages=messages, category=category if category else "info") }}
-    {% endwith %}
-
-    {% block content %}
-    {% endblock %}
-
-
 </body>
 </html>

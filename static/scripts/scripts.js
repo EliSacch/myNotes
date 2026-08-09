@@ -3,15 +3,26 @@ $(document).ready(function(){
     /**
      * Options button
      */
-    $('#options-toggler').click( () => {
-        $('#options').slideToggle();
-        $('#options-toggler').attr('aria-expanded', (i, attr) => {
-            if(attr == 'false') {
-                return 'true'
-            } else {
-                return 'false'
-            }
-        })
+    $('#options-toggler').click(() => {
+        const $toggler = $('#options-toggler');
+        const $options = $('#options');
+        const isOpen = $toggler.attr('aria-expanded') === 'true';
+
+        $toggler.attr('aria-expanded', String(!isOpen));
+
+        if (isOpen) {
+            $options
+                .removeClass('options-opening')
+                .addClass('options-closing')
+                .one('animationend', () => {
+                    $options.hide().removeClass('options-closing');
+                });
+        } else {
+            $options
+                .show()
+                .removeClass('options-closing')
+                .addClass('options-opening');
+        }
     });
 
     /**

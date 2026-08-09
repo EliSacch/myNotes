@@ -6,6 +6,7 @@
 
 /* --------------------------- Import modules */
 @import url('modules/flash-messages.css');
+@import url('modules/header.css');
 
 /* --------------------------- General */
 
@@ -37,108 +38,8 @@ body {
     justify-content: center;
 }
 
-/* --------------------------- Header */
-
-header {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    padding: 1em;
-    background-color: var(--clr-dark);
-    color: var(--clr-primary);
-    z-index: 1;
-}
-
-#logo {
-    height: 99%;
-    position: relative;
-    font-family: var(--font-decorative);
-    font-style: italic;
-    letter-spacing: 3px;
-    padding: 0 1em;
-    border-bottom: 1px solid var(--clr-primary);
-}
-
-#logo > i {
-    position: absolute;
-    right: -1.3em;
-    bottom: 0;
-    font-size: 1.7em;
-    opacity: .7;
-}
-
-#auth-nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1em;
-}
-
-#auth-nav a:hover {
-    color: var(--clr-ternary);
-}
-
-#auth-nav a:focus {
-    color: var(--clr-ternary);
-    outline: 1px solid var(--clr-ternary);
-}
-
-
-#options-toggler {
-    width: 35px;
-    aspect-ratio: 1/1;
-    margin-right: 2em;
-    border: 2px solid var(--clr-ternary);
-    border-radius: 50%;
-    cursor: pointer;
-    color: var(--clr-primary);
-    background-color: inherit;
-    transition: .5s;
-}
-
-#options-toggler:hover,
-#options-toggler:focus {
-    background-color: var(--clr-ternary);
-}
-
-#options-toggler[aria-expanded="true"] {
-    transform: rotate(45deg);
-}
-
-#options {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 100%;
-}
-
-nav a {
-    position: relative;
-    font-weight: bold;
-    padding: 1em 2em;
-    background-color: transparent;
-    isolation: isolate;
-}
-
-nav ul a::before,
-nav ul a::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-color: var(--clr-dark);
-    z-index: -1;
-    transition: .5s;
-}
-
-nav ul a::after {
-    width: 0;
-    background-color: var(--clr-ternary);
-}
-
-nav ul a:hover::after {
-    width: 100%;
+.lg-only {
+    display: block;
 }
 
 /* --------------------------- Notes dashboard */
@@ -297,6 +198,9 @@ form button:hover {
     }
     #options {
         width: 100%;
+    }
+    .lg-only {
+        display: none;
     }
     .form-wrapper {
         padding: 1em;

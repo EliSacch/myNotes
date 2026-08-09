@@ -192,6 +192,7 @@ def login():
             )
             if user and check_password_hash(user.password_hash, password):
                 login_user(user)
+                flash(f"Welcome back, {user.username}!", "success")
                 return redirect(url_for("notes.index"))
             else:
                 errors["form"].append("Invalid email or password.")
