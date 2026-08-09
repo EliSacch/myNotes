@@ -212,6 +212,7 @@ def logout():
 def index():
     notes = db.session.scalars(db.select(Note)).all()
     data = [note.to_dict() for note in notes]
+    print("DARA", data)
     return render_template("index.html", page_title="Dashboard", notes=data)
 
 

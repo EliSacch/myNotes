@@ -37,6 +37,7 @@
             {% endif %}
         </nav>
 
+        {% if current_user.is_authenticated %}
         <nav id="options-nav">
             <button id="options-toggler" aria-label="Open options" aria-controls="options" aria-expanded="false"><i class="fa-solid fa-plus"></i></button>
             <ul id="options">
@@ -44,6 +45,13 @@
                 <li><button class="center-items"><i class="fa-solid fa-list"></i> </button></li>
             </ul>
         </nav>
+        {% endif %}
     </header>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {{ flash_messages(messages=messages, category=category if category else "info") }}
+    {% endwith %}
+
+    {% block content %}
+    {% endblock %}
 </body>
 </html>

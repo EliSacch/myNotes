@@ -1,0 +1,19 @@
+{% macro note_wrapper(title, content, footer) %}
+<div class="note">
+    {% if title %}
+    <h2 class="note-title">
+        {{ title }}
+    </h2>
+    {% endif %}
+    {% if content %}
+    <div class="note-body">
+        {{ content }}
+    </div>
+    {% endif %}
+    {% if footer %}
+    <div class="note-footer">
+        {{ footer }}
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}

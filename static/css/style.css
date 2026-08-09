@@ -7,6 +7,7 @@
 /* --------------------------- Import modules */
 @import url('modules/flash-messages.css');
 @import url('modules/header.css');
+@import url('modules/forms.css');
 
 /* --------------------------- General */
 
@@ -107,81 +108,6 @@ main {
     border-color: var(--clr-ternary) var(--clr-primary);
     box-shadow: -3px 3px 3px rgb(0 0 0 / 0.2);
   }
-
-
-/* --------------------------- Forms */
-
-#errorMsg {
-    color: var(--clr-error);
-}
-
-.form-wrapper {
-    width: 90%;
-    max-width: 600px;
-    margin: 1em auto;
-    padding: 1em 3em;
-    border-radius: 12px;
-    background-color: var(--clr-secondary);
-}
-
-.form-wrapper h1 {
-    font-weight: 600;
-    text-align: center;
-    margin-bottom: var(--spacing-m);
-}
-
-.form-wrapper a {
-    color: var(--clr-ternary);
-}
-
-.list-item {
-    display: flex;
-    gap: 1em;
-}
-
-.form-control {
-    margin-bottom: var(--spacing-l);
-}
-
-.form-control.is-invalid li {
-    color: var(--clr-error);
-}
-
-.form-control.is-invalid input {
-    border-bottom: 1px solid var(--clr-error);
-}
-
-form input {
-    width: 100%;
-    border: none;
-    border-bottom: 1px dotted var(--clr-dark);
-    padding: var(--padding-m);
-    background-color: transparent;
-}
-
-form input:focus {
-    border-bottom: 1px solid var(--clr-dark);
-    outline: none;
-}
-
-form button {
-    width: 100%;
-    background-color: var(--clr-ternary);
-    color: var(--clr-primary);
-    border: none;
-    margin-top:1em;
-    padding: .5em 1em;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: 600;
-    letter-spacing: 1px;
-    transition: .5s;
-}
-
-form button:hover {
-    background-color: var(--clr-dark);
-}
 
 /* --------------------------- Media queries */
 

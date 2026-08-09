@@ -1,0 +1,26 @@
+{% macro noteForm(action) %}
+<div class="note-form-wrapper">
+
+    <form id="addNew" action="{{action}}" method="POST">
+        <p id="errorMsg"></p>
+        <input label="title" type="text" id="title" name="title" class="note-title" placeholder="Add a new note" required><br>
+        <textarea 
+        id="content" 
+        name="content" 
+        class="note-content" 
+        placeholder="Type something..."
+        maxlength="255"
+        ></textarea>
+
+        <div class="note-form-buttons">
+            <button type="button" aria-label="Cancel" class="note-form-button-cancel">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+            
+            <button type="submit" aria-label="Save" class="note-form-button-save">
+                <i class="fa-solid fa-floppy-disk"></i>
+            </button>
+        </div>
+    </form>
+</div>
+{% endmacro %}

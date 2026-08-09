@@ -1,0 +1,5 @@
+{% from "components/noteWrapper.html" import note_wrapper %}
+
+{% macro noteWithForm(note) %}
+{{ note_wrapper(content=note.Form) }}
+{% endmacro %}
