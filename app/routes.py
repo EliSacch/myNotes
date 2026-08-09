@@ -2,8 +2,9 @@ import hmac
 import re
 import secrets
 
-from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
-from flask_login import login_user
+
+from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for, flash
+from flask_login import login_user, login_required, current_user, logout_user
 from sqlalchemy import func, text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -164,6 +165,8 @@ def register():
 def login():
     errors = {
         "form": [],
+        "email": [],
+        "password": [],
     }
     if request.method == "POST":
         email = (request.form.get("email") or "").strip().lower()
@@ -177,8 +180,12 @@ def login():
             and hmac.compare_digest(submitted_token, stored_token)
         ):
             errors["form"].append("Your form has expired. Please try again.")
+        if not email:
+            errors["email"].append("Email is required.")
+        if not password:
+            errors["password"].append("Password is required.")
         if not EMAIL_PATTERN.fullmatch(email):
-            errors["form"].append("Enter a valid email address.")
+            errors["email"].append("Enter a valid email address.")
         if not any(errors.values()):
             user = db.session.scalar(
                 db.select(User).where(func.lower(User.email) == email)
@@ -192,8 +199,15 @@ def login():
             return render_template("form/login.html", **_login_context(errors, email))
     return render_template("form/login.html", **_login_context())
     
+@auth_bp.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("You have been logged out.", "success")
+    return redirect(url_for("notes.index"))
 
 @notes_bp.route("/")
+@login_required
 def index():
     notes = db.session.scalars(db.select(Note)).all()
     data = [note.to_dict() for note in notes]
@@ -201,6 +215,7 @@ def index():
 
 
 @notes_bp.route("/addNote", methods=["GET", "POST"])
+@login_required
 def add_note():
     if request.method == "POST":
         new_note = Note(
@@ -224,6 +239,7 @@ def add_note():
 
 
 @notes_bp.route("/addList", methods=["GET", "POST"])
+@login_required
 def add_list():
     if request.method == "POST":
         new_note = Note(

@@ -1,0 +1,28 @@
+:root {
+    --clr-primary: rgb(248, 247, 243);
+    --clr-secondary: rgb(238, 237, 229);
+    --clr-ternary: rgb(0, 145, 121);
+    --clr-dark: rgb(59, 58, 55);
+    --clr-light: rgb(190, 225, 218);
+
+    --clr-error: rgb(235, 59, 59);
+    --clr-error-bg: rgb(240, 116, 116);
+    --clr-success: rgb(153, 220, 209);
+    --clr-info: rgb(193, 206, 244);
+    --clr-warning: rgb(235, 224, 145);
+
+    --font-basic: 'Mulish', sans-serif;
+    --font-decorative: 'Shadows Into Light', cursive;
+
+    --spacing-s: 4px;
+    --spacing-m: 8px;
+    --spacing-l: 16px;
+    --spacing-xl: 32px;
+
+    --padding-s: 4px;
+    --padding-m: 8px;
+    --padding-l: 16px;
+    --padding-xl: 32px;
+
+    --border-radius: 5px;
+}

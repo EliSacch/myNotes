@@ -1,0 +1,64 @@
+#messages {
+    position: absolute;
+    top: var(--spacing-l);
+    right: 50dvw;
+    z-index: 10;
+    gap: var(--spacing-m);
+    display: flex;
+    flex-direction: column;
+}
+
+#messages .close-button {
+    background-color: transparent;
+    color: var(--clr-dark);
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    position: absolute;
+    top: var(--spacing-s);
+    right: var(--spacing-m);
+    opacity: .5;
+    transition: .5s;
+}
+
+#messages .close-button:hover {
+    opacity: 1;
+}
+
+.message {
+    background-color: var(--clr-warning);
+    color: var(--clr-dark);
+    padding: var(--padding-l);
+    padding-right: var(--padding-xl);
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    position: relative;
+    animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+.message.success {
+    background-color: var(--clr-success);
+}
+
+.message.info {
+    background-color: var(--clr-info);
+}
+
+.message.warning { 
+    background-color: var(--clr-warning);
+}
+
+.message.error {
+    background-color: var(--clr-error-bg);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(50%);
+    }
+}

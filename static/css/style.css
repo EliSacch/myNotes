@@ -1,29 +1,13 @@
 /* --------------------------- Import google fonts */
 @import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200;0,300;0,400;0,600;0,1000;1,200;1,300;1,400;1,600&family=Shadows+Into+Light&display=swap');
 
+/* --------------------------- Import variables */
+@import url('vars.css');
+
+/* --------------------------- Import modules */
+@import url('modules/flash-messages.css');
+
 /* --------------------------- General */
-
-:root {
-    --clr-primary: rgb(248, 247, 243);
-    --clr-secondary: rgb(238, 237, 229);
-    --clr-ternary: rgb(0, 145, 121);
-    --clr-dark: rgb(59, 58, 55);
-    --clr-light: rgb(190, 225, 218);
-
-    --clr-error: rgb(235, 59, 59);
-
-    --font-basic: 'Mulish', sans-serif;
-    --font-decorative: 'Shadows Into Light', cursive;
-
-    --spacing-s: 4px;
-    --spacing-m: 8px;
-    --spacing-l: 16px;
-    --spacing-xl: 32px;
-
-    --padding-s: 4px;
-    --padding-m: 8px;
-    --padding-l: 16px;
-}
 
 * {
     margin: 0;
@@ -85,6 +69,23 @@ header {
     opacity: .7;
 }
 
+#auth-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+}
+
+#auth-nav a:hover {
+    color: var(--clr-ternary);
+}
+
+#auth-nav a:focus {
+    color: var(--clr-ternary);
+    outline: 1px solid var(--clr-ternary);
+}
+
+
 #options-toggler {
     width: 35px;
     aspect-ratio: 1/1;
@@ -121,8 +122,8 @@ nav a {
     isolation: isolate;
 }
 
-nav a::before,
-nav a::after {
+nav ul a::before,
+nav ul a::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -131,15 +132,14 @@ nav a::after {
     transition: .5s;
 }
 
-nav a::after {
+nav ul a::after {
     width: 0;
     background-color: var(--clr-ternary);
 }
 
-nav a:hover::after {
+nav ul a:hover::after {
     width: 100%;
 }
-
 
 /* --------------------------- Notes dashboard */
 
@@ -270,7 +270,7 @@ form button {
     border: none;
     margin-top:1em;
     padding: .5em 1em;
-    border-radius: 5px;
+    border-radius: var(--border-radius);
     cursor: pointer;
     font-size: 1em;
     font-weight: 600;

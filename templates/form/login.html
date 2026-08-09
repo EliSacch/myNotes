@@ -19,9 +19,10 @@
         label="Email",
         value=email,
         type="email",
-        required=true,
         pattern="[^@\s]+@[^@\s]+\.[^@\s]+",
-        autocomplete="email"
+        autocomplete="email",
+        required=true,
+        errors=errors.email
     ) }}
     
     {{ text_input(
@@ -29,8 +30,9 @@
         label="Password",
         value=password,
         type="password",
+        autocomplete="current-password",
         required=true,
-        autocomplete="password"
+        errors=errors.password
     ) }}
     <button type="submit">Login</button>
 </form>
