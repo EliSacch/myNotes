@@ -20,7 +20,7 @@
     <div id="addNoteForm" class="hidden-form">
         {{ noteWithForm({
             "Title": "",
-            "Form": noteForm("addNew")
+            "Form": noteForm(url_for("notes.add_note"), csrf_token)
         })
         }}
     </div>

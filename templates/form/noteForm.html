@@ -1,7 +1,9 @@
-{% macro noteForm(action) %}
+{% macro noteForm(action, csrf_token) %}
 <div class="note-form-wrapper">
 
     <form id="addNew" action="{{action}}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}" required>
+        
         <p id="errorMsg"></p>
         <input label="title" type="text" id="title" name="title" class="note-title" placeholder="Add a new note" ><br>
         <textarea 
