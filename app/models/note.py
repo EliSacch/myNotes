@@ -8,10 +8,11 @@ from app.extensions import db
 class Note(db.Model):
     __tablename__ = "Notes"
 
-    NoteId = db.Column(db.Integer, primary_key=True)
-    IsList = db.Column(db.Boolean, default=True)
+    id = db.Column(db.Integer, primary_key=True)
     Title = db.Column(db.String(50))
-    Content = db.Column(ARRAY(db.JSON))
+    Content = db.Column(db.Text)
+    OwnerId = db.Column(db.Integer, db.ForeignKey("Users.id"))
+    Owner = db.relationship("User", back_populates="notes")
     CreatedAt = db.Column(db.DateTime, default=datetime.utcnow)
 
     @property
@@ -20,12 +21,11 @@ class Note(db.Model):
 
     def to_dict(self):
         return {
-            "Id": self.NoteId,
-            "List": self.IsList,
+            "Id": self.id,
             "Title": self.Title,
             "Content": self.Content,
             "CreatedAt": self.formatted_created_at,
         }
 
     def __repr__(self):
-        return f"<Note {self.NoteId}>"
+        return f"<Note {self.id}>"

@@ -45,7 +45,6 @@ def add_note():
 
         new_note = Note(
             Title=request.form.get("title"),
-            IsList=False,
             Content=[{"checked": False, "content": request.form.get("content")}],
         )
         db.session.add(new_note)

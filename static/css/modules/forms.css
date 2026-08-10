@@ -21,11 +21,6 @@
     color: var(--clr-ternary);
 }
 
-/* .list-item {
-    display: flex;
-    gap: 1em;
-} */
-
 .form-control {
     margin-bottom: var(--spacing-l);
 }

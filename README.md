@@ -1,5 +1,5 @@
 # myNotes
-A web app for your notes and lists
+A web app for your notes
 
 [Link to live site]()
 
@@ -63,7 +63,6 @@ To develop a program that answers all the needs identified above, I have created
 
 ![Home](media/wireframes/mobile-home.png)
 ![Add note](media/wireframes/mobile-note.png)
-![Add list](media/wireframes/mobile-list.png)
 
 </details>
 
@@ -73,7 +72,6 @@ To develop a program that answers all the needs identified above, I have created
 
 ![Home](media/wireframes/desktop-home.png)
 ![Add note](media/wireframes/desktop-note.png)
-![Add list](media/wireframes/desktop-list.png)
 
 </details>
 

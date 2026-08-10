@@ -25,52 +25,6 @@ $(document).ready(function(){
         }
     });
 
-    /**
-     * Add list items functions
-     */
-
-    $('#addItem').attr("disabled", true)
-    /* Disable add item button if empty input */
-    $('#content').on('input', () => {
-        isEmpty = $('#content').val().length == 0
-        if(!isEmpty) {
-            $('#addItem').attr("disabled", false)
-        } else {
-            $('#addItem').attr("disabled", true)
-        }
-    })
-
-    items = []
-
-    /* Add list item button */
-    $('#addItem').click( () => {
-        itemId = 0
-        itemValue = $('#content').val()
-        items.push(itemValue)
-        displayItems()
-        $('#content').val('')
-        $('#addItem').attr("disabled", true)
-
-        /* Remove list item button */
-        $('.deleteItem').on("click", deleteItem)
-    });
-
-    /* Delete list item */
-    function deleteItem() {
-        itemId = $(this).attr('data-id')
-        items.splice(itemId,1)
-        displayItems()
-    }
-
-    /* Display added items */
-    function displayItems() {
-        display = $('.displayItems')
-        display.html("")
-        for(item of items) {
-            display.append(`<span class="list-item"><button class="deleteItem" data-id="${items.indexOf(item)}" type="button">X</button><p>${item}</p></span>`)
-        }
-    }
-
     function closeAllNoteEdits() {
         $('.note-slot').each(function () {
             const $slot = $(this);
