@@ -105,15 +105,6 @@ $(document).ready(function(){
 
 
     /**
-     * 
-     * Delete note button (view only — not form cancel)
-     */
-    $(document).on('click', '.note-view .delete-btn', function () {
-        console.log('delete');
-    });
-
-
-    /**
      * Note form validation (add + edit)
      */
     $(document).on('submit', '.note-form', function (e) {

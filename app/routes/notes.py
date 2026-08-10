@@ -82,25 +82,24 @@ def edit_note(note_id):
         return redirect(url_for("notes.index"))
     return redirect(url_for("notes.index"))
 
-@notes_bp.route("/addList", methods=["GET", "POST"])
+@notes_bp.route("/deleteNote/<int:note_id>", methods=["GET", "POST"])
 @login_required
-def add_list():
+def delete_note(note_id):
+    note = db.session.get(Note, note_id)
+    if not note:
+        abort(404, description="Note not found.")
     if request.method == "POST":
-        new_note = Note(
-            Title=request.form.get("title"),
-            IsList=True,
-            Content=[{"checked": False, "content": request.form.get("content")}],
-        )
-        db.session.add(new_note)
+        if not _has_valid_notes_csrf_token():
+            abort(400, description="Invalid CSRF token.")
+
+        db.session.delete(note)
         try:
             db.session.commit()
+            session.pop("notes_csrf_token", None)
         except SQLAlchemyError:
             db.session.rollback()
-            error_msg = "There was an error submitting this request. Please, try again."
-            return render_template(
-                "addList.html",
-                page_title="Add new list",
-                action="/addList",
-                message=error_msg,
-            )
-    return render_template("addList.html", page_title="Add new list", action="/addList")
+            flash("There was an error submitting this request. Please try again.", "error")
+            return redirect(url_for("notes.index"))
+        return redirect(url_for("notes.index"))
+    return redirect(url_for("notes.index"))
+

@@ -91,14 +91,16 @@
 }
 
 .note-form-wrapper form input.note-title {
-    font-size: 1.5em;
+    font-size: 1.2em;
+    padding: var(--padding-l);
+    padding-bottom: var(--padding-m);
     font-family: var(--font-basic);
     letter-spacing: 1px;
     color: var(--clr-dark);
 }
 
 .note-form-wrapper form textarea.note-content {
-    font-size: 1.2em;
+    font-size: 1em;
     font-family: var(--font-basic);
     color: var(--clr-dark);
     field-sizing: content;
@@ -126,16 +128,13 @@
     transform: scale(1.1);
 }
 
-.note-action-buttons button.save-btn {
-    font-size: 1.4em;
-}
-
 .note-action-buttons button.edit-btn:hover {
     color: var(--clr-quaternary);
 }
 .note-action-buttons button.save-btn:hover {
     color: var(--clr-ternary);
 }
-.note-action-buttons button.delete-btn:hover {
+.note-action-buttons button.delete-btn:hover,
+.note-action-buttons button.cancel-btn:hover {
     color: var(--clr-error);
 }
