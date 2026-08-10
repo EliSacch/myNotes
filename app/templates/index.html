@@ -15,7 +15,20 @@
         {{ noNotesNote() }}
     {% else %}
         {% for note in notes %}
-            {{ noteWithContent(note) }}
+        <div class="note-slot" data-note-id="{{ note.Id }}">
+            <div class="note-view">
+                {{ noteWithContent(note) }}
+            </div>
+            <div class="note-edit hidden-form">
+                {{ noteWithForm({
+                    "Form": noteForm(
+                        url_for("notes.edit_note", note_id=note.Id),
+                        csrf_token,
+                        note
+                    )
+                }) }}
+            </div>
+        </div>
         {% endfor %}
     {% endif %}
 

@@ -82,15 +82,6 @@ main {
     opacity: 0.6;
 }
 
-.note-footer > button {
-    background-color: transparent;
-    color: var(--clr-ternary);
-    border: none;
-    font-size: 1.2em;
-    margin-left: 1em;
-    cursor: pointer;
-}
-
 .note::before {
     content: "";
     position: absolute;

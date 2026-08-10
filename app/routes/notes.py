@@ -31,7 +31,7 @@ def _has_valid_notes_csrf_token():
 @notes_bp.route("/")
 @login_required
 def index():
-    notes = db.session.scalars(db.select(Note)).all()
+    notes = db.session.scalars(db.select(Note).order_by(Note.CreatedAt.asc())).all()
     data = [note.to_dict() for note in notes]
     return render_template("index.html", page_title="Dashboard", notes=data, csrf_token=_notes_csrf_token())
 
@@ -67,16 +67,20 @@ def edit_note(note_id):
     if not note:
         abort(404, description="Note not found.")
     if request.method == "POST":
+        if not _has_valid_notes_csrf_token():
+            abort(400, description="Invalid CSRF token.")
+
         note.Title = request.form.get("title")
         note.Content = [{"checked": False, "content": request.form.get("content")}]
         try:
             db.session.commit()
+            session.pop("notes_csrf_token", None)
         except SQLAlchemyError:
             db.session.rollback()
             flash("There was an error submitting this request. Please try again.", "error")
             return redirect(url_for("notes.index"))
         return redirect(url_for("notes.index"))
-    return render_template("editNote.html", page_title="Edit note", note=note.to_dict(), csrf_token=_notes_csrf_token())
+    return redirect(url_for("notes.index"))
 
 @notes_bp.route("/addList", methods=["GET", "POST"])
 @login_required

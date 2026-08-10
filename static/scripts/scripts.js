@@ -69,53 +69,85 @@ $(document).ready(function(){
         for(item of items) {
             display.append(`<span class="list-item"><button class="deleteItem" data-id="${items.indexOf(item)}" type="button">X</button><p>${item}</p></span>`)
         }
-    } 
+    }
 
+    function closeAllNoteEdits() {
+        $('.note-slot').each(function () {
+            const $slot = $(this);
+            const $form = $slot.find('.note-form');
+            $slot.find('.error-msg').html('');
+            $form.trigger('reset');
+            $slot.find('.note-edit').addClass('hidden-form');
+            $slot.find('.note-view').removeClass('hidden-form');
+        });
+    }
+
+    function closeAddNoteForm() {
+        const $addForm = $('#addNoteForm');
+        $addForm.find('.error-msg').html('');
+        $addForm.find('.note-form').trigger('reset');
+        $addForm.addClass('hidden-form');
+    }
 
     /**
      * Edit note button
      */
-    $('.edit-btn').click( () => {
-        
+    $(document).on('click', '.edit-btn', function () {
+        const $slot = $(this).closest('.note-slot');
+        if (!$slot.length) {
+            return;
+        }
+        closeAddNoteForm();
+        closeAllNoteEdits();
+        $slot.find('.note-view').addClass('hidden-form');
+        $slot.find('.note-edit').removeClass('hidden-form');
     });
 
 
     /**
      * 
-     * Delete note button
+     * Delete note button (view only — not form cancel)
      */
-    $('.delete-btn').click( () => {
-        console.log('delete')
+    $(document).on('click', '.note-view .delete-btn', function () {
+        console.log('delete');
     });
 
 
     /**
-     * Add note and list form validation
+     * Note form validation (add + edit)
      */
-    $('#addNew').submit( (e) => {
-        let errors = []
-        const title = $('#title')
-        const content = $('#content')
-        const errorField = $('#errorMsg')
+    $(document).on('submit', '.note-form', function (e) {
+        const $form = $(this);
+        const title = $form.find('.note-title').val();
+        const errorField = $form.find('.error-msg');
+        let errors = [];
 
-        if(title.val() === "" || title.val() === null) {
-            errors.push("A title is required.")
+        if (title === "" || title === null) {
+            errors.push("A title is required.");
         }
         if (errors.length > 0) {
-            e.preventDefault()
-            errorField.html(errors.join('<br>'))
+            e.preventDefault();
+            errorField.html(errors.join('<br>'));
         }
     });
 
     /**
      * 
-     * Cancel note form
+     * Cancel note form (add + edit)
      */
-    $('#note-form-button-cancel').click( () => {
-        $('#errorMsg').html('')
-        $('#addNew').trigger('reset')
-        $('#addNoteForm').addClass('hidden-form')
+    $(document).on('click', '.note-form-button-cancel', function () {
+        const $form = $(this).closest('.note-form');
+        const $slot = $(this).closest('.note-slot');
 
+        $form.find('.error-msg').html('');
+        $form.trigger('reset');
+
+        if ($slot.length) {
+            $slot.find('.note-edit').addClass('hidden-form');
+            $slot.find('.note-view').removeClass('hidden-form');
+        } else {
+            $('#addNoteForm').addClass('hidden-form');
+        }
     });
 
     /**
@@ -123,6 +155,7 @@ $(document).ready(function(){
      * Add note button
      */
     $('#addNoteButton').click( () => {
-        $('#addNoteForm').removeClass('hidden-form')
+        closeAllNoteEdits();
+        $('#addNoteForm').removeClass('hidden-form');
     });
 });

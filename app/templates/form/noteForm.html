@@ -1,19 +1,20 @@
 {% from "notes/components/noteFormActions.html" import noteFormActions %}
-{% macro noteForm(action, csrf_token) %}
+{% macro noteForm(action, csrf_token, note=None) %}
+{% set title_value = note.Title if note else "" %}
+{% set content_value = note.Content[0].content if note and note.Content else "" %}
 <div class="note-form-wrapper">
 
-    <form id="addNew" action="{{action}}" method="POST">
+    <form class="note-form" action="{{action}}" method="POST">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}" required>
         
-        <p id="errorMsg"></p>
-        <input label="title" type="text" id="title" name="title" class="note-title" placeholder="Add a new note" ><br>
+        <p class="error-msg"></p>
+        <input label="title" type="text" name="title" class="note-title" placeholder="Add a new note" value="{{ title_value }}"><br>
         <textarea 
-        id="content" 
         name="content" 
         class="note-content" 
         placeholder="Type something..."
         maxlength="255"
-        ></textarea>
+        >{{ content_value }}</textarea>
 
         {{ noteFormActions() }}
     </form>
