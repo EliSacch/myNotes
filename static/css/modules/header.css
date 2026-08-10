@@ -55,13 +55,14 @@ header {
 }
 
 #options-nav {
-    position: absolute;
+    position: fixed;
     bottom: var(--spacing-xl);
     right: var(--spacing-l);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 1em;
+    z-index: 2;
 }
 
 #options-nav i {

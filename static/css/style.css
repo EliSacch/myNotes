@@ -43,6 +43,12 @@ body {
     display: block;
 }
 
+.notes-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-l);
+}
+
 /* --------------------------- Notes dashboard */
 
 main {
@@ -117,6 +123,9 @@ main {
     }
     #options {
         width: 100%;
+    }
+    .notes-list {
+        grid-template-columns: 1fr;
     }
     .lg-only {
         display: none;

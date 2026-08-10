@@ -10,21 +10,26 @@
 {% block content %}
     
 <main>
+    <section class="notes-list">
 
     {% if not notes %}
         {{ noNotesNote() }}
     {% else %}
         {% for note in notes %}
+        {% set note_errors = errors.get(note.id|string, []) %}
+        {% set note_values = form_values.get(note.id|string, {}) %}
         <div class="note-slot" data-note-id="{{ note.id }}">
-            <div class="note-view">
+            <div class="note-view{% if note_errors %} hidden-form{% endif %}">
                 {{ noteWithContent(note, csrf_token) }}
             </div>
-            <div class="note-edit hidden-form">
+            <div class="note-edit{% if not note_errors %} hidden-form{% endif %}">
                 {{ noteWithForm({
                     "Form": noteForm(
                         url_for("notes.edit_note", note_id=note.id),
                         csrf_token,
-                        note
+                        note,
+                        errors=note_errors,
+                        values=note_values
                     )
                 }) }}
             </div>
@@ -32,13 +37,19 @@
         {% endfor %}
     {% endif %}
 
-    <div id="addNoteForm" class="hidden-form">
+    {% set add_errors = errors.get("add", []) %}
+    {% set add_values = form_values.get("add", {}) %}
+    <div id="addNoteForm"{% if not add_errors %} class="hidden-form"{% endif %}>
         {{ noteWithForm({
-            "Title": "",
-            "Form": noteForm(url_for("notes.add_note"), csrf_token)
-            })
-        }}
+            "Form": noteForm(
+                url_for("notes.add_note"),
+                csrf_token,
+                errors=add_errors,
+                values=add_values
+            )
+        }) }}
     </div>
+</section>
 
 </main>
 {% endblock %}
