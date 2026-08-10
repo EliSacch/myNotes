@@ -1,7 +1,7 @@
 {% from "notes/noteWrapper.html" import noteWrapper %}
 {% from "notes/components/noteActions.html" import noteActions %}
 
-{% macro noteWithContent(note) %}
+{% macro noteWithContent(note, csrf_token) %}
 
-{{ noteWrapper(note.title, note.content, noteActions(note)) }}
+{{ noteWrapper(note.title, note.content, noteActions(note, csrf_token)) }}
 {% endmacro %}

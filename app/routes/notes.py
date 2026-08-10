@@ -66,17 +66,18 @@ def add_note():
 @notes_bp.route("/editNote/<int:note_id>", methods=["GET", "POST"])
 @login_required
 def edit_note(note_id):
-    if not current_user.is_authenticated:
-        abort(401, description="You must be logged in to edit a note.")
     note = db.session.get(Note, note_id)
     if not note or note.owner_id != current_user.id:
-        abort(403, description="You are not authorized to edit this note.")
+        flash("You are not authorized to edit this note.", "error")
+        return redirect(url_for("notes.index"))
     if not note:
-        abort(404, description="Note not found.")
+        flash("Note not found.", "error")
+        return redirect(url_for("notes.index"))
     if request.method == "POST":
         if not _has_valid_notes_csrf_token():
             abort(400, description="Invalid CSRF token.")
-
+            flash("Invalid form submission.", "error")
+            return redirect(url_for("notes.index"))
         note.title = request.form.get("title")
         note.content = request.form.get("content")
         try:
@@ -92,16 +93,17 @@ def edit_note(note_id):
 @notes_bp.route("/deleteNote/<int:note_id>", methods=["GET", "POST"])
 @login_required
 def delete_note(note_id):
-    if not current_user.is_authenticated:
-        abort(401, description="You must be logged in to delete a note.")
     note = db.session.get(Note, note_id)
     if not note or note.owner_id != current_user.id:
-        abort(403, description="You are not authorized to delete this note.")
+        flash("You are not authorized to delete this note.", "error")
+        return redirect(url_for("notes.index"))
     if not note:
-        abort(404, description="Note not found.")
+        flash("Note not found.", "error")
+        return redirect(url_for("notes.index"))
     if request.method == "POST":
         if not _has_valid_notes_csrf_token():
-            abort(400, description="Invalid CSRF token.")
+            flash("Invalid form submission.", "error")
+            return redirect(url_for("notes.index"))
 
         db.session.delete(note)
         try:

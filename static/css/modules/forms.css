@@ -110,6 +110,10 @@
     margin-top: var(--spacing-m);
 }
 
+.note-action-buttons .note-delete-form {
+    display: contents;
+}
+
 .note-action-buttons button {
     color: var(--clr-grey);
     background-color: transparent;

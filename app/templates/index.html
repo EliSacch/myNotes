@@ -17,7 +17,7 @@
         {% for note in notes %}
         <div class="note-slot" data-note-id="{{ note.id }}">
             <div class="note-view">
-                {{ noteWithContent(note) }}
+                {{ noteWithContent(note, csrf_token) }}
             </div>
             <div class="note-edit hidden-form">
                 {{ noteWithForm({
