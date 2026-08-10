@@ -1,7 +1,7 @@
 {% from "notes/components/noteFormActions.html" import noteFormActions %}
 {% macro noteForm(action, csrf_token, note=None) %}
-{% set title_value = note.Title if note else "" %}
-{% set content_value = note.Content[0].content if note and note.Content else "" %}
+{% set title_value = note.title if note else "" %}
+{% set content_value = note.content if note else "" %}
 <div class="note-form-wrapper">
 
     <form class="note-form" action="{{action}}" method="POST">
