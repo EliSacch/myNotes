@@ -147,20 +147,21 @@ The live version of this program is available on Heroku.
       ```
     - Alternatively, set `DATABASE_URL` and `SECRET_KEY` directly in your terminal. The database URL format is `postgresql+psycopg2://USERNAME:PASSWORD@HOST:5432/DATABASE_NAME`.
     - Create or update the database schema with `flask --app run db upgrade`.
-    - Run locally using `python run.py`.
+    - Run locally using `python run.py`
 
   - For susequent runs simply:
+    - Start postgres `brew services stop postgresql@18`
     - Activate virtual environment `source ./bin/activate`
     - Load env vars into your terminal:
       ```bash
       export DATABASE_URL="$(grep '^DATABASE_URL=' .env | cut -d= -f2-)"
       export SECRET_KEY="$(grep '^SECRET_KEY=' .env | cut -d= -f2-)"
       ```
-    - Run locally using `python run.py`.
+    - Run locally using `python run.py`
 
 
   - To stop running locally
-    - brew services stop postgresql@18
+    - `brew services stop postgresql@18`
     - Deactivate virtual environment `deactivate`
 
   
@@ -205,8 +206,6 @@ The app requires `DATABASE_URL` to connect to PostgreSQL and `SECRET_KEY` to sec
 ## Credits 
 
 ### Design
-
-- The color palette was generated using [My color Space](https://mycolor.space/)
 
 ### Code
 

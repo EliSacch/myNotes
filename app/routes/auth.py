@@ -3,18 +3,16 @@ import re
 import secrets
 
 
-from flask import Blueprint, abort, jsonify, redirect, render_template, request, session, url_for, flash
+from flask import Blueprint, redirect, render_template, request, session, url_for, flash
 from flask_login import login_user, login_required, current_user, logout_user
 from sqlalchemy import func, text
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.extensions import db, login_manager
-from app.models import Note, User
+from app.models import User
 
-notes_bp = Blueprint("notes", __name__)
 auth_bp = Blueprint("auth", __name__)
-health_bp = Blueprint("health", __name__)
 
 USERNAME_PATTERN = re.compile(r"^[A-Za-z0-9_]+$")
 EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
@@ -57,33 +55,6 @@ def _login_context(errors=None, email=""):
         "errors": errors or [],
         "title": "Login to your account",
     }
-
-
-def _notes_csrf_token():
-    csrf_token = session.get("notes_csrf_token")
-    if not csrf_token:
-        csrf_token = secrets.token_urlsafe(32)
-        session["notes_csrf_token"] = csrf_token
-    return csrf_token
-
-
-def _has_valid_notes_csrf_token():
-    submitted_token = request.form.get("csrf_token", "")
-    stored_token = session.get("notes_csrf_token", "")
-    return (
-        isinstance(submitted_token, str)
-        and isinstance(stored_token, str)
-        and hmac.compare_digest(submitted_token, stored_token)
-    )
-
-
-@health_bp.route("/health/db")
-def health_db_check():
-    try:
-        db.session.execute(text("SELECT 1"))
-        return jsonify({"db_status": "ok"}), 200
-    except Exception as e:
-        return jsonify({"db_status": "error", "detail": str(e)}), 500
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
@@ -153,7 +124,7 @@ def register():
 
         if any(errors.values()):
             return render_template(
-                "form/register.html",
+                "auth/register.html",
                 **_register_context(errors, username, email),
             )
 
@@ -168,7 +139,7 @@ def register():
         except IntegrityError:
             db.session.rollback()
             return render_template(
-                "form/register.html",
+                "auth/register.html",
                 **_register_context(
                     errors={"form": "Unable to create an account with those details."},
                     username=username,
@@ -178,7 +149,7 @@ def register():
 
         session.pop("register_csrf_token", None)
         return redirect(url_for("notes.index"))
-    return render_template("form/register.html", **_register_context())
+    return render_template("auth/register.html", **_register_context())
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -216,8 +187,8 @@ def login():
             else:
                 errors["form"].append("Invalid email or password.")
         if any(errors.values()):
-            return render_template("form/login.html", **_login_context(errors, email))
-    return render_template("form/login.html", **_login_context())
+            return render_template("auth/login.html", **_login_context(errors, email))
+    return render_template("auth/login.html", **_login_context())
     
 @auth_bp.route("/logout")
 @login_required
@@ -225,58 +196,3 @@ def logout():
     logout_user()
     flash("You have been logged out.", "success")
     return redirect(url_for("notes.index"))
-
-@notes_bp.route("/")
-@login_required
-def index():
-    notes = db.session.scalars(db.select(Note)).all()
-    data = [note.to_dict() for note in notes]
-    return render_template("index.html", page_title="Dashboard", notes=data, csrf_token=_notes_csrf_token())
-
-
-@notes_bp.route("/addNote", methods=["GET", "POST"])
-@login_required
-def add_note():
-    if request.method == "POST":
-        if not _has_valid_notes_csrf_token():
-            abort(400, description="Invalid CSRF token.")
-
-        new_note = Note(
-            Title=request.form.get("title"),
-            IsList=False,
-            Content=[{"checked": False, "content": request.form.get("content")}],
-        )
-        db.session.add(new_note)
-        try:
-            db.session.commit()
-            session.pop("notes_csrf_token", None)
-        except SQLAlchemyError:
-            db.session.rollback()
-            flash("There was an error submitting this request. Please try again.", "error")
-            return redirect(url_for("notes.index"))
-        return redirect(url_for("notes.index"))
-    return redirect(url_for("notes.index"))
-
-
-@notes_bp.route("/addList", methods=["GET", "POST"])
-@login_required
-def add_list():
-    if request.method == "POST":
-        new_note = Note(
-            Title=request.form.get("title"),
-            IsList=True,
-            Content=[{"checked": False, "content": request.form.get("content")}],
-        )
-        db.session.add(new_note)
-        try:
-            db.session.commit()
-        except SQLAlchemyError:
-            db.session.rollback()
-            error_msg = "There was an error submitting this request. Please, try again."
-            return render_template(
-                "addList.html",
-                page_title="Add new list",
-                action="/addList",
-                message=error_msg,
-            )
-    return render_template("addList.html", page_title="Add new list", action="/addList")

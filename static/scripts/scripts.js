@@ -76,7 +76,7 @@ $(document).ready(function(){
      * Edit note button
      */
     $('.edit-btn').click( () => {
-        console.log('edit')
+        
     });
 
 
