@@ -1,0 +1,8 @@
+{% macro tooltip(trigger, text, position="top") %}
+<div class="tooltip-container">
+    {{ trigger | safe }}
+    <div class="tooltip-box {{ position }}">
+        <p>{{ text }}</p>
+    </div>
+</div>
+{% endmacro %}

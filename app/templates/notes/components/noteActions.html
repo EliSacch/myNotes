@@ -1,3 +1,5 @@
+{% from "components/tooltip.html" import tooltip %}
+
 {% macro noteActions(note, csrf_token) %}
     <span class="note-actions-created-at">{{ note.created_at if note else "" }}</span>
 
@@ -8,10 +10,12 @@
             method="POST"
         >
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-            <button type="submit" class="delete-btn" aria-label="delete">
+            {{ tooltip('<button type="submit" class="delete-btn" aria-label="delete">
                 <i class="fa-solid fa-trash-can"></i>
-            </button>
+            </button>', 'Delete', 'bottom') }}
+            
         </form>
-        <button type="button" class="edit-btn" aria-label="edit"><i class="fa-solid fa-pencil"></i></button>
+        {{ tooltip('<button type="button" class="edit-btn" aria-label="edit"><i class="fa-solid fa-pencil"></i></button>', 'Edit', 'bottom') }}
+        
     </div>
 {% endmacro %}

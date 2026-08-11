@@ -1,4 +1,5 @@
 {% from "components/flashMessage.html" import flash_messages %}
+{% from "components/tooltip.html" import tooltip %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +10,7 @@
 
     <meta name="description" content="A web app for your notes">
     <meta name="keywords" content="notes todo">
-    <meta name="author" content="Elisa Sacchelli">
+    <meta name="author" content="Elisa S">
     <title>My Notes - {{ page_title }}</title>
 
     <!-- Font awesome kit -->
@@ -39,9 +40,24 @@
 
         {% if current_user.is_authenticated %}
         <nav id="options-nav">
-            <button id="options-toggler" aria-label="Open options" aria-controls="options" aria-expanded="false"><i class="fa-solid fa-plus"></i></button>
+
+            {{ tooltip('<button 
+                id="options-toggler" 
+                aria-label="Open options" 
+                aria-controls="options" 
+                aria-expanded="false"
+            >
+                <i class="fa-solid fa-plus"></i>
+            </button>', 'Open options') }}
+
             <ul id="options">
-                <li><button class="center-items" id="addNoteButton"><i class="fa-solid fa-pen-nib"></i> </button></li>
+                <li>
+                    {{ tooltip('<button 
+                    class="center-items" 
+                    id="addNoteButton">
+                        <i class="fa-solid fa-pen-nib"></i>
+                    </button>', 'Add new note') }}
+                </li>
             </ul>
         </nav>
         {% endif %}
