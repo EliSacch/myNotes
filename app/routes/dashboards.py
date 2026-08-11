@@ -1,7 +1,7 @@
 import hmac
 import secrets
 
-from flask import Blueprint, flash, jsonify, redirect, request, session, url_for
+from flask import Blueprint, abort, flash, jsonify, redirect, request, session, url_for
 from flask_login import login_required, current_user
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -44,6 +44,13 @@ def _submitted_dashboard_values():
         "name": request.form.get("name", ""),
     }
 
+@dashboards_bp.route("/<int:dashboard_id>/<slug>")
+@login_required
+def get_dashboard(dashboard_id, slug):
+    dashboard = db.session.get(Dashboard, dashboard_id)
+    if not dashboard or dashboard.owner_id != current_user.id:
+        abort(404)
+    return jsonify(dashboard.to_dict())
 
 @dashboards_bp.route("/list")
 @login_required

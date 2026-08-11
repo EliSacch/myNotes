@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 
 from app.extensions import db
@@ -16,6 +17,11 @@ class Dashboard(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     @property
+    def slug(self):
+        slug = re.sub(r"[^a-z0-9]+", "-", self.name.casefold()).strip("-")
+        return slug or "dashboard"
+
+    @property
     def formatted_updated_at(self):
         return self.updated_at.strftime("%Y-%m-%d %H:%M")
 
@@ -27,6 +33,7 @@ class Dashboard(db.Model):
         return {
             "id": self.id,
             "name": self.name,
+            "slug": self.slug,
             "is_default": self.is_default,
             "created_at": self.formatted_created_at,
             "updated_at": self.formatted_updated_at,

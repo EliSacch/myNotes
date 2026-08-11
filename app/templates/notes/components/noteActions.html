@@ -1,12 +1,17 @@
 {% from "components/tooltip.html" import tooltip %}
 
-{% macro noteActions(note, csrf_token) %}
+{% macro noteActions(note, csrf_token, dashboard) %}
     <span class="note-actions-created-at">{{ note.created_at if note else "" }}</span>
 
     <div class="note-action-buttons">
         <form
             class="note-delete-form"
-            action="{{ url_for('notes.delete_note', note_id=note.id) }}"
+            action="{{ url_for(
+                'notes.delete_note',
+                dashboard_id=dashboard.id,
+                slug=dashboard.slug,
+                note_id=note.id
+            ) }}"
             method="POST"
         >
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">

@@ -20,12 +20,17 @@
         {% set note_values = form_values.get(note.id|string, {}) %}
         <div class="note-slot" data-note-id="{{ note.id }}">
             <div class="note-view{% if note_errors %} hidden-form{% endif %}">
-                {{ noteWithContent(note, csrf_token) }}
+                {{ noteWithContent(note, csrf_token, dashboard) }}
             </div>
             <div class="note-edit{% if not note_errors %} hidden-form{% endif %}">
                 {{ noteWithForm({
                     "Form": noteForm(
-                        url_for("notes.edit_note", note_id=note.id),
+                        url_for(
+                            "notes.edit_note",
+                            dashboard_id=dashboard.id,
+                            slug=dashboard.slug,
+                            note_id=note.id
+                        ),
                         csrf_token,
                         note,
                         errors=note_errors,
@@ -37,18 +42,24 @@
         {% endfor %}
     {% endif %}
 
+    {% if dashboard %}
     {% set add_errors = errors.get("add", []) %}
     {% set add_values = form_values.get("add", {}) %}
     <div id="addNoteForm"{% if not add_errors %} class="hidden-form"{% endif %}>
         {{ noteWithForm({
             "Form": noteForm(
-                url_for("notes.add_note"),
+                url_for(
+                    "notes.add_note",
+                    dashboard_id=dashboard.id,
+                    slug=dashboard.slug
+                ),
                 csrf_token,
                 errors=add_errors,
                 values=add_values
             )
         }) }}
     </div>
+    {% endif %}
 </section>
 
 </main>

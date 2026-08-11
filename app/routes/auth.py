@@ -157,7 +157,7 @@ def register():
     return render_template("auth/register.html", **_register_context())
 
 @auth_bp.route("/login", methods=["GET", "POST"])
-@limiter.limit("5 per minute; 30 per hour", methods=["POST"])
+@limiter.limit("3 per minute; 10 per hour", methods=["POST"])
 def login():
     errors = {
         "form": [],
