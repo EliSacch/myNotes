@@ -24,10 +24,12 @@ def create_app():
     migrate.init_app(app, db)
 
     from app import models  # noqa: F401
-    from app.routes import notes_bp, auth_bp, health_bp
+    from app.routes import health_bp, auth_bp, index_bp, dashboards_bp, notes_bp
 
-    app.register_blueprint(notes_bp)
-    app.register_blueprint(auth_bp)
     app.register_blueprint(health_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(index_bp)
+    app.register_blueprint(dashboards_bp)
+    app.register_blueprint(notes_bp)
 
     return app

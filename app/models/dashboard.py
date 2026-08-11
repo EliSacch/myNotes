@@ -3,16 +3,15 @@ from datetime import datetime
 from app.extensions import db
 
 
-class Note(db.Model):
-    __tablename__ = "Notes"
+class Dashboard(db.Model):
+    __tablename__ = "Dashboards"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    title = db.Column(db.String(50), nullable=False)
-    content = db.Column(db.Text)
+    name = db.Column(db.String(50), nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey("Users.id"), nullable=False, index=True)
-    owner = db.relationship("User", back_populates="notes")
-    dashboard_id = db.Column(db.Integer, db.ForeignKey("Dashboards.id"), nullable=False, index=True)
-    dashboard = db.relationship("Dashboard", back_populates="notes")
+    is_default = db.Column(db.Boolean, nullable=False, default=False)
+    notes = db.relationship("Note", back_populates="dashboard", cascade="all, delete-orphan")
+    owner = db.relationship("User", back_populates="dashboards")
     created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -27,11 +26,11 @@ class Note(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
-            "title": self.title,
-            "content": self.content,
+            "name": self.name,
+            "is_default": self.is_default,
             "created_at": self.formatted_created_at,
             "updated_at": self.formatted_updated_at,
         }
 
     def __repr__(self):
-        return f"<Note {self.id}>"
+        return f"<Dashboard {self.id}>"

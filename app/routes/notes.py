@@ -36,7 +36,7 @@ def _redirect_to_index_with_errors(form_key, errors, values=None):
     session[_NOTE_FORM_ERRORS_KEY] = {form_key: errors}
     if values is not None:
         session[_NOTE_FORM_VALUES_KEY] = {form_key: values}
-    return redirect(url_for("notes.index"))
+    return redirect(url_for("dashboards.index"))
 
 
 def _submitted_note_values():
@@ -45,9 +45,9 @@ def _submitted_note_values():
         "content": request.form.get("content", ""),
     }
 
-@notes_bp.route("/")
+@notes_bp.route("/listNotes")
 @login_required
-def index():
+def list_notes():
     notes = db.session.scalars(db.select(Note).where(Note.owner_id == current_user.id).order_by(Note.created_at.asc()))
     data = [note.to_dict() for note in notes]
     errors = session.pop(_NOTE_FORM_ERRORS_KEY, {})
@@ -60,7 +60,6 @@ def index():
         errors=errors,
         form_values=form_values,
     )
-
 
 @notes_bp.route("/addNote", methods=["GET", "POST"])
 @login_required
@@ -98,8 +97,8 @@ def add_note():
                 ["There was an error submitting this request. Please try again."],
                 _submitted_note_values(),
             )
-        return redirect(url_for("notes.index"))
-    return redirect(url_for("notes.index"))
+        return redirect(url_for("dashboards.index"))
+    return redirect(url_for("dashboards.index"))
 
 
 @notes_bp.route("/editNote/<int:note_id>", methods=["GET", "POST"])
@@ -108,10 +107,10 @@ def edit_note(note_id):
     note = db.session.get(Note, note_id)
     if not note or note.owner_id != current_user.id:
         flash("You are not authorized to edit this note.", "error")
-        return redirect(url_for("notes.index"))
+        return redirect(url_for("dashboards.index"))
     if not note:
         flash("Note not found.", "error")
-        return redirect(url_for("notes.index"))
+        return redirect(url_for("dashboards.index"))
     if request.method == "POST":
         errors = []
         if not _has_valid_notes_csrf_token():
@@ -131,7 +130,7 @@ def edit_note(note_id):
         try:
             db.session.commit()
             session.pop("notes_csrf_token", None)
-            return redirect(url_for("notes.index"))
+            return redirect(url_for("dashboards.index"))
         except SQLAlchemyError:
             db.session.rollback()
             return _redirect_to_index_with_errors(
@@ -146,14 +145,14 @@ def delete_note(note_id):
     note = db.session.get(Note, note_id)
     if not note or note.owner_id != current_user.id:
         flash("You are not authorized to delete this note.", "error")
-        return redirect(url_for("notes.index"))
+        return redirect(url_for("dashboards.index"))
     if not note:
         flash("Note not found.", "error")
-        return redirect(url_for("notes.index"))
+        return redirect(url_for("dashboards.index"))
     if request.method == "POST":
         if not _has_valid_notes_csrf_token():
             flash("Invalid form submission.", "error")
-            return redirect(url_for("notes.index"))
+            return redirect(url_for("dashboards.index"))
 
         db.session.delete(note)
         try:
@@ -162,7 +161,7 @@ def delete_note(note_id):
         except SQLAlchemyError:
             db.session.rollback()
             flash("There was an error submitting this request. Please try again.", "error")
-            return redirect(url_for("notes.index"))
-        return redirect(url_for("notes.index"))
-    return redirect(url_for("notes.index"))
+            return redirect(url_for("dashboards.index"))
+        return redirect(url_for("dashboards.index"))
+    return redirect(url_for("dashboards.index"))
 

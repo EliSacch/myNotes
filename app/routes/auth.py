@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.extensions import db, login_manager
-from app.models import User
+from app.models import Dashboard, User
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -133,6 +133,9 @@ def register():
             email=email,
             password_hash=generate_password_hash(password),
         )
+        new_user.dashboards.append(
+            Dashboard(name="My Dashboard", is_default=True)
+        )
         db.session.add(new_user)
         try:
             db.session.commit()
@@ -148,7 +151,8 @@ def register():
             )
 
         session.pop("register_csrf_token", None)
-        return redirect(url_for("notes.index"))
+        login_user(new_user)
+        return redirect(url_for("index.index"))
     return render_template("auth/register.html", **_register_context())
 
 @auth_bp.route("/login", methods=["GET", "POST"])
@@ -183,7 +187,7 @@ def login():
             if user and check_password_hash(user.password_hash, password):
                 login_user(user)
                 flash(f"Welcome back, {user.username}!", "success")
-                return redirect(url_for("notes.index"))
+                return redirect(url_for("index.index"))
             else:
                 errors["form"].append("Invalid email or password.")
         if any(errors.values()):
@@ -195,4 +199,4 @@ def login():
 def logout():
     logout_user()
     flash("You have been logged out.", "success")
-    return redirect(url_for("notes.index"))
+    return redirect(url_for("index.index"))

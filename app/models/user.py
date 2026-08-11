@@ -13,6 +13,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
     notes = db.relationship("Note", back_populates="owner", cascade="all, delete-orphan")
+    dashboards = db.relationship("Dashboard", back_populates="owner", cascade="all, delete-orphan")
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(
         db.DateTime,
