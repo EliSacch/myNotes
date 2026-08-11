@@ -9,7 +9,7 @@ from sqlalchemy import func, text
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app.extensions import db, login_manager
+from app.extensions import db, login_manager, limiter
 from app.models import Dashboard, User
 
 auth_bp = Blueprint("auth", __name__)
@@ -57,6 +57,7 @@ def _login_context(errors=None, email=""):
     }
 
 @auth_bp.route("/register", methods=["GET", "POST"])
+@limiter.limit("3 per minute; 10 per hour", methods=["POST"])
 def register():
     errors = {
         "form": [],
@@ -156,6 +157,7 @@ def register():
     return render_template("auth/register.html", **_register_context())
 
 @auth_bp.route("/login", methods=["GET", "POST"])
+@limiter.limit("5 per minute; 30 per hour", methods=["POST"])
 def login():
     errors = {
         "form": [],

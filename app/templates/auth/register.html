@@ -54,7 +54,13 @@
         required=true,
     ) }}
 
-    <button type="submit">Register</button>
+    <button type="submit" class="form-submit-btn" data-loading-text="Creating account...">
+        <span class="btn-label">Register</span>
+        <span class="btn-loading" hidden>
+            <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+            <span class="btn-loading-text">Creating account...</span>
+        </span>
+    </button>
 </form>
 
 <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>

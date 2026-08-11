@@ -1,8 +1,9 @@
 import os
 
-from flask import Flask
+from flask import Flask, flash, redirect, request, url_for
+from flask_limiter.errors import RateLimitExceeded
 
-from app.extensions import db, migrate, login_manager
+from app.extensions import db, migrate, login_manager, limiter
 
 
 def create_app():
@@ -22,6 +23,7 @@ def create_app():
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
     migrate.init_app(app, db)
+    limiter.init_app(app)
 
     from app import models  # noqa: F401
     from app.routes import health_bp, auth_bp, index_bp, dashboards_bp, notes_bp
@@ -31,5 +33,10 @@ def create_app():
     app.register_blueprint(index_bp)
     app.register_blueprint(dashboards_bp)
     app.register_blueprint(notes_bp)
+
+    @app.errorhandler(RateLimitExceeded)
+    def handle_rate_limit_exceeded(error):
+        flash("Too many attempts. Please wait a moment and try again.", "warning")
+        return redirect(request.referrer or url_for("auth.login"))
 
     return app

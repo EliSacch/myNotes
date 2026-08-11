@@ -1,4 +1,24 @@
 $(document).ready(function(){
+
+    /**
+     * Auth form submit loading state
+     */
+    $(document).on('submit', '#register, #login', function () {
+        const $btn = $(this).find('.form-submit-btn');
+        if ($btn.prop('disabled')) {
+            return false;
+        }
+
+        const loadingText = $btn.data('loading-text');
+        if (loadingText) {
+            $btn.find('.btn-loading-text').text(loadingText);
+        }
+
+        $btn
+            .prop('disabled', true)
+            .attr('aria-busy', 'true')
+            .addClass('is-loading');
+    });
     
     /**
      * Options button
