@@ -14,7 +14,7 @@
 .form-wrapper h1 {
     font-weight: 600;
     text-align: center;
-    margin-bottom: var(--spacing-m);
+    margin-bottom: var(--spacing-xl);
 }
 
 .form-wrapper a {
@@ -22,7 +22,23 @@
 }
 
 .form-control {
-    margin-bottom: var(--spacing-l);
+    position: relative;
+    margin-top: var(--spacing-l);
+}
+
+.form-control label {
+    font-size: 1em;
+    position: absolute;
+    bottom: var(--padding-m);
+    left: 0;
+    transition: .3s;
+}
+
+.form-control input:focus + label,
+.form-control input:not(:placeholder-shown) + label {
+    bottom: 100%;
+    font-size: 0.8em;
+    color: var(--clr-dark);
 }
 
 .form-control.is-invalid li {
