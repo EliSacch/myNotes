@@ -1,4 +1,4 @@
-{% from "components/tooltip.html" import tooltip %}
+{% from "macros/tooltip.html" import tooltip %}
 
 {% macro noteActions(note, csrf_token, dashboard) %}
     <span class="note-actions-created-at">{{ note.created_at if note else "" }}</span>

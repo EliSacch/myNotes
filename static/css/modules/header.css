@@ -50,8 +50,7 @@ header {
 }
 
 #auth-nav a:focus {
-    color: var(--clr-ternary);
-    outline: 1px solid var(--clr-ternary);
+    color: var(--clr-info);
 }
 
 #options-nav {
@@ -67,7 +66,6 @@ header {
 
 #options-nav i {
     font-size: 1.3em;
-    font-weight: bold;
 }
 
 #options-toggler {
@@ -85,7 +83,7 @@ header {
 
 #options-toggler:hover,
 #options-toggler:focus {
-    background-color: var(--clr-ternary);
+    opacity: 0.8;
 }
 
 #options-toggler[aria-expanded="true"] {
@@ -96,7 +94,7 @@ header {
 #options {
     display: none;
     position: absolute;
-    right: 0;
+    left: 0;
     bottom: 120%;
 }
 
@@ -116,8 +114,7 @@ header {
     width: 50px;
     aspect-ratio: 1/1;
     border-radius: 50%;
-    margin-right: var(--spacing-xl);
-    margin-bottom: var(--spacing-l);
+    margin-top: var(--spacing-l);
 }
 
 @keyframes optionsFadeIn {

@@ -159,8 +159,10 @@ The live version of this program is available on Heroku.
 
 
   - To stop running locally
-    - `brew services stop postgresql@18`
+    - Ctrl + C
     - Deactivate virtual environment `deactivate`
+    - Quit postgres `\q`
+    - Stop postgres `brew services stop postgresql@18`
 
   
   #### Create a Postgres Local db for the first time

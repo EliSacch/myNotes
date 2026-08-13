@@ -1,4 +1,4 @@
-{% macro text_input(name, label, value='', type='text', errors=[], required=false,
+{% macro text_input(name, label, value='', type='text', placeholder='', errors=[], required=false,
                     pattern=none, autocomplete=none) %}
 <div class="form-control{% if errors %} is-invalid{% endif %}">
     <label for="{{ name }}">{{ label }}</label><br>
@@ -8,6 +8,7 @@
         name="{{ name }}"
         value="{{ value }}"
         type="{{ type }}"
+        {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
         {% if required %}required{% endif %}
         {% if pattern %}pattern="{{ pattern }}"{% endif %}
         {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}

@@ -1,0 +1,15 @@
+{% from "form/inputs/textImput.html" import text_input %}
+
+{% macro dashboardForm(action, csrf_token, dashboard=None, errors=[], values={}) %}
+<form class="dashboard-form" action="{{action}}" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    {{ text_input(
+        name="name",
+        label="Dashboard Name",
+        placeholder="New Dashboard",
+        value=values.name,
+        type="text",
+        required=true,
+    ) }}
+</form>
+{% endmacro %}

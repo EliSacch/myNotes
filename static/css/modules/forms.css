@@ -33,7 +33,7 @@
     border-bottom: 1px solid var(--clr-error);
 }
 
-.form-wrapper form input {
+.form-control input {
     width: 100%;
     border: none;
     border-bottom: 1px dotted var(--clr-dark);
@@ -41,7 +41,7 @@
     background-color: transparent;
 }
 
-.form-wrapper form input:focus {
+.form-control input:focus {
     border-bottom: 1px solid var(--clr-dark);
     outline: none;
 }

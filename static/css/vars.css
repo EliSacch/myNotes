@@ -27,4 +27,6 @@
     --padding-xl: 32px;
 
     --border-radius: 5px;
+
+    --tab-outline: 2px solid var(--clr-info);
 }

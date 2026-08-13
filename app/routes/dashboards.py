@@ -63,9 +63,9 @@ def list_dashboards():
     return jsonify([dashboard.to_dict() for dashboard in dashboards])
 
 
-@dashboards_bp.route("/add", methods=["GET", "POST"])
+@dashboards_bp.route("/create", methods=["GET", "POST"])
 @login_required
-def add_dashboard():
+def create():
     if request.method == "POST":
         errors = []
         name = (request.form.get("name") or "").strip()
@@ -78,7 +78,7 @@ def add_dashboard():
             errors.append("Name must be less than 50 characters.")
         if errors:
             return _redirect_to_index_with_errors(
-                "add",
+                "create",
                 errors,
                 _submitted_dashboard_values(),
             )
@@ -95,7 +95,7 @@ def add_dashboard():
         except SQLAlchemyError:
             db.session.rollback()
             return _redirect_to_index_with_errors(
-                "add",
+                "create",
                 ["There was an error submitting this request. Please try again."],
                 _submitted_dashboard_values(),
             )

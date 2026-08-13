@@ -1,6 +1,6 @@
-{% from "form/inputs/textImput.html" import text_input %}
-
 {% extends "form/formWrapper.html" %}
+{% from "form/inputs/textImput.html" import text_input %}
+{% from "macros/button.html" import button %}
 
 {% block formContent %}
 <form id="login" action="{{action}}" method="POST">
@@ -34,13 +34,8 @@
         required=true,
         errors=errors.password
     ) }}
-    <button type="submit" class="form-submit-btn" data-loading-text="Signing in...">
-        <span class="btn-label">Login</span>
-        <span class="btn-loading" hidden>
-            <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
-            <span class="btn-loading-text">Signing in...</span>
-        </span>
-    </button>
+    
+    {{ button('Login', 'Signing in...') }}
 </form>
 
 <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register</a></p>

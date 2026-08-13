@@ -19,6 +19,85 @@ $(document).ready(function(){
             .attr('aria-busy', 'true')
             .addClass('is-loading');
     });
+
+    /**
+     * Modal open / close
+     * Page behind the dialog is inert while open; dialog is inert while closed.
+     * Move focus out before hiding so AT users aren't trapped in aria-hidden.
+     */
+    let $lastModalTrigger = null;
+
+    function setBackgroundInert(isInert) {
+        $('body').children().not('.overlay').each(function () {
+            if (isInert) {
+                $(this).attr('inert', '');
+            } else {
+                $(this).removeAttr('inert');
+            }
+        });
+    }
+
+    function openModal($modal, $trigger) {
+        $lastModalTrigger = $trigger || null;
+        setBackgroundInert(true);
+
+        $modal
+            .removeAttr('inert')
+            .attr('aria-hidden', 'false')
+            .addClass('visible');
+
+        const $focusTarget = $modal.find('.modal-close, button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])').filter(':visible').first();
+        if ($focusTarget.length) {
+            $focusTarget.trigger('focus');
+        }
+    }
+
+    function closeModal($modal) {
+        // Clear page inert first so the trigger can receive focus again.
+        setBackgroundInert(false);
+
+        const $returnFocus = $lastModalTrigger && $lastModalTrigger.length
+            ? $lastModalTrigger
+            : $('.modal-trigger').filter('[data-modal="' + $modal.attr('id') + '"]').first();
+
+        if ($returnFocus.length) {
+            $returnFocus.trigger('focus');
+        } else if (document.activeElement && $modal[0].contains(document.activeElement)) {
+            document.activeElement.blur();
+        }
+
+        $modal
+            .removeClass('visible')
+            .attr('aria-hidden', 'true')
+            .attr('inert', '');
+
+        $lastModalTrigger = null;
+    }
+
+    $(document).on('click', '.modal-trigger', function () {
+        const $trigger = $(this);
+        const $modal = $(`#${$trigger.attr('data-modal')}`);
+        if ($modal.length) {
+            openModal($modal, $trigger);
+        }
+    });
+
+    $(document).on('click', '.modal-close', function () {
+        const $overlay = $(this).closest('.overlay');
+        if ($overlay.length) {
+            closeModal($overlay);
+        }
+    });
+
+    $(document).on('keydown', function (e) {
+        if (e.key !== 'Escape') {
+            return;
+        }
+        const $openModal = $('.overlay.visible').last();
+        if ($openModal.length) {
+            closeModal($openModal);
+        }
+    });
     
     /**
      * Options button

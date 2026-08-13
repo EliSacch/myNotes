@@ -1,5 +1,9 @@
-{% from "components/flashMessage.html" import flash_messages %}
-{% from "components/tooltip.html" import tooltip %}
+{% from "macros/flashMessage.html" import flash_messages %}
+{% from "macros/tooltip.html" import tooltip %}
+{% from "macros/modal.html" import render_modal %}
+{% from "form/dashboardForm.html" import dashboardForm %}
+
+{% set addDashboardForm = dashboardForm(url_for('dashboards.create'), csrf_token, dashboard=None, errors=[], values={}) %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -14,7 +18,7 @@
     <title>My Notes - {{ page_title }}</title>
 
     <!-- Font awesome kit -->
-    <script src="https://kit.fontawesome.com/1af258361d.js" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/4c90250119.js" crossorigin="anonymous"></script>
 
     <!-- JQuery -->
     <script src="../static/scripts/jquery-3.6.3.min.js" defer></script>
@@ -55,8 +59,14 @@
                     {{ tooltip('<button 
                     class="center-items" 
                     id="addNoteButton">
-                        <i class="fa-solid fa-pen-nib"></i>
-                    </button>', 'Add new note') }}
+                        <i class="fa-regular fa-note-sticky"></i>
+                    </button>', 'Add note') }}
+                </li>
+                <li>
+                    {{ tooltip('<button 
+                    class="center-items modal-trigger" data-modal="addDashboardModal">
+                        <i class="fa-regular fa-folder"></i>
+                    </button>', 'Add dashboard') }}
                 </li>
             </ul>
         </nav>
@@ -68,5 +78,7 @@
 
     {% block content %}
     {% endblock %}
+
+    {{ render_modal('addDashboardModal', 'Add dashboard', addDashboardForm, 'Add') }}
 </body>
 </html>
