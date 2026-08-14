@@ -1,5 +1,5 @@
 {% from "macros/button.html" import button %}
-{% macro render_modal(id, title, content, confirm_action=None) -%}
+{% macro modal(id, title, content, confirm_action=None) -%}
     <div class="overlay fade"
          id="{{ id }}"
          role="dialog"

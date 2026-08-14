@@ -66,30 +66,32 @@ def _dashboard_view_context(dashboard):
         _notes_csrf_token,
     )
 
-    dashboards = list(
-        db.session.scalars(
+    dashboards = [
+        item.to_dict()
+        for item in db.session.scalars(
             db.select(Dashboard)
             .where(Dashboard.owner_id == current_user.id)
             .order_by(Dashboard.created_at.asc())
         )
-    )
+    ]
 
     if dashboard is None:
         notes = []
     else:
-        notes = list(
-            db.session.scalars(
+        notes = [
+            note.to_dict()
+            for note in db.session.scalars(
                 db.select(Note)
                 .where(Note.dashboard_id == dashboard.id)
                 .order_by(Note.created_at.asc())
             )
-        )
+        ]
 
     return {
         "page_title": dashboard.name if dashboard else "Home",
-        "dashboards": [item.to_dict() for item in dashboards],
+        "dashboards": dashboards,
         "dashboard": dashboard.to_dict() if dashboard else None,
-        "notes": [note.to_dict() for note in notes],
+        "notes": notes,
         "csrf_token": _notes_csrf_token(),
         "dashboards_csrf_token": _dashboards_csrf_token(),
         "errors": session.pop(_NOTE_FORM_ERRORS_KEY, {}),
@@ -99,14 +101,14 @@ def _dashboard_view_context(dashboard):
 
 @dashboards_bp.route("/<int:dashboard_id>/<slug>")
 @login_required
-def get_dashboard(dashboard_id, slug):
+def get(dashboard_id, slug):
     dashboard = db.session.get(Dashboard, dashboard_id)
     if not dashboard or dashboard.owner_id != current_user.id:
         abort(404)
     if dashboard.slug != slug:
         return redirect(
             url_for(
-                "dashboards.get_dashboard",
+                "dashboards.get",
                 dashboard_id=dashboard.id,
                 slug=dashboard.slug,
             )
@@ -116,7 +118,7 @@ def get_dashboard(dashboard_id, slug):
 
 @dashboards_bp.route("/list")
 @login_required
-def list_dashboards():
+def list():
     dashboards = db.session.scalars(
         db.select(Dashboard)
         .where(Dashboard.owner_id == current_user.id)
@@ -166,7 +168,7 @@ def create():
 
         flash("Dashboard created successfully.", "success")
         redirect_url = url_for(
-            "dashboards.get_dashboard",
+            "dashboards.get",
             dashboard_id=new_dashboard.id,
             slug=new_dashboard.slug,
         )
@@ -176,9 +178,60 @@ def create():
     return redirect(url_for("index"))
 
 
-@dashboards_bp.route("/delete/<int:dashboard_id>", methods=["GET", "POST"])
+@dashboards_bp.route("/<int:dashboard_id>/<slug>/update", methods=["GET", "POST"])
 @login_required
-def delete_dashboard(dashboard_id):
+def update(dashboard_id, slug):
+    dashboard = db.session.get(Dashboard, dashboard_id)
+    if not dashboard or dashboard.owner_id != current_user.id:
+        abort(404)
+    if dashboard.slug != slug:
+        abort(404)
+    if request.method == "POST":
+        errors = {}
+        name = (request.form.get("name") or "").strip()
+        values = _submitted_dashboard_values()
+
+        if not _has_valid_dashboards_csrf_token():
+            errors.setdefault("form", []).append("Invalid form submission.")
+        if not name:
+            errors.setdefault("name", []).append("Name is required.")
+        elif len(name) > 50:
+            errors.setdefault("name", []).append("Name must be less than 50 characters.")
+        if errors:
+            return _create_error_response(errors, values)
+
+        dashboard.name = name
+        try:
+            db.session.commit()
+            session.pop("dashboards_csrf_token", None)
+        except IntegrityError:
+            db.session.rollback()
+            return _create_error_response(
+                {"name": ["You already have a dashboard with this name."]},
+                values,
+            )
+        except SQLAlchemyError:
+            db.session.rollback()
+            return _create_error_response(
+                {"form": ["There was an error submitting this request. Please try again."]},
+                values,
+            )
+
+        flash("Dashboard updated successfully.", "success")
+        redirect_url = url_for(
+            "dashboards.get",
+            dashboard_id=dashboard.id,
+            slug=dashboard.slug,
+        )
+        if _wants_json():
+            return jsonify({"ok": True, "redirect_url": redirect_url})
+        return redirect(redirect_url)
+    return redirect(url_for("index"))
+
+
+@dashboards_bp.route("/<int:dashboard_id>/delete", methods=["GET", "POST"])
+@login_required
+def delete(dashboard_id):
     dashboard = db.session.get(Dashboard, dashboard_id)
     if not dashboard or dashboard.owner_id != current_user.id:
         flash("You are not authorized to delete this dashboard.", "error")

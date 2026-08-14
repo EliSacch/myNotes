@@ -253,7 +253,6 @@ $(document).ready(function(){
      * Options button
      */
     $('#options-toggler').click(() => {
-        console.log('options-toggler clicked');
         const $toggler = $('#options-toggler');
         const $options = $('#options');
         const isOpen = $toggler.attr('aria-expanded') === 'true';

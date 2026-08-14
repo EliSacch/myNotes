@@ -25,7 +25,7 @@
     <body>
         <header>
             <div id="logo">
-                <h1>{{ current_user.is_authenticated and current_user.username + "'s" or "My" }} Notes</h1>
+                <h1>{% if dashboard is defined and dashboard %}{{ dashboard.name }}{% else %}{{ current_user.is_authenticated and current_user.username + "'s" or "My" }} Notes{% endif %}</h1>
                 <i class="fa-solid fa-pen-nib"></i>
             </div>
             <nav id="auth-nav">

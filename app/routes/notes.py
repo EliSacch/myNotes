@@ -56,7 +56,7 @@ def _get_owned_dashboard(dashboard_id, slug):
 
 @notes_bp.route("/list")
 @login_required
-def list_notes(dashboard_id, slug):
+def list(dashboard_id, slug):
     _get_owned_dashboard(dashboard_id, slug)
     notes = db.session.scalars(
         db.select(Note)
@@ -65,9 +65,20 @@ def list_notes(dashboard_id, slug):
     )
     return jsonify([note.to_dict() for note in notes])
 
-@notes_bp.route("/add", methods=["GET", "POST"])
+
+@notes_bp.route("/<int:note_id>")
 @login_required
-def add_note(dashboard_id, slug):
+def get(dashboard_id, slug, note_id):
+    dashboard = _get_owned_dashboard(dashboard_id, slug)
+    note = db.session.get(Note, note_id)
+    if not note or note.owner_id != current_user.id or note.dashboard_id != dashboard.id:
+        abort(404)
+    return jsonify(note.to_dict())
+
+
+@notes_bp.route("/create", methods=["GET", "POST"])
+@login_required
+def create(dashboard_id, slug):
     dashboard = _get_owned_dashboard(dashboard_id, slug)
     if request.method == "POST":
         errors = []
@@ -79,7 +90,7 @@ def add_note(dashboard_id, slug):
             errors.append("Content must be less than 1000 characters.")
         if errors:
             return _redirect_to_index_with_errors(
-                "add",
+                "create",
                 errors,
                 _submitted_note_values(),
             )
@@ -97,7 +108,7 @@ def add_note(dashboard_id, slug):
         except SQLAlchemyError:
             db.session.rollback()
             return _redirect_to_index_with_errors(
-                "add",
+                "create",
                 ["There was an error submitting this request. Please try again."],
                 _submitted_note_values(),
             )
@@ -105,9 +116,9 @@ def add_note(dashboard_id, slug):
     return redirect(url_for("index"))
 
 
-@notes_bp.route("/<int:note_id>/edit", methods=["GET", "POST"])
+@notes_bp.route("/<int:note_id>/update", methods=["GET", "POST"])
 @login_required
-def edit_note(dashboard_id, slug, note_id):
+def update(dashboard_id, slug, note_id):
     dashboard = _get_owned_dashboard(dashboard_id, slug)
     note = db.session.get(Note, note_id)
     if not note or note.owner_id != current_user.id or note.dashboard_id != dashboard.id:
@@ -142,9 +153,10 @@ def edit_note(dashboard_id, slug, note_id):
             )
     return redirect(url_for("index"))
 
+
 @notes_bp.route("/<int:note_id>/delete", methods=["GET", "POST"])
 @login_required
-def delete_note(dashboard_id, slug, note_id):
+def delete(dashboard_id, slug, note_id):
     dashboard = _get_owned_dashboard(dashboard_id, slug)
     note = db.session.get(Note, note_id)
     if not note or note.owner_id != current_user.id or note.dashboard_id != dashboard.id:
