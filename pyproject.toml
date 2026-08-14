@@ -1,0 +1,3 @@
+[tool.djlint]
+profile = "jinja"
+files = ["app/templates"]

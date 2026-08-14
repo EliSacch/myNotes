@@ -2,7 +2,7 @@
 {% from "form/inputs/textImput.html" import text_input %}
 {% from "macros/button.html" import button %}
 {% block formContent %}
-    <form id="register" action="{{ action }}" method="POST">
+    <form id="register" action="{{ action }}" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         {% if errors.form %}
             <div class="error-msg" role="alert">

@@ -3,7 +3,7 @@
     {% set title_value = values.get("title", note.title if note else "") %}
     {% set content_value = values.get("content", note.content if note else "") %}
     <div class="note-form-wrapper">
-        <form class="note-form" action="{{ action }}" method="POST">
+        <form class="note-form" action="{{ action }}" method="post">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}" required>
             {% if errors %}
                 <ul class="error-msg" role="alert">

@@ -3,11 +3,8 @@
     <span class="note-actions-created-at">{{ note.created_at if note else "" }}</span>
     <div class="note-action-buttons">
         <form class="note-delete-form"
-              action="{{ url_for('notes.delete_note',
- dashboard_id=dashboard.id,
- slug=dashboard.slug,
- note_id=note.id) }}"
-              method="POST">
+              action="{{ url_for('notes.delete_note', dashboard_id=dashboard.id, slug=dashboard.slug, note_id=note.id) }}"
+              method="post">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             {{ tooltip('<button type="submit" class="delete-btn" aria-label="delete">
                 <i class="fa-solid fa-trash-can"></i>

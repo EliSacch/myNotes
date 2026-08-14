@@ -3,7 +3,7 @@
     {% set field_errors = errors if errors is mapping else {"name": errors} %}
     <form {% if form_id %}id="{{ form_id }}" {% endif %}class="dashboard-form"
           action="{{ action }}"
-          method="POST"
+          method="post"
           novalidate>
         <div class="form-errors error-msg"
              role="alert"

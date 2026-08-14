@@ -8,12 +8,6 @@ A web app for your notes
 
 ## Table of content
 
-- [Design and User Experience](#design-and-user-experience)
-  - [User Stories](#user-stories)
-  - [Flow Chart](#flow-chart)
-  - [Wireframes](#wireframes)
-  - [Design](#design)
-
 - [Architecture](#architecture)
 
 - [Features](#features)
@@ -27,106 +21,48 @@ A web app for your notes
 - [Deployment](#deployment)
   - [Live Website](#live-website)
   - [Local Deployment](#local-deployment)
-
-- [Credits](#credits)
-  - [Code](#code)
+  - [Database migrations](#database-migrations)
+  - [Environment variables](#environment-variables)
+  - [Formatting templates](#formatting-templates)
 
 - [Technologies used](#technologies-used)
+  - [Languages](#languages)
+  - [Backend](#backend)
+  - [Frontend](#frontend)
+  - [Tooling](#tooling)
+  - [Hosting](#hosting)
 
 - [Acknowledgements](#acknowledgements)
 
-## Design and User Experience
-
-
-### User Stories
-- As a first time use I want:
-    - To understand the purpose of the website.
-    - To easily understand how to use it.
-    - To have a clear a compact design to quickly take notes without eccessive navigation.
-- As a frequent user I want:
-    - To have a personal profile where I can save my notes.
-    - To be able to access my notes from all my devices.
-
-
-### Flow Chart
-
-To develop a program that answers all the needs identified above, I have created the following flow chart:
-
-![Flow_Chart]()
-
-[Back to the top](#myNotes)
-
-### Wireframes
-
-<details>
-  <summary>Mobile</summary>
-
-![Home](media/wireframes/mobile-home.png)
-![Add note](media/wireframes/mobile-note.png)
-
-</details>
-
-
-<details>
-  <summary>Desktop</summary>
-
-![Home](media/wireframes/desktop-home.png)
-![Add note](media/wireframes/desktop-note.png)
-
-</details>
-
-### Design
-
-For the color I opted for a neutral palette
-
-![Color Palette](media/palette.png)
 
 ## Architecture
 
 App built following the Application Factory Pattern
 
+[Back to the top](#myNotes)
+
 ## Features 
+
+[Back to the top](#myNotes)
 
 ## Testing 
 
-### Tests
-
-  <details>
-  <summary>Manual testing</summary>
-
-  |Action | Expected behavious | Pass / Fail|
-  |-------|--------------------|-------|
-  | |  | Pass |
-  | |  | Pass |
-
-  </details>
-
-- JS testing
-
-
-[Back to the top](#myNotes)
-
 ### Validator Testing
-
-html
-css
-The PEP8 
 
 ### Fixed Bugs
 
-
-[Back to the top](#myNotes)
 
 ### Unfixed Bugs
 
 - There are no known unfixed bugs.
 
+[Back to the top](#myNotes)
 
 ## Deployment
 
 ### Live Website
 
-The live version of this program is available on Heroku.
+The live version of this program is available here.
 
 [Click here to open]()
 
@@ -201,26 +137,64 @@ Never edit an already-applied migration. Create a new migration for every later 
 
 The app requires `DATABASE_URL` to connect to PostgreSQL and `SECRET_KEY` to securely sign sessions and CSRF tokens. Store both in the hosting provider's secret/configuration settings when deploying; never commit an actual connection URL, password, or secret key. The committed `.env.example` only documents the required format.
 
+### Formatting templates
+
+Jinja templates are linted and formatted with [djLint](https://djlint.com/). Defaults live in `pyproject.toml` (`profile = "jinja"`, `files = ["app/templates"]`).
+
+With the virtual environment activated:
+
+```bash
+# Check formatting without changing files
+djlint - --check
+
+# Reformat templates
+djlint - --reformat
+
+# Lint templates
+djlint - --lint
+```
+
+The `-` source is required when `files` is set in the config; djLint then uses `app/templates` automatically.
+
+In Cursor/VS Code, install the djLint extension and set it as the default formatter for Jinja/HTML files if you want format-on-save.
+
 [Back to the top](#myNotes)
-
-## Credits 
-
-### Design
-
-### Code
-
 
 ## Technologies used
 
-### Main languages
+### Languages
 
-    - Flask
-    - Python
-    - Postgres
-    - OAuth
+- Python
+- HTML / Jinja2 templates
+- CSS
+- JavaScript
 
-### Python Libraries
+### Backend
 
-  - sys - needed in 
+- [Flask](https://flask.palletsprojects.com/) — web framework (application factory pattern)
+- [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/) — ORM integration
+- [SQLAlchemy](https://www.sqlalchemy.org/) — database models and queries
+- [Flask-Migrate](https://flask-migrate.readthedocs.io/) / [Alembic](https://alembic.sqlalchemy.org/) — database migrations
+- [Flask-Login](https://flask-login.readthedocs.io/) — session-based authentication
+- [Flask-Limiter](https://flask-limiter.readthedocs.io/) — rate limiting on auth routes
+- [Werkzeug](https://werkzeug.palletsprojects.com/) — password hashing
+- [psycopg2](https://www.psycopg.org/) — PostgreSQL driver
+- [PostgreSQL](https://www.postgresql.org/) — primary database
+
+### Frontend
+
+- [Jinja2](https://jinja.palletsprojects.com/) — server-rendered templates
+- [jQuery](https://jquery.com/) — client-side interactions (modals, forms, options menu)
+- [Font Awesome](https://fontawesome.com/) — icons
+- [Google Fonts](https://fonts.google.com/) — Mulish and Shadows Into Light
+
+### Tooling
+
+- [djLint](https://djlint.com/) — Jinja/HTML template linting and formatting
+- Virtualenv — local Python environment
+
+### Hosting
+
+- [TBD]() — planned/live deployment target
 
 ## Acknowledgements
