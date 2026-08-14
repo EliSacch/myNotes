@@ -38,7 +38,7 @@
 }
 
 .modal-body {
-    margin-top: var(--spacing-l);
+    margin-top: var(--spacing-xl);
 }
 
 .modal-header > h1 {

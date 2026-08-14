@@ -1,7 +1,7 @@
-{% macro button(label, loadingText, variant="primary", extra="") %}
+{% macro button(label, loadingText="", variant="primary", extra="") %}
 <button class="base-button {{ variant }}" data-loading-text="{{ loadingText }}" {{ extra }}>
     <span class="btn-label">{{ label }}</span>
-    <span class="btn-loading" hidden
+    <span class="btn-loading" hidden>
         <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
         <span class="btn-loading-text">{{ loadingText }}</span>
     </span>

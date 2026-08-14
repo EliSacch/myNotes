@@ -71,7 +71,142 @@ $(document).ready(function(){
             .attr('aria-hidden', 'true')
             .attr('inert', '');
 
+        const $form = $modal.find('form').first();
+        if ($form.length) {
+            clearFormErrors($form);
+            $form.trigger('reset');
+        }
+
         $lastModalTrigger = null;
+    }
+
+    function setButtonLoading($btn, isLoading) {
+        if (!$btn.length) {
+            return;
+        }
+
+        if (isLoading) {
+            const loadingText = $btn.data('loading-text');
+            if (loadingText) {
+                $btn.find('.btn-loading-text').text(loadingText);
+            }
+            $btn
+                .prop('disabled', true)
+                .attr('aria-busy', 'true')
+                .addClass('is-loading');
+            return;
+        }
+
+        $btn
+            .prop('disabled', false)
+            .removeAttr('aria-busy')
+            .removeClass('is-loading');
+    }
+
+    function clearFormErrors($form) {
+        $form.find('.form-errors').prop('hidden', true).empty();
+        $form.find('.form-control').removeClass('is-invalid');
+        $form.find('input, select, textarea').removeAttr('aria-invalid aria-describedby');
+        $form.find('.form-control-wrapper > .error-msg').prop('hidden', true).empty();
+    }
+
+    function renderErrorList(messages) {
+        const items = (Array.isArray(messages) ? messages : [messages])
+            .filter(Boolean)
+            .map((message) => $('<li></li>').text(message)[0].outerHTML)
+            .join('');
+        return items ? `<ul>${items}</ul>` : '';
+    }
+
+    function showFormErrors($form, errors) {
+        clearFormErrors($form);
+        if (!errors || typeof errors !== 'object') {
+            return;
+        }
+
+        Object.entries(errors).forEach(([field, messages]) => {
+            const html = renderErrorList(messages);
+            if (!html) {
+                return;
+            }
+
+            if (field === 'form') {
+                $form.find('.form-errors').html(html).prop('hidden', false);
+                return;
+            }
+
+            const $input = $form.find(`[name="${field}"]`);
+            if (!$input.length) {
+                $form.find('.form-errors').html(html).prop('hidden', false);
+                return;
+            }
+
+            const errorId = `${field}-errors`;
+            $input
+                .attr('aria-invalid', 'true')
+                .attr('aria-describedby', errorId)
+                .closest('.form-control')
+                .addClass('is-invalid');
+
+            let $error = $form.find(`#${errorId}`);
+            if (!$error.length) {
+                $error = $('<div class="error-msg" role="alert"></div>').attr('id', errorId);
+                $input.closest('.form-control-wrapper').append($error);
+            }
+            $error.html(html).prop('hidden', false);
+        });
+    }
+
+    async function submitModalForm($modal, $confirmBtn) {
+        const $form = $modal.find('form').first();
+        if (!$form.length) {
+            return;
+        }
+
+        const form = $form.get(0);
+        if (typeof form.reportValidity === 'function' && !form.reportValidity()) {
+            return;
+        }
+
+        clearFormErrors($form);
+        setButtonLoading($confirmBtn, true);
+
+        try {
+            const response = await fetch($form.attr('action'), {
+                method: ($form.attr('method') || 'POST').toUpperCase(),
+                body: new FormData(form),
+                headers: {
+                    Accept: 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                credentials: 'same-origin',
+            });
+
+            let data = null;
+            try {
+                data = await response.json();
+            } catch (err) {
+                data = null;
+            }
+
+            if (!response.ok || !data || data.ok === false) {
+                showFormErrors($form, (data && data.errors) || {
+                    form: ['Something went wrong. Please try again.'],
+                });
+                return;
+            }
+
+            closeModal($modal);
+            if (data.redirect_url) {
+                window.location.href = data.redirect_url;
+            }
+        } catch (err) {
+            showFormErrors($form, {
+                form: ['Something went wrong. Please try again.'],
+            });
+        } finally {
+            setButtonLoading($confirmBtn, false);
+        }
     }
 
     $(document).on('click', '.modal-trigger', function () {
@@ -87,6 +222,22 @@ $(document).ready(function(){
         if ($overlay.length) {
             closeModal($overlay);
         }
+    });
+
+    $(document).on('click', '.modal-confirm', function () {
+        const $confirmBtn = $(this);
+        const $modal = $confirmBtn.closest('.overlay');
+        const action = $modal.data('confirm');
+
+        if (action === 'submit-form') {
+            submitModalForm($modal, $confirmBtn);
+        }
+    });
+
+    $(document).on('submit', '.overlay[data-confirm="submit-form"] form', function (e) {
+        e.preventDefault();
+        const $modal = $(this).closest('.overlay');
+        submitModalForm($modal, $modal.find('.modal-confirm').first());
     });
 
     $(document).on('keydown', function (e) {

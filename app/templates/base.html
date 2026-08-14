@@ -3,8 +3,6 @@
 {% from "macros/modal.html" import render_modal %}
 {% from "form/dashboardForm.html" import dashboardForm %}
 
-{% set addDashboardForm = dashboardForm(url_for('dashboards.create'), csrf_token, dashboard=None, errors=[], values={}) %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,6 +77,17 @@
     {% block content %}
     {% endblock %}
 
-    {{ render_modal('addDashboardModal', 'Add dashboard', addDashboardForm, 'Add') }}
+    {% if current_user.is_authenticated and dashboards_csrf_token is defined %}
+    {% set addDashboardForm = dashboardForm(
+        url_for('dashboards.create'),
+        dashboards_csrf_token,
+        dashboard=None,
+        errors={},
+        values={},
+        form_id='addDashboardForm'
+    ) %}
+    {{ render_modal('addDashboardModal', 'Add dashboard', addDashboardForm, confirm_action='submit-form') }}
+    {% endif %}
+
 </body>
 </html>

@@ -31,7 +31,7 @@
     position: absolute;
     bottom: var(--padding-m);
     left: 0;
-    transition: .3s;
+    transition: bottom .3s, font-size .3s;
 }
 
 .form-control input:focus + label,

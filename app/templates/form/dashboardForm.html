@@ -1,14 +1,25 @@
 {% from "form/inputs/textImput.html" import text_input %}
 
-{% macro dashboardForm(action, csrf_token, dashboard=None, errors=[], values={}) %}
-<form class="dashboard-form" action="{{action}}" method="POST">
+{% macro dashboardForm(action, csrf_token, dashboard=None, errors={}, values={}, form_id=None) %}
+{% set field_errors = errors if errors is mapping else {"name": errors} %}
+<form {% if form_id %}id="{{ form_id }}" {% endif %}class="dashboard-form" action="{{ action }}" method="POST" novalidate>
+    <div class="form-errors error-msg" role="alert"{% if not field_errors.get('form') %} hidden{% endif %}>
+        {% if field_errors.get('form') %}
+        <ul>
+            {% for error in field_errors.form %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     {{ text_input(
         name="name",
         label="Dashboard Name",
-        value=values.name,
+        value=values.name if values else '',
         type="text",
         required=true,
+        errors=field_errors.get('name', []),
     ) }}
 </form>
 {% endmacro %}

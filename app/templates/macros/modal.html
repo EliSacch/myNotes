@@ -1,7 +1,16 @@
 {% from "macros/button.html" import button %}
 
-{% macro render_modal(id, title, content, confirmAction) -%}
-<div class="overlay fade" id="{{ id }}" role="dialog" aria-modal="true" aria-labelledby="{{ id }}-title" aria-hidden="true" inert>
+{% macro render_modal(id, title, content, confirm_action=None) -%}
+<div
+    class="overlay fade"
+    id="{{ id }}"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="{{ id }}-title"
+    aria-hidden="true"
+    inert
+    {% if confirm_action %}data-confirm="{{ confirm_action }}"{% endif %}
+>
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,8 +23,8 @@
                 {{ content }}
             </div>
             <div class="modal-footer">
-                {{ button('Cancel', '', 'secondary modal-close') }}
-                {{ button(confirmAction or 'Confirm', 'Confirming...') }}
+                {{ button('Cancel', variant='secondary modal-close', extra='type="button"') }}
+                {{ button('Confirm', 'Confirming...', variant='primary modal-confirm', extra='type="button"') }}
             </div>
         </div>
     </div>

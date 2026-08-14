@@ -1,12 +1,12 @@
 import hmac
 import secrets
 
-from flask import Blueprint, abort, flash, jsonify, redirect, request, session, url_for
+from flask import Blueprint, abort, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_login import login_required, current_user
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.extensions import db
-from app.models import Dashboard
+from app.models import Dashboard, Note
 
 dashboards_bp = Blueprint("dashboards", __name__, url_prefix="/dashboards")
 _DASHBOARD_FORM_ERRORS_KEY = "dashboard_form_errors"
@@ -31,6 +31,14 @@ def _has_valid_dashboards_csrf_token():
     )
 
 
+def _wants_json():
+    return (
+        request.headers.get("X-Requested-With") == "XMLHttpRequest"
+        or request.accept_mimetypes.best_match(["application/json", "text/html"])
+        == "application/json"
+    )
+
+
 def _redirect_to_index_with_errors(form_key, errors, values=None):
     form_key = str(form_key)
     session[_DASHBOARD_FORM_ERRORS_KEY] = {form_key: errors}
@@ -44,13 +52,67 @@ def _submitted_dashboard_values():
         "name": request.form.get("name", ""),
     }
 
+
+def _create_error_response(errors, values=None):
+    if _wants_json():
+        return jsonify({"ok": False, "errors": errors, "values": values or {}}), 400
+    return _redirect_to_index_with_errors("create", errors, values)
+
+
+def _dashboard_view_context(dashboard):
+    from app.routes.notes import (
+        _NOTE_FORM_ERRORS_KEY,
+        _NOTE_FORM_VALUES_KEY,
+        _notes_csrf_token,
+    )
+
+    dashboards = list(
+        db.session.scalars(
+            db.select(Dashboard)
+            .where(Dashboard.owner_id == current_user.id)
+            .order_by(Dashboard.created_at.asc())
+        )
+    )
+
+    if dashboard is None:
+        notes = []
+    else:
+        notes = list(
+            db.session.scalars(
+                db.select(Note)
+                .where(Note.dashboard_id == dashboard.id)
+                .order_by(Note.created_at.asc())
+            )
+        )
+
+    return {
+        "page_title": dashboard.name if dashboard else "Home",
+        "dashboards": [item.to_dict() for item in dashboards],
+        "dashboard": dashboard.to_dict() if dashboard else None,
+        "notes": [note.to_dict() for note in notes],
+        "csrf_token": _notes_csrf_token(),
+        "dashboards_csrf_token": _dashboards_csrf_token(),
+        "errors": session.pop(_NOTE_FORM_ERRORS_KEY, {}),
+        "form_values": session.pop(_NOTE_FORM_VALUES_KEY, {}),
+    }
+
+
 @dashboards_bp.route("/<int:dashboard_id>/<slug>")
 @login_required
 def get_dashboard(dashboard_id, slug):
     dashboard = db.session.get(Dashboard, dashboard_id)
     if not dashboard or dashboard.owner_id != current_user.id:
         abort(404)
-    return jsonify(dashboard.to_dict())
+    if dashboard.slug != slug:
+        return redirect(
+            url_for(
+                "dashboards.get_dashboard",
+                dashboard_id=dashboard.id,
+                slug=dashboard.slug,
+            )
+        )
+    return render_template("index.html", **_dashboard_view_context(dashboard))
+
 
 @dashboards_bp.route("/list")
 @login_required
@@ -67,21 +129,18 @@ def list_dashboards():
 @login_required
 def create():
     if request.method == "POST":
-        errors = []
+        errors = {}
         name = (request.form.get("name") or "").strip()
+        values = _submitted_dashboard_values()
 
         if not _has_valid_dashboards_csrf_token():
-            errors.append("Invalid form submission.")
+            errors.setdefault("form", []).append("Invalid form submission.")
         if not name:
-            errors.append("Name is required.")
+            errors.setdefault("name", []).append("Name is required.")
         elif len(name) > 50:
-            errors.append("Name must be less than 50 characters.")
+            errors.setdefault("name", []).append("Name must be less than 50 characters.")
         if errors:
-            return _redirect_to_index_with_errors(
-                "create",
-                errors,
-                _submitted_dashboard_values(),
-            )
+            return _create_error_response(errors, values)
 
         new_dashboard = Dashboard(
             name=name,
@@ -94,12 +153,20 @@ def create():
             session.pop("dashboards_csrf_token", None)
         except SQLAlchemyError:
             db.session.rollback()
-            return _redirect_to_index_with_errors(
-                "create",
-                ["There was an error submitting this request. Please try again."],
-                _submitted_dashboard_values(),
+            return _create_error_response(
+                {"form": ["There was an error submitting this request. Please try again."]},
+                values,
             )
-        return redirect(url_for("index.index"))
+
+        flash("Dashboard created successfully.", "success")
+        redirect_url = url_for(
+            "dashboards.get_dashboard",
+            dashboard_id=new_dashboard.id,
+            slug=new_dashboard.slug,
+        )
+        if _wants_json():
+            return jsonify({"ok": True, "redirect_url": redirect_url})
+        return redirect(redirect_url)
     return redirect(url_for("index.index"))
 
 
