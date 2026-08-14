@@ -4,11 +4,10 @@
 {% from "notes/noteWithContent.html" import noteWithContent %}
 {% from "form/dashboardForm.html" import dashboardForm %}
 {% from "form/noteForm.html" import noteForm %}
+{% from "form/deleteNoteForm.html" import deleteNoteForm %}
 {% from "macros/tooltip.html" import tooltip %}
 {% from "macros/modal.html" import modal %}
-
 {% extends "base.html" %}
-
 {% block content %}
     {# Outside main so page-transition transforms do not break position:fixed #}
     {% if current_user.is_authenticated %}
@@ -21,24 +20,24 @@
                 >
                 <i class="fa-solid fa-plus"></i>
                 </button>', 'Open options', 'top') }}
-            <ul id="options">
-                <li>
-                    {{ tooltip('<button
-                        class="center-items"
-                        id="addNoteButton"
-                        >
-                        <i class="fa-regular fa-note-sticky"></i>
-                        </button>', 'Add note', 'top') }}
-                </li>
-                <li>
-                    {{ tooltip('<button
-                        class="center-items modal-trigger"
-                        data-modal="addDashboardModal"
-                        >
-                        <i class="fa-regular fa-folder"></i>
-                        </button>', 'Add dashboard', 'top') }}
-                </li>
-            </ul>
+        <ul id="options">
+            <li>
+                {{ tooltip('<button
+                    class="center-items"
+                    id="addNoteButton"
+                    >
+                    <i class="fa-regular fa-note-sticky"></i>
+                    </button>', 'Add note', 'top') }}
+        </li>
+        <li>
+            {{ tooltip('<button
+                class="center-items modal-trigger"
+                data-modal="addDashboardModal"
+                >
+                <i class="fa-regular fa-folder"></i>
+                </button>', 'Add dashboard', 'top') }}
+        </li>
+        </ul>
         </nav>
     {% endif %}
     <main>
@@ -91,7 +90,6 @@
                     }) }}
                 </div>
             {% endif %}
-
         </section>
     </main>
     {# Overlay must be a direct body child so setBackgroundInert does not make it inert. #}
@@ -104,6 +102,8 @@
             values={},
             form_id='addDashboardForm'
         ) %}
+        {% set deleteNoteFormHtml = deleteNoteForm(csrf_token) %}
         {{ modal('addDashboardModal', 'Add dashboard', addDashboardForm, confirm_action='submit-form') }}
+        {{ modal('deleteNoteModal', 'Delete note', deleteNoteFormHtml, confirm_action='submit-form') }}
     {% endif %}
 {% endblock %}

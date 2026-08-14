@@ -2,14 +2,13 @@
 {% macro noteActions(note, csrf_token, dashboard) %}
     <span class="note-actions-created-at">{{ note.created_at if note else "" }}</span>
     <div class="note-action-buttons">
-        <form class="note-delete-form"
-              action="{{ url_for('notes.delete', dashboard_id=dashboard.id, slug=dashboard.slug, note_id=note.id) }}"
-              method="post">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-            {{ tooltip('<button type="submit" class="delete-btn" aria-label="delete">
-                <i class="fa-solid fa-trash-can"></i>
-                </button>', 'Delete', 'bottom') }}
-    </form>
+        {{ tooltip('<button type="button"
+            class="delete-btn modal-trigger"
+            data-modal="deleteNoteModal"
+            data-form-action="' ~ url_for('notes.delete', dashboard_id=dashboard.id, slug=dashboard.slug, note_id=note.id) ~ '"
+            aria-label="delete">
+            <i class="fa-solid fa-trash-can"></i>
+            </button>', 'Delete', 'bottom') }}
     {{ tooltip('<button type="button" class="edit-btn" aria-label="edit"><i class="fa-solid fa-pencil"></i></button>', 'Edit', 'bottom') }}
     </div>
 {% endmacro %}

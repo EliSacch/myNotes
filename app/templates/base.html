@@ -1,7 +1,6 @@
 {% from "macros/flashMessage.html" import flash_messages %}
 {% from "macros/modal.html" import modal %}
 {% from "macros/tooltip.html" import tooltip %}
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -39,53 +38,51 @@
         <header>
             {% if dashboards is defined and dashboards %}
                 <nav id="dashboards-nav" class="center-items column">
-                    {{tooltip('<button
-                    id="dashboards-toggler"
-                    aria-label="Open dashboards"
-                    aria-controls="dashboards-nav"
-                    aria-expanded="false"
-                    >
-                    <span class="dashboards-list-closed-icon"><i class="fa-regular fa-folder"></i></span>
-                    <span class="dashboards-list-expanded-icon"><i class="fa-regular fa-folder-open"></i></span>
-                    </button>', 'All Dadhboards', 'right', 'light')}}
-                    <ul id="dashboards-list">
-                        {% for item in dashboards %}
-                            <li {% if dashboard is defined and dashboard and item.id == dashboard.id %}class="active"{% endif %}>
-                                <a href="{{ url_for('dashboards.get', dashboard_id=item.id, slug=item.slug) }}"
-                                   {% if dashboard is defined and dashboard and item.id == dashboard.id %}aria-current="page"{% endif %}>
-                                    {{ item.name }}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                    {{ tooltip('<button
+                        id="dashboards-toggler"
+                        aria-label="Open dashboards"
+                        aria-controls="dashboards-nav"
+                        aria-expanded="false"
+                        >
+                        <span class="dashboards-list-closed-icon"><i class="fa-regular fa-folder"></i></span>
+                        <span class="dashboards-list-expanded-icon"><i class="fa-regular fa-folder-open"></i></span>
+                        </button>', 'All Dadhboards', 'right', 'light') }}
+                <ul id="dashboards-list">
+                    {% for item in dashboards %}
+                        <li {% if dashboard is defined and dashboard and item.id == dashboard.id %}class="active"{% endif %}>
+                            <a href="{{ url_for('dashboards.get', dashboard_id=item.id, slug=item.slug) }}"
+                               {% if dashboard is defined and dashboard and item.id == dashboard.id %}aria-current="page"{% endif %}>
+                                {{ item.name }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
                 </nav>
             {% endif %}
-
             <div id="logo">
-                <h1>{% if dashboard is defined and dashboard %}
-                    {{ dashboard.name }}
+                <h1>
+                    {% if dashboard is defined and dashboard %}
+                        {{ dashboard.name }}
                     {% else %}
-                    {{ current_user.is_authenticated and current_user.username + "'s" or "My" }} Notes
+                        {{ current_user.is_authenticated and current_user.username + "'s" or "My" }} Notes
                     {% endif %}
                 </h1>
             </div>
-            
             <nav id="auth-nav">
                 {% if current_user.is_authenticated %}
-                {{ tooltip('<button
-                class="center-items modal-trigger base-button link-light"
-                data-modal="logoutModal"
-                >
-                <i class="fa-solid fa-right-from-bracket"></i>
-                </button>', 'Logout', 'left', 'light') }}
-                {% endif %}
-            </nav>
-        </header>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {{ flash_messages(messages=messages, category=category if category else "info") }}
-        {% endwith %}
-        {% block content %}{% endblock %}
-
-        {{ modal('logoutModal', 'Logout', 'Are you sure you want to logout?', confirm_action='logout') }}
-    </body>
+                    {{ tooltip('<button
+                        class="center-items modal-trigger base-button link-light"
+                        data-modal="logoutModal"
+                        >
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>', 'Logout', 'left', 'light') }}
+            {% endif %}
+        </nav>
+    </header>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {{ flash_messages(messages=messages, category=category if category else "info") }}
+    {% endwith %}
+    {% block content %}{% endblock %}
+    {{ modal('logoutModal', 'Logout', 'Are you sure you want to logout?', confirm_action='logout') }}
+</body>
 </html>

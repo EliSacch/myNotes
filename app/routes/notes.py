@@ -30,12 +30,24 @@ def _has_valid_notes_csrf_token():
     )
 
 
-def _redirect_to_index_with_errors(form_key, errors, values=None):
+def _dashboard_url(dashboard):
+    return url_for(
+        "dashboards.get",
+        dashboard_id=dashboard.id,
+        slug=dashboard.slug,
+    )
+
+
+def _redirect_to_dashboard(dashboard):
+    return redirect(_dashboard_url(dashboard))
+
+
+def _redirect_to_dashboard_with_errors(dashboard, form_key, errors, values=None):
     form_key = str(form_key)
     session[_NOTE_FORM_ERRORS_KEY] = {form_key: errors}
     if values is not None:
         session[_NOTE_FORM_VALUES_KEY] = {form_key: values}
-    return redirect(url_for("index"))
+    return _redirect_to_dashboard(dashboard)
 
 
 def _submitted_note_values():
@@ -89,7 +101,8 @@ def create(dashboard_id, slug):
         if len(request.form.get("content", "")) > 1000:
             errors.append("Content must be less than 1000 characters.")
         if errors:
-            return _redirect_to_index_with_errors(
+            return _redirect_to_dashboard_with_errors(
+                dashboard,
                 "create",
                 errors,
                 _submitted_note_values(),
@@ -107,13 +120,14 @@ def create(dashboard_id, slug):
             session.pop("notes_csrf_token", None)
         except SQLAlchemyError:
             db.session.rollback()
-            return _redirect_to_index_with_errors(
+            return _redirect_to_dashboard_with_errors(
+                dashboard,
                 "create",
                 ["There was an error submitting this request. Please try again."],
                 _submitted_note_values(),
             )
-        return redirect(url_for("index"))
-    return redirect(url_for("index"))
+        return _redirect_to_dashboard(dashboard)
+    return _redirect_to_dashboard(dashboard)
 
 
 @notes_bp.route("/<int:note_id>/update", methods=["GET", "POST"])
@@ -123,7 +137,7 @@ def update(dashboard_id, slug, note_id):
     note = db.session.get(Note, note_id)
     if not note or note.owner_id != current_user.id or note.dashboard_id != dashboard.id:
         flash("You are not authorized to edit this note.", "error")
-        return redirect(url_for("index"))
+        return _redirect_to_dashboard(dashboard)
     if request.method == "POST":
         errors = []
         if not _has_valid_notes_csrf_token():
@@ -135,7 +149,8 @@ def update(dashboard_id, slug, note_id):
         if len(note.content) > 1000:
             errors.append("Content must be less than 1000 characters.")
         if errors:
-            return _redirect_to_index_with_errors(
+            return _redirect_to_dashboard_with_errors(
+                dashboard,
                 note.id,
                 errors,
                 _submitted_note_values(),
@@ -143,15 +158,24 @@ def update(dashboard_id, slug, note_id):
         try:
             db.session.commit()
             session.pop("notes_csrf_token", None)
-            return redirect(url_for("index"))
+            return _redirect_to_dashboard(dashboard)
         except SQLAlchemyError:
             db.session.rollback()
-            return _redirect_to_index_with_errors(
+            return _redirect_to_dashboard_with_errors(
+                dashboard,
                 note.id,
                 ["There was an error submitting this request. Please try again."],
                 _submitted_note_values(),
             )
-    return redirect(url_for("index"))
+    return _redirect_to_dashboard(dashboard)
+
+
+def _wants_json():
+    return (
+        request.headers.get("X-Requested-With") == "XMLHttpRequest"
+        or request.accept_mimetypes.best_match(["application/json", "text/html"])
+        == "application/json"
+    )
 
 
 @notes_bp.route("/<int:note_id>/delete", methods=["GET", "POST"])
@@ -161,11 +185,15 @@ def delete(dashboard_id, slug, note_id):
     note = db.session.get(Note, note_id)
     if not note or note.owner_id != current_user.id or note.dashboard_id != dashboard.id:
         flash("You are not authorized to delete this note.", "error")
-        return redirect(url_for("index"))
+        if _wants_json():
+            return jsonify({"ok": False, "errors": {"form": ["You are not authorized to delete this note."]}}), 403
+        return _redirect_to_dashboard(dashboard)
     if request.method == "POST":
         if not _has_valid_notes_csrf_token():
             flash("Invalid form submission.", "error")
-            return redirect(url_for("index"))
+            if _wants_json():
+                return jsonify({"ok": False, "errors": {"form": ["Invalid form submission."]}}), 400
+            return _redirect_to_dashboard(dashboard)
 
         db.session.delete(note)
         try:
@@ -174,6 +202,19 @@ def delete(dashboard_id, slug, note_id):
         except SQLAlchemyError:
             db.session.rollback()
             flash("There was an error submitting this request. Please try again.", "error")
-            return redirect(url_for("index"))
-        return redirect(url_for("index"))
-    return redirect(url_for("index"))
+            if _wants_json():
+                return jsonify(
+                    {
+                        "ok": False,
+                        "errors": {
+                            "form": ["There was an error submitting this request. Please try again."]
+                        },
+                    }
+                ), 500
+            return _redirect_to_dashboard(dashboard)
+
+        redirect_url = _dashboard_url(dashboard)
+        if _wants_json():
+            return jsonify({"ok": True, "redirect_url": redirect_url})
+        return redirect(redirect_url)
+    return _redirect_to_dashboard(dashboard)

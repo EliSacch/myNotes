@@ -94,13 +94,15 @@ header {
 #dashboards-list {
     display: none;
     position: absolute;
-    top: 110%;
+    top: 101%;
     left: calc(-1 * var(--spacing-l));
     height: 100dvh;
     z-index: 1;
     width: 100vw;
     max-width: 300px;
+    padding-top: var(--spacing-l);
     background-color: var(--clr-dark);
+    box-shadow: 0 3px 10px 0 var(--clr-dark);
 }
 
 #dashboards-list li {

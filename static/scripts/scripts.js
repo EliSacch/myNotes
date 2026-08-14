@@ -170,6 +170,11 @@ $(document).ready(function(){
             $modal.appendTo(document.body);
         }
 
+        const formAction = $trigger && $trigger.attr('data-form-action');
+        if (formAction) {
+            $modal.find('form').first().attr('action', formAction);
+        }
+
         setBackgroundInert(true);
 
         $modal
