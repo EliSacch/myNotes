@@ -1,14 +1,15 @@
 {% from "macros/tooltip.html" import tooltip %}
-
 {% macro noteFormActions() %}
-<div class="note-action-buttons">
-    {{ tooltip('<button type="button" aria-label="Cancel" class="note-form-button-cancel cancel-btn">
-        <i class="fa-solid fa-xmark"></i>
-    </button>', 'Cancel', 'bottom') }}
-    
-    {{ tooltip('<button type="submit" aria-label="Save" class="note-form-button-save save-btn">
+    <div class="note-action-buttons">
+        {{ tooltip('<button type="button"
+        aria-label="Cancel"
+        class="note-form-button-cancel cancel-btn">
+            <i class="fa-solid fa-xmark"></i>
+            </button>', 'Cancel', 'bottom') }}
+    {{ tooltip('<button type="submit"
+        aria-label="Save"
+        class="note-form-button-save save-btn">
         <i class="fa-solid fa-floppy-disk"></i>
-    </button>', 'Save', 'bottom') }}
-    
-</div>
+        </button>', 'Save', 'bottom') }}
+    </div>
 {% endmacro %}

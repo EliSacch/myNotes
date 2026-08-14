@@ -1,64 +1,50 @@
 {% extends "form/formWrapper.html" %}
 {% from "form/inputs/textImput.html" import text_input %}
 {% from "macros/button.html" import button %}
-
 {% block formContent %}
-<form id="register" action="{{action}}" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    {% if errors.form %}
-    <div class="error-msg" role="alert">
-        <ul>
-            {% for error in errors.form %}
-            <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    <br>
-    <br>
-
-    {% endif %}
-    
-    {{ text_input(
-        name="username",
-        label="Username",
-        value=username,
-        errors=errors.username,
-        required=true,
-        pattern="[A-Za-z0-9_]+",
-        autocomplete="username"
-    ) }}
-    {{ text_input(
-        name="email",
-        label="Email",
-        value=email,
-        type="email",
-        errors=errors.email,
-        required=true,
-        pattern="[^@\s]+@[^@\s]+\.[^@\s]+",
-        autocomplete="email"
-    ) }}
-    
-    {{ text_input(
-        name="password",
-        label="Password",
-        value=password,
-        type="password",
-        errors=errors.password,
-        autocomplete="new-password",
-        required=true,
-    ) }}
-    {{ text_input(
-        name="confirm_password",
-        label="Confirm Password",
-        value=confirm_password,
-        type="password",
-        errors=errors.confirm_password,
-        autocomplete="new-password",
-        required=true,
-    ) }}
-
-    {{ button('Register', 'Signing up...') }}
-</form>
-
-<p>Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
+    <form id="register" action="{{ action }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        {% if errors.form %}
+            <div class="error-msg" role="alert">
+                <ul>
+                    {% for error in errors.form %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <br>
+            <br>
+        {% endif %}
+        {{ text_input(name="username",
+            label="Username",
+            value=username,
+            errors=errors.username,
+            required=true,
+            pattern="[A-Za-z0-9_]+",
+            autocomplete="username") }}
+        {{ text_input(name="email",
+            label="Email",
+            value=email,
+            type="email",
+            errors=errors.email,
+            required=true,
+            pattern="[^@\s]+@[^@\s]+\.[^@\s]+",
+            autocomplete="email") }}
+        {{ text_input(name="password",
+            label="Password",
+            value=password,
+            type="password",
+            errors=errors.password,
+            autocomplete="new-password",
+            required=true,) }}
+        {{ text_input(name="confirm_password",
+            label="Confirm Password",
+            value=confirm_password,
+            type="password",
+            errors=errors.confirm_password,
+            autocomplete="new-password",
+            required=true,) }}
+        {{ button('Register', 'Signing up...') }}
+    </form>
+    <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
 {% endblock %}

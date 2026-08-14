@@ -1,93 +1,42 @@
 {% from "macros/flashMessage.html" import flash_messages %}
 {% from "macros/tooltip.html" import tooltip %}
-{% from "macros/modal.html" import render_modal %}
-{% from "form/dashboardForm.html" import dashboardForm %}
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <meta name="description" content="A web app for your notes">
-    <meta name="keywords" content="notes todo">
-    <meta name="author" content="Elisa S">
-    <title>My Notes - {{ page_title }}</title>
-
-    <!-- Font awesome kit -->
-    <script src="https://kit.fontawesome.com/4c90250119.js" crossorigin="anonymous"></script>
-
-    <!-- JQuery -->
-    <script src="{{ url_for('static', filename='scripts/jquery-3.6.3.min.js') }}" defer></script>
-    <!-- Custom JS -->
-    <script src="{{ url_for('static', filename='scripts/scripts.js') }}" defer></script>
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-
-    <header>
-        <div id="logo">
-            <h1>{{current_user.is_authenticated and current_user.username + "'s" or "My" }} Notes</h1>
-            <i class="fa-solid fa-pen-nib"></i>
-        </div>
-
-        <nav id="auth-nav">
-            {% if current_user.is_authenticated %}
-            <a href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket" ></i> <span class="lg-only">Logout</span></a>
-            {% endif %}
-        </nav>
-
-        {% if current_user.is_authenticated %}
-        <nav id="options-nav">
-
-            {{ tooltip('<button 
-                id="options-toggler" 
-                aria-label="Open options" 
-                aria-controls="options" 
-                aria-expanded="false"
-            >
-                <i class="fa-solid fa-plus"></i>
-            </button>', 'Open options') }}
-
-            <ul id="options">
-                <li>
-                    {{ tooltip('<button 
-                    class="center-items" 
-                    id="addNoteButton">
-                        <i class="fa-regular fa-note-sticky"></i>
-                    </button>', 'Add note') }}
-                </li>
-                <li>
-                    {{ tooltip('<button 
-                    class="center-items modal-trigger" data-modal="addDashboardModal">
-                        <i class="fa-regular fa-folder"></i>
-                    </button>', 'Add dashboard') }}
-                </li>
-            </ul>
-        </nav>
-        {% endif %}
-    </header>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {{ flash_messages(messages=messages, category=category if category else "info") }}
-    {% endwith %}
-
-    {% block content %}
-    {% endblock %}
-
-    {% if current_user.is_authenticated and dashboards_csrf_token is defined %}
-    {% set addDashboardForm = dashboardForm(
-        url_for('dashboards.create'),
-        dashboards_csrf_token,
-        dashboard=None,
-        errors={},
-        values={},
-        form_id='addDashboardForm'
-    ) %}
-    {{ render_modal('addDashboardModal', 'Add dashboard', addDashboardForm, confirm_action='submit-form') }}
-    {% endif %}
-
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A web app for your notes">
+        <meta name="keywords" content="notes todo">
+        <meta name="author" content="Elisa S">
+        <title>My Notes - {{ page_title }}</title>
+        <!-- Font awesome kit -->
+        <script src="https://kit.fontawesome.com/4c90250119.js"
+                crossorigin="anonymous"></script>
+        <!-- JQuery -->
+        <script src="{{ url_for('static', filename='scripts/jquery-3.6.3.min.js') }}"
+                defer></script>
+        <!-- Custom JS -->
+        <script src="{{ url_for('static', filename='scripts/scripts.js') }}" defer></script>
+        <!-- Custom CSS -->
+        <link rel="stylesheet"
+              href="{{ url_for('static', filename='css/style.css') }}">
+    </head>
+    <body>
+        <header>
+            <div id="logo">
+                <h1>{{ current_user.is_authenticated and current_user.username + "'s" or "My" }} Notes</h1>
+                <i class="fa-solid fa-pen-nib"></i>
+            </div>
+            <nav id="auth-nav">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> <span class="lg-only">Logout</span></a>
+                {% endif %}
+            </nav>
+        </header>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {{ flash_messages(messages=messages, category=category if category else "info") }}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </body>
 </html>

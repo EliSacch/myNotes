@@ -1,14 +1,16 @@
 {% macro flash_messages(messages, category="info") %}
-{% if messages %}
-    <div id="messages">
-        {% for category, message in messages %}
-        <div class="message {{ category }}">
-            {{ message }}
-            <button class="close-button" aria-label="Close message" onclick="this.parentElement.remove()">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+    {% if messages %}
+        <div id="messages">
+            {% for category, message in messages %}
+                <div class="message {{ category }}">
+                    {{ message }}
+                    <button class="close-button"
+                            aria-label="Close message"
+                            onclick="this.parentElement.remove()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-{% endif %}
+    {% endif %}
 {% endmacro %}

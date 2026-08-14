@@ -1,44 +1,36 @@
 {% extends "form/formWrapper.html" %}
 {% from "form/inputs/textImput.html" import text_input %}
 {% from "macros/button.html" import button %}
-
 {% block formContent %}
-<form id="login" action="{{action}}" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    {% if errors.form %}
-    <div class="error-msg" role="alert">
-        <ul>
-            {% for error in errors.form %}
-            <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    <br>
-    <br>
-    {% endif %}
-    {{ text_input(
-        name="email",
-        label="Email",
-        value=email,
-        type="email",
-        pattern="[^@\s]+@[^@\s]+\.[^@\s]+",
-        autocomplete="email",
-        required=true,
-        errors=errors.email
-    ) }}
-    
-    {{ text_input(
-        name="password",
-        label="Password",
-        value=password,
-        type="password",
-        autocomplete="current-password",
-        required=true,
-        errors=errors.password
-    ) }}
-    
-    {{ button('Login', 'Signing in...') }}
-</form>
-
-<p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register</a></p>
+    <form id="login" action="{{ action }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        {% if errors.form %}
+            <div class="error-msg" role="alert">
+                <ul>
+                    {% for error in errors.form %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <br>
+            <br>
+        {% endif %}
+        {{ text_input(name="email",
+            label="Email",
+            value=email,
+            type="email",
+            pattern="[^@\s]+@[^@\s]+\.[^@\s]+",
+            autocomplete="email",
+            required=true,
+            errors=errors.email) }}
+        {{ text_input(name="password",
+            label="Password",
+            value=password,
+            type="password",
+            autocomplete="current-password",
+            required=true,
+            errors=errors.password) }}
+        {{ button('Login', 'Signing in...') }}
+    </form>
+    <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register</a></p>
 {% endblock %}

@@ -1,13 +1,7 @@
 {% extends "base.html" %}
-
 {% block content %}
-
-<div class="form-wrapper">
-
-    <h1>{{ title }}</h1>
-
-    {% block formContent %}
-    {% endblock %}
-</div>
-
+    <div class="form-wrapper">
+        <h1>{{ title }}</h1>
+        {% block formContent %}{% endblock %}
+    </div>
 {% endblock %}

@@ -1,29 +1,29 @@
 {% macro text_input(name, label, value='', type='text', errors=[], required=false,
-                    pattern=none, autocomplete=none) %}
-
-<div class="form-control-wrapper">
-    <div class="form-control{% if errors %} is-invalid{% endif %}">
-        <input
-            id="{{ name }}"
-            name="{{ name }}"
-            value="{{ value }}"
-            type="{{ type }}"
-            placeholder=" "
-            {% if required %}required{% endif %}
-            {% if pattern %}pattern="{{ pattern }}"{% endif %}
-            {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
-            {% if errors %}aria-invalid="true" aria-describedby="{{ name }}-errors"{% endif %}
-        >
-        <label for="{{ name }}">{{ label }}</label>
+    pattern=none, autocomplete=none) %}
+    <div class="form-control-wrapper">
+        <div class="form-control{% if errors %} is-invalid{% endif %}">
+            <input id="{{ name }}"
+                   name="{{ name }}"
+                   value="{{ value }}"
+                   type="{{ type }}"
+                   placeholder=" "
+                   {% if required %}required{% endif %}
+                   {% if pattern %}pattern="{{ pattern }}"{% endif %}
+                   {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
+                   {% if errors %}aria-invalid="true" aria-describedby="{{ name }}-errors"{% endif %}>
+            <label for="{{ name }}">{{ label }}</label>
+        </div>
+        <div class="error-msg"
+             id="{{ name }}-errors"
+             role="alert"
+             {% if not errors %} hidden{% endif %}>
+            {% if errors %}
+                <ul>
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
     </div>
-    <div class="error-msg" id="{{ name }}-errors" role="alert"{% if not errors %} hidden{% endif %}>
-        {% if errors %}
-        <ul>
-            {% for error in errors %}
-            <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-    </div>
-</div>
 {% endmacro %}

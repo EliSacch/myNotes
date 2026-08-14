@@ -1,28 +1,29 @@
 {% from "notes/components/noteFormActions.html" import noteFormActions %}
 {% macro noteForm(action, csrf_token, note=None, errors=[], values={}) %}
-{% set title_value = values.get("title", note.title if note else "") %}
-{% set content_value = values.get("content", note.content if note else "") %}
-<div class="note-form-wrapper">
-
-    <form class="note-form" action="{{action}}" method="POST">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}" required>
-
-        {% if errors %}
-        <ul class="error-msg" role="alert">
-            {% for error in errors %}
-            <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        <input label="title" type="text" name="title" class="note-title" placeholder="Add a new note" value="{{ title_value }}" required>
-        <textarea 
-        name="content" 
-        class="note-content" 
-        placeholder="Type something..."
-        maxlength="255"
-        >{{ content_value }}</textarea>
-
-        {{ noteFormActions() }}
-    </form>
-</div>
+    {% set title_value = values.get("title", note.title if note else "") %}
+    {% set content_value = values.get("content", note.content if note else "") %}
+    <div class="note-form-wrapper">
+        <form class="note-form" action="{{ action }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" required>
+            {% if errors %}
+                <ul class="error-msg" role="alert">
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <input label="title"
+                   type="text"
+                   name="title"
+                   class="note-title"
+                   placeholder="Add a new note"
+                   value="{{ title_value }}"
+                   required>
+            <textarea name="content"
+                      class="note-content"
+                      placeholder="Type something..."
+                      maxlength="255">{{ content_value }}</textarea>
+            {{ noteFormActions() }}
+        </form>
+    </div>
 {% endmacro %}
