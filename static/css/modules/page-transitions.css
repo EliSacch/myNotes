@@ -1,0 +1,86 @@
+/* --------------------------- Page transitions */
+
+/* Hide content before first paint when arriving via a transitioned nav */
+html.is-page-pending main,
+html.is-page-pending .form-wrapper,
+html.is-page-pending .error-page,
+html.is-page-pending #logo {
+    opacity: 0;
+}
+
+body.is-page-entering .page-transition-target {
+    animation: pageEnter 0.45s ease-out both;
+}
+
+body.is-page-entering #logo {
+    animation: pageEnterLogo 0.4s ease-out both;
+}
+
+body.is-page-exiting .page-transition-target {
+    animation: pageExit 0.28s ease-in both;
+    pointer-events: none;
+}
+
+body.is-page-exiting #logo {
+    animation: pageExitLogo 0.25s ease-in both;
+}
+
+body.is-page-exiting {
+    cursor: wait;
+}
+
+@keyframes pageEnter {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pageEnterLogo {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes pageExit {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+}
+
+@keyframes pageExitLogo {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.is-page-pending main,
+    html.is-page-pending .form-wrapper,
+    html.is-page-pending .error-page,
+    html.is-page-pending #logo {
+        opacity: 1;
+    }
+
+    body.is-page-entering .page-transition-target,
+    body.is-page-entering #logo,
+    body.is-page-exiting .page-transition-target,
+    body.is-page-exiting #logo {
+        animation: none;
+    }
+}

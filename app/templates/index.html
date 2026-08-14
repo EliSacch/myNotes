@@ -10,17 +10,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <main>
-        {% if current_user.is_authenticated %}
-            <nav id="options-nav">
-                {{ tooltip('<button
-                    id="options-toggler"
-                    aria-label="Open options"
-                    aria-controls="options"
-                    aria-expanded="false"
-                    >
-                    <i class="fa-solid fa-plus"></i>
-                    </button>', 'Open options') }}
+    {# Outside main so page-transition transforms do not break position:fixed #}
+    {% if current_user.is_authenticated %}
+        <nav id="options-nav">
+            {{ tooltip('<button
+                id="options-toggler"
+                aria-label="Open options"
+                aria-controls="options"
+                aria-expanded="false"
+                >
+                <i class="fa-solid fa-plus"></i>
+                </button>', 'Open options') }}
             <ul id="options">
                 <li>
                     {{ tooltip('<button
@@ -29,18 +29,19 @@
                         >
                         <i class="fa-regular fa-note-sticky"></i>
                         </button>', 'Add note') }}
-            </li>
-            <li>
-                {{ tooltip('<button
-                    class="center-items modal-trigger"
-                    data-modal="addDashboardModal"
-                    >
-                    <i class="fa-regular fa-folder"></i>
-                    </button>', 'Add dashboard') }}
-            </li>
+                </li>
+                <li>
+                    {{ tooltip('<button
+                        class="center-items modal-trigger"
+                        data-modal="addDashboardModal"
+                        >
+                        <i class="fa-regular fa-folder"></i>
+                        </button>', 'Add dashboard') }}
+                </li>
             </ul>
-            </nav>
-        {% endif %}
+        </nav>
+    {% endif %}
+    <main>
         <section class="notes-list">
             {% if not notes %}
                 {{ noNotesNote() }}

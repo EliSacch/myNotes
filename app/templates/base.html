@@ -11,6 +11,17 @@
         <meta name="keywords" content="notes todo">
         <meta name="author" content="Elisa S">
         <title>My Notes - {{ page_title }}</title>
+        <script>
+            (function () {
+                try {
+                    if (sessionStorage.getItem('mynotes-page-transition') === '1') {
+                        document.documentElement.classList.add('is-page-pending');
+                    }
+                } catch (err) {
+                    /* ignore storage errors */
+                }
+            })();
+        </script>
         <!-- Font awesome kit -->
         <script src="https://kit.fontawesome.com/4c90250119.js"
                 crossorigin="anonymous"></script>
