@@ -362,6 +362,8 @@ $(document).ready(function(){
 
         if (action === 'submit-form') {
             submitModalForm($modal, $confirmBtn);
+        } else if (action === 'logout') {
+            window.location.href = '/logout';
         }
     });
 

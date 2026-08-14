@@ -1,4 +1,5 @@
 {% from "macros/flashMessage.html" import flash_messages %}
+{% from "macros/modal.html" import modal %}
 {% from "macros/tooltip.html" import tooltip %}
 
 <!DOCTYPE html>
@@ -46,7 +47,7 @@
                     >
                     <span class="dashboards-list-closed-icon"><i class="fa-regular fa-folder"></i></span>
                     <span class="dashboards-list-expanded-icon"><i class="fa-regular fa-folder-open"></i></span>
-                    </button>', 'All Dadhboards', 'bottom')}}
+                    </button>', 'All Dadhboards', 'right', 'light')}}
                     <ul id="dashboards-list">
                         {% for item in dashboards %}
                             <li {% if dashboard is defined and dashboard and item.id == dashboard.id %}class="active"{% endif %}>
@@ -71,7 +72,12 @@
             
             <nav id="auth-nav">
                 {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> <span class="lg-only">Logout</span></a>
+                {{ tooltip('<button
+                class="center-items modal-trigger base-button link-light"
+                data-modal="logoutModal"
+                >
+                <i class="fa-solid fa-right-from-bracket"></i>
+                </button>', 'Logout', 'left', 'light') }}
                 {% endif %}
             </nav>
         </header>
@@ -79,5 +85,7 @@
             {{ flash_messages(messages=messages, category=category if category else "info") }}
         {% endwith %}
         {% block content %}{% endblock %}
+
+        {{ modal('logoutModal', 'Logout', 'Are you sure you want to logout?', confirm_action='logout') }}
     </body>
 </html>

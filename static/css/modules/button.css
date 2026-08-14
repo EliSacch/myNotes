@@ -31,6 +31,11 @@
     color: var(--clr-ternary);
 }
 
+.base-button.link-light {
+    background-color: transparent;
+    color: var(--clr-secondary);
+}
+
 .base-button:hover,
 .base-button:focus {
     opacity: 0.8;

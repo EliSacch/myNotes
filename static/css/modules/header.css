@@ -43,17 +43,6 @@ header {
     font-size: 1.2em;
 }
 
-#auth-nav a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1em;
-}
-
-#auth-nav a:hover {
-    color: var(--clr-ternary);
-}
-
 #auth-nav a:focus {
     color: var(--clr-info);
 }
@@ -242,7 +231,7 @@ header {
     width: 50px;
     aspect-ratio: 1/1;
     border-radius: 50%;
-    margin-top: var(--spacing-l);
+    margin-bottom: var(--spacing-l);
 }
 
 @keyframes optionsFadeIn {
