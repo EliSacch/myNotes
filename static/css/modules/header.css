@@ -15,6 +15,7 @@ header {
     font-family: var(--font-decorative);
     font-style: italic;
     letter-spacing: 3px;
+    margin-right: auto;
     padding: 0 1em;
     border-bottom: 1px solid var(--clr-primary);
 }
@@ -26,6 +27,10 @@ header {
     font-size: 1.7em;
     opacity: .7;
 }
+
+/** --------------------------------------------------
+    Auth nav
+-------------------------------------------------- */
 
 #auth-nav {
     display: flex;
@@ -52,6 +57,98 @@ header {
 #auth-nav a:focus {
     color: var(--clr-info);
 }
+
+/** --------------------------------------------------
+    Dashboards nav
+-------------------------------------------------- */
+
+#dashboards-nav {
+    position: relative;
+    height: stretch;
+}
+
+#dashboards-toggler {
+    background-color: transparent;
+    color: var(--color-primary);
+    border: none;
+    cursor: pointer;
+    width: 50px;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    font-size: 2em;
+}
+
+#dashboards-list {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: calc(-1 * var(--spacing-l));
+    z-index: 1;
+    width: 100vw;
+    max-width: 300px;
+    background-color: var(--clr-dark);
+    padding-top: var(--spacing-l);
+}
+
+#dashboards-list li {
+    border-bottom: 1px dotted var(--clr-grey);
+    height: fit-content;
+}
+
+#dashboards-list li a {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    width: 100%;
+    padding: var(--spacing-l);
+    text-align: left;
+}
+
+#dashboards-list li a:hover,
+#dashboards-list li a:focus {
+    color: var(--clr-dark);
+    background-color: var(--clr-light);
+}
+
+#dashboards-list.dashboards-opening {
+    animation: dashboardsFadeIn 0.5s ease-in-out forwards;
+}
+
+#dashboards-list.dashboards-closing {
+    animation: dashboardsFadeOut 0.5s ease-in-out forwards;
+}
+
+@keyframes dashboardsFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(0);
+    }
+    30% {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(10px);
+    }
+}
+
+@keyframes dashboardsFadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(10px);
+    }
+    40% {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+        transform: translateY(0);
+    }
+}
+
+/** --------------------------------------------------
+    Options nav
+-------------------------------------------------- */
 
 #options-nav {
     position: fixed;

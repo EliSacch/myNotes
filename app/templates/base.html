@@ -1,5 +1,6 @@
 {% from "macros/flashMessage.html" import flash_messages %}
 {% from "macros/tooltip.html" import tooltip %}
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -24,10 +25,33 @@
     </head>
     <body>
         <header>
+            {% if dashboards is defined and dashboards %}
+                <nav id="dashboards-nav" class="center-items column">
+                    {{tooltip('<button
+                    id="dashboards-toggler"
+                    aria-label="Open dashboards"
+                    aria-controls="dashboards-nav"
+                    aria-expanded="false"
+                    >
+                    <i class="fa-regular fa-folder"></i>
+                    </button>', 'All Dadhboards', 'bottom')}}
+                    <ul id="dashboards-list">
+                        {% for dashboard in dashboards %}
+                            <li><a href="{{ url_for('notes.list', dashboard_id=dashboard.id, slug=dashboard.slug) }}">{{ dashboard.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </nav>
+            {% endif %}
+
             <div id="logo">
-                <h1>{% if dashboard is defined and dashboard %}{{ dashboard.name }}{% else %}{{ current_user.is_authenticated and current_user.username + "'s" or "My" }} Notes{% endif %}</h1>
-                <i class="fa-solid fa-pen-nib"></i>
+                <h1>{% if dashboard is defined and dashboard %}
+                    {{ dashboard.name }}
+                    {% else %}
+                    {{ current_user.is_authenticated and current_user.username + "'s" or "My" }} Notes
+                    {% endif %}
+                </h1>
             </div>
+            
             <nav id="auth-nav">
                 {% if current_user.is_authenticated %}
                     <a href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> <span class="lg-only">Logout</span></a>

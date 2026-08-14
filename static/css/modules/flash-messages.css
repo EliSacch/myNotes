@@ -29,6 +29,7 @@
     background-color: var(--clr-warning);
     color: var(--clr-dark);
     padding: var(--padding-l);
+    padding-right: var(--spacing-xl);
     border-radius: var(--border-radius);
     font-weight: 500;
     position: relative;

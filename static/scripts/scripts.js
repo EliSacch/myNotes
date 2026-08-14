@@ -274,6 +274,31 @@ $(document).ready(function(){
         }
     });
 
+    /**
+     * Dashboards toggler
+     */
+    $('#dashboards-toggler').click(() => {
+        const $toggler = $('#dashboards-toggler');
+        const $options = $('#dashboards-list');
+        const isOpen = $toggler.attr('aria-expanded') === 'true';
+
+        $toggler.attr('aria-expanded', String(!isOpen));
+
+        if (isOpen) {
+            $options
+                .removeClass('dashboards-opening')
+                .addClass('dashboards-closing')
+                .one('animationend', () => {
+                    $options.hide().removeClass('dashboards-closing');
+                });
+        } else {
+            $options
+                .show()
+                .removeClass('dashboards-closing')
+                .addClass('dashboards-opening');
+        }
+    });
+
     function closeAllNoteEdits() {
         $('.note-slot').each(function () {
             const $slot = $(this);
