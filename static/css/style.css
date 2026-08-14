@@ -46,8 +46,19 @@ body {
     justify-content: center;
 }
 
+.column {
+    flex-direction: column;
+}
+
 .lg-only {
     display: block;
+}
+
+.error-page {
+    width: 90%;
+    max-width: 400px;
+    margin: 1em auto;
+    gap: var(--spacing-l);
 }
 
 .notes-list {

@@ -26,9 +26,19 @@
     color: var(--clr-dark);
 }
 
+.base-button.link {
+    background-color: transparent;
+    color: var(--clr-ternary);
+}
+
 .base-button:hover,
 .base-button:focus {
     opacity: 0.8;
+}
+
+.base-button.link:hover,
+.base-button.link:focus {
+    color: var(--clr-info);
 }
 
 /* .base-button .btn-loading {
