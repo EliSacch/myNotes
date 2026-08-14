@@ -3,7 +3,7 @@ import secrets
 
 from flask import Blueprint, abort, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_login import login_required, current_user
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from app.extensions import db
 from app.models import Dashboard, Note
@@ -151,6 +151,12 @@ def create():
         try:
             db.session.commit()
             session.pop("dashboards_csrf_token", None)
+        except IntegrityError:
+            db.session.rollback()
+            return _create_error_response(
+                {"name": ["You already have a dashboard with this name."]},
+                values,
+            )
         except SQLAlchemyError:
             db.session.rollback()
             return _create_error_response(

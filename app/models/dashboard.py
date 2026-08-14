@@ -6,6 +6,9 @@ from app.extensions import db
 
 class Dashboard(db.Model):
     __tablename__ = "Dashboards"
+    __table_args__ = (
+        db.UniqueConstraint("owner_id", "name", name="uq_dashboards_owner_id_name"),
+    )
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50), nullable=False)
