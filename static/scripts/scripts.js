@@ -38,6 +38,11 @@ $(document).ready(function(){
 
     function openModal($modal, $trigger) {
         $lastModalTrigger = $trigger || null;
+
+        if (!$modal.parent().is('body')) {
+            $modal.appendTo(document.body);
+        }
+
         setBackgroundInert(true);
 
         $modal

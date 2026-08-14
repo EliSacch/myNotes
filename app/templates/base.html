@@ -33,11 +33,17 @@
                     aria-controls="dashboards-nav"
                     aria-expanded="false"
                     >
-                    <i class="fa-regular fa-folder"></i>
+                    <span class="dashboards-list-closed-icon"><i class="fa-regular fa-folder"></i></span>
+                    <span class="dashboards-list-expanded-icon"><i class="fa-regular fa-folder-open"></i></span>
                     </button>', 'All Dadhboards', 'bottom')}}
                     <ul id="dashboards-list">
-                        {% for dashboard in dashboards %}
-                            <li><a href="{{ url_for('notes.list', dashboard_id=dashboard.id, slug=dashboard.slug) }}">{{ dashboard.name }}</a></li>
+                        {% for item in dashboards %}
+                            <li {% if dashboard is defined and dashboard and item.id == dashboard.id %}class="active"{% endif %}>
+                                <a href="{{ url_for('dashboards.get', dashboard_id=item.id, slug=item.slug) }}"
+                                   {% if dashboard is defined and dashboard and item.id == dashboard.id %}aria-current="page"{% endif %}>
+                                    {{ item.name }}
+                                </a>
+                            </li>
                         {% endfor %}
                     </ul>
                 </nav>

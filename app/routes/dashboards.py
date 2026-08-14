@@ -103,6 +103,12 @@ def _dashboard_view_context(dashboard):
 @login_required
 def get(dashboard_id, slug):
     dashboard = db.session.get(Dashboard, dashboard_id)
+    notes = db.session.scalars(
+        db.select(Note)
+        .where(Note.dashboard_id == dashboard_id)
+        .order_by(Note.created_at.asc())
+    )
+
     if not dashboard or dashboard.owner_id != current_user.id:
         abort(404)
     if dashboard.slug != slug:
@@ -111,6 +117,7 @@ def get(dashboard_id, slug):
                 "dashboards.get",
                 dashboard_id=dashboard.id,
                 slug=dashboard.slug,
+                notes=notes,
             )
         )
     return render_template("index.html", **_dashboard_view_context(dashboard))

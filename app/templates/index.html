@@ -41,17 +41,6 @@
             </ul>
             </nav>
         {% endif %}
-        {% if current_user.is_authenticated and dashboards_csrf_token is defined %}
-            {% set addDashboardForm = dashboardForm(
-                url_for('dashboards.create'),
-                dashboards_csrf_token,
-                dashboard=None,
-                errors={},
-                values={},
-                form_id='addDashboardForm'
-            ) %}
-            {{ modal('addDashboardModal', 'Add dashboard', addDashboardForm, confirm_action='submit-form') }}
-        {% endif %}
         <section class="notes-list">
             {% if not notes %}
                 {{ noNotesNote() }}
@@ -104,4 +93,16 @@
 
         </section>
     </main>
+    {# Overlay must be a direct body child so setBackgroundInert does not make it inert. #}
+    {% if current_user.is_authenticated and dashboards_csrf_token is defined %}
+        {% set addDashboardForm = dashboardForm(
+            url_for('dashboards.create'),
+            dashboards_csrf_token,
+            dashboard=None,
+            errors={},
+            values={},
+            form_id='addDashboardForm'
+        ) %}
+        {{ modal('addDashboardModal', 'Add dashboard', addDashboardForm, confirm_action='submit-form') }}
+    {% endif %}
 {% endblock %}
