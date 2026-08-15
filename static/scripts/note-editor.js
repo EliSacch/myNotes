@@ -93,6 +93,32 @@
         return { blocks: storageBlocksToEditorBlocks(storageBlocks) };
     }
 
+    function focusChecklistItem(editor, blockIndex, atEnd) {
+        // needToFocus on insert() only marks the block focused; move the caret explicitly.
+        if (editor.caret && typeof editor.caret.setToBlock === 'function') {
+            editor.caret.setToBlock(blockIndex, atEnd ? 'end' : 'start');
+        }
+
+        const block = editor.blocks.getBlockByIndex(blockIndex);
+        const editable = block && block.holder && block.holder.querySelector('[contenteditable="true"]');
+        if (!editable) {
+            return;
+        }
+
+        editable.focus();
+
+        const selection = window.getSelection && window.getSelection();
+        if (!selection) {
+            return;
+        }
+
+        const range = document.createRange();
+        range.selectNodeContents(editable);
+        range.collapse(!atEnd);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+
     async function replaceParagraphWithChecklistItem(editor, blockIndex, itemText) {
         await editor.blocks.delete(blockIndex);
         await editor.blocks.insert(
@@ -111,6 +137,11 @@
             blockIndex,
             true
         );
+
+        // Wait a frame so the list tool's contenteditable is in the DOM.
+        requestAnimationFrame(function () {
+            focusChecklistItem(editor, blockIndex, Boolean(itemText));
+        });
     }
 
     function bindDashShortcut(editor, holder) {
@@ -154,6 +185,117 @@
         });
     }
 
+    /**
+     * Editor.js List always preventDefaults Tab for nesting. With maxLevel: 1 that is a
+     * no-op, so Tab never leaves the first item. Move focus between items ourselves and
+     * expose checkboxes to the keyboard.
+     */
+    function bindChecklistAccessibility(holder) {
+        function focusEditable(el, atStart) {
+            el.focus();
+            const selection = window.getSelection && window.getSelection();
+            if (!selection) {
+                return;
+            }
+            const range = document.createRange();
+            range.selectNodeContents(el);
+            range.collapse(Boolean(atStart));
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+
+        holder.addEventListener('keydown', function (event) {
+            if (event.key !== 'Tab') {
+                return;
+            }
+            if (!event.target || !event.target.closest) {
+                return;
+            }
+
+            const listItem = event.target.closest('.cdx-list__item');
+            if (!listItem) {
+                return;
+            }
+
+            const listRoot = listItem.closest('.cdx-list');
+            if (!listRoot) {
+                return;
+            }
+
+            const focusables = Array.from(
+                listRoot.querySelectorAll(
+                    '.cdx-list__checkbox[tabindex="0"], .cdx-list__item-content[contenteditable="true"]'
+                )
+            );
+            const current = event.target.closest(
+                '.cdx-list__checkbox, .cdx-list__item-content'
+            );
+            const index = focusables.indexOf(current);
+            if (index === -1) {
+                return;
+            }
+
+            const nextIndex = event.shiftKey ? index - 1 : index + 1;
+            // Always stop the List tool from eating Tab (it preventDefaults nesting).
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+
+            if (nextIndex < 0 || nextIndex >= focusables.length) {
+                // At list edge: allow normal Tab to leave the list.
+                return;
+            }
+
+            event.preventDefault();
+            const next = focusables[nextIndex];
+            if (next.isContentEditable) {
+                focusEditable(next, !event.shiftKey);
+            } else {
+                next.focus();
+            }
+        }, true);
+
+        function syncCheckboxAria(el) {
+            el.setAttribute(
+                'aria-checked',
+                el.classList.contains('cdx-list__checkbox--checked') ? 'true' : 'false'
+            );
+        }
+
+        function enhanceCheckbox(el) {
+            if (el.getAttribute('data-a11y') === '1') {
+                syncCheckboxAria(el);
+                return;
+            }
+            el.setAttribute('data-a11y', '1');
+            el.setAttribute('role', 'checkbox');
+            el.setAttribute('tabindex', '0');
+            syncCheckboxAria(el);
+
+            el.addEventListener('keydown', function (event) {
+                if (event.key !== ' ' && event.key !== 'Enter') {
+                    return;
+                }
+                event.preventDefault();
+                event.stopPropagation();
+                el.click();
+                syncCheckboxAria(el);
+            });
+        }
+
+        function enhanceAll() {
+            holder.querySelectorAll('.cdx-list__checkbox').forEach(enhanceCheckbox);
+        }
+
+        enhanceAll();
+        const observer = new MutationObserver(enhanceAll);
+        observer.observe(holder, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['class'],
+        });
+    }
+
     function initNoteEditor($form) {
         if (!$form || !$form.length) {
             return null;
@@ -192,6 +334,7 @@
             holder: holder,
             placeholder: placeholder,
             data: initialData,
+            minHeight: 50,
             tools: {
                 paragraph: {
                     class: window.Paragraph,
@@ -211,6 +354,7 @@
         editorsByHolderId.set(holderId, editor);
         editor.isReady.then(function () {
             bindDashShortcut(editor, holder);
+            bindChecklistAccessibility(holder);
         }).catch(function () {
             /* ignore */
         });

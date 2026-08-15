@@ -21,6 +21,7 @@
     --spacing-l: 16px;
     --spacing-xl: 32px;
 
+    --padding-xs: 3px;
     --padding-s: 4px;
     --padding-m: 8px;
     --padding-l: 12px;
@@ -29,4 +30,5 @@
     --border-radius: 5px;
 
     --tab-outline: 2px solid var(--clr-info);
+    --tab-outline-strong: 2px solid var(--clr-ternary);
 }

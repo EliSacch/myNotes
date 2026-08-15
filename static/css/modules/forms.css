@@ -163,6 +163,16 @@
     padding-left: 0;
 }
 
+.note-form-wrapper .note-editor .cdx-list__checkbox--checked .cdx-list__checkbox-check {
+    background-color: var(--clr-dark);
+    border-color: var(--clr-dark);
+}
+
+.note-form-wrapper .note-editor .cdx-list__checkbox:focus-visible {
+    outline: var(--tab-outline-strong);
+    outline-offset: 3px;
+}
+
 .note-action-buttons {
     display: flex;
     justify-content: flex-end;
@@ -188,6 +198,11 @@
     transform: scale(1.1);
 }
 
+.note-action-buttons button:focus-visible {
+    outline: var(--tab-outline-strong);
+    outline-offset: 2px;
+}
+
 .note-action-buttons button.edit-btn:hover {
     color: var(--clr-quaternary);
 }
@@ -198,3 +213,4 @@
 .note-action-buttons button.cancel-btn:hover {
     color: var(--clr-error);
 }
+
