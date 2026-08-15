@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, flash, redirect, request, url_for, render_template
+from flask import Flask, flash, redirect, request, url_for, render_template, request
 from flask_limiter.errors import RateLimitExceeded
 
 from app.extensions import db, migrate, login_manager, limiter
@@ -26,10 +26,11 @@ def create_app():
     limiter.init_app(app)
 
     from app import models  # noqa: F401
-    from app.routes import auth_bp, dashboards_bp, main_bp, notes_bp
+    from app.routes import auth_bp, dashboards_bp, main_bp, notes_bp, profile_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(profile_bp)
     app.register_blueprint(dashboards_bp)
     app.register_blueprint(notes_bp)
 

@@ -5,8 +5,8 @@
 .form-wrapper {
     width: 90%;
     max-width: 600px;
-    margin: 1em auto;
-    padding: 1em 3em;
+    margin: var(--spacing-xl) auto;
+    padding: var(--padding-xl);
     border-radius: 12px;
     background-color: var(--clr-secondary);
 }
@@ -23,7 +23,7 @@
 
 .form-control {
     position: relative;
-    margin-top: var(--spacing-l);
+    margin-top: var(--spacing-xl);
 }
 
 .form-control label {
@@ -36,7 +36,7 @@
 
 .form-control input:focus + label,
 .form-control input:not(:placeholder-shown) + label {
-    bottom: 100%;
+    bottom: calc(100% + var(--spacing-m));
     font-size: 0.8em;
     color: var(--clr-dark);
 }

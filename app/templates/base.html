@@ -29,11 +29,15 @@
         <script src="{{ url_for('static', filename='scripts/jquery-3.6.3.min.js') }}"
                 defer></script>
         <!-- Editor.js -->
-        <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.30.8/dist/editorjs.umd.js" defer></script>
-        <script src="https://cdn.jsdelivr.net/npm/@editorjs/paragraph@2.11.7/dist/paragraph.umd.js" defer></script>
-        <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@2.0.8/dist/editorjs-list.umd.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.30.8/dist/editorjs.umd.js"
+                defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/@editorjs/paragraph@2.11.7/dist/paragraph.umd.js"
+                defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@2.0.8/dist/editorjs-list.umd.js"
+                defer></script>
         <!-- Custom JS -->
-        <script src="{{ url_for('static', filename='scripts/note-editor.js') }}" defer></script>
+        <script src="{{ url_for('static', filename='scripts/note-editor.js') }}"
+                defer></script>
         <script src="{{ url_for('static', filename='scripts/scripts.js') }}" defer></script>
         <!-- Custom CSS -->
         <link rel="stylesheet"
@@ -43,7 +47,9 @@
         <a class="skip-link" href="#main-content">Skip to main content</a>
         <header>
             {% if dashboards is defined and dashboards %}
-                <nav id="dashboards-nav" class="center-items column" aria-label="Dashboards">
+                <nav id="dashboards-nav"
+                     class="center-items column"
+                     aria-label="Dashboards">
                     {{ tooltip('<button
                         id="dashboards-toggler"
                         type="button"
@@ -70,29 +76,50 @@
                 <h1>
                     {% if dashboard is defined and dashboard %}
                         {{ dashboard.name }}
+                    {% elif request.endpoint == 'profile.index' %}
+                        {{ current_user.is_authenticated and current_user.username + "'s" }} Profile
                     {% else %}
                         {{ current_user.is_authenticated and current_user.username + "'s" or "My" }} Notes
                     {% endif %}
                 </h1>
             </div>
-            <nav id="auth-nav" aria-label="Account">
-                {% if current_user.is_authenticated %}
-                    {{ tooltip('<button
-                        type="button"
-                        class="center-items modal-trigger base-button link-light"
-                        data-modal="logoutModal"
-                        aria-label="Logout"
-                        >
-                        <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
-                        </button>', 'Logout', 'left', 'light') }}
+            {% if request.endpoint != 'profile.index' %}
+                <nav id="auth-nav" aria-label="Account">
+                    {% set profile_tooltip %}
+                        <a href="{{ url_for('profile.index') }}"
+                           class="base-button link-light"
+                           aria-label="Profile">
+                            <i class="fa-solid fa-user" aria-hidden="true"></i>
+                        </a>
+                    {% endset %}
+                    {% if current_user.is_authenticated %}
+                        {{ tooltip(profile_tooltip, 'Profile', 'left', 'light') }}
+                    {% endif %}
+                </nav>
+            {% elif request.endpoint == 'profile.index' %}
+                <nav id="auth-nav" aria-label="Home">
+                    {% set profile_tooltip %}
+                        <a href="{{ url_for('main.index') }}"
+                           class="base-button link-light"
+                           aria-label="Home">
+                            <i class="fa-solid fa-house" aria-hidden="true"></i>
+                        </a>
+                    {% endset %}
+                    {% if current_user.is_authenticated %}
+                        {{ tooltip(profile_tooltip, 'Home', 'left', 'light') }}
+                    {% endif %}
+                </nav>
             {% endif %}
-        </nav>
-    </header>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {{ flash_messages(messages=messages, category=category if category else "info") }}
-    {% endwith %}
-    {% block content %}{% endblock %}
-    {{ modal('logoutModal', 'Logout', 'Are you sure you want to logout?', confirm_action='logout') }}
-    <div id="a11y-status" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
-</body>
+        </header>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {{ flash_messages(messages=messages, category=category if category else "info") }}
+        {% endwith %}
+        {% block content %}{% endblock %}
+        {{ modal('logoutModal', 'Logout', 'Are you sure you want to logout?', confirm_action='logout') }}
+        <div id="a11y-status"
+             class="visually-hidden"
+             role="status"
+             aria-live="polite"
+             aria-atomic="true"></div>
+    </body>
 </html>

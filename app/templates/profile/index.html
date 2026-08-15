@@ -1,0 +1,22 @@
+{% from "macros/tooltip.html" import tooltip %}
+{% extends "base.html" %}
+{% block content %}
+    <main id="main-content">
+        <section class="profile-page center-items column">
+            <h1>{{ user.username }}</h1>
+            <p>{{ user.email }}</p>
+            <nav id="auth-nav" aria-label="Account">
+                {% if user.is_authenticated %}
+                    {{ tooltip('<button
+                        type="button"
+                        class="center-items modal-trigger base-button link-light"
+                        data-modal="logoutModal"
+                        aria-label="Logout"
+                        >
+                        <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+                        </button>', 'Logout', 'left', 'light') }}
+            {% endif %}
+        </nav>
+    </section>
+    </main>
+{% endblock %}
