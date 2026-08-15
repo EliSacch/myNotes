@@ -59,7 +59,8 @@
 
 .form-control input:focus {
     border-bottom: 1px solid var(--clr-dark);
-    outline: none;
+    outline: var(--tab-outline-strong);
+    outline-offset: 2px;
 }
 
 .form-wrapper form button {
@@ -142,6 +143,11 @@
     font-family: var(--font-basic);
     letter-spacing: 1px;
     color: var(--clr-dark);
+}
+
+.note-form-wrapper form input.note-title:focus-visible {
+    outline: var(--tab-outline-strong);
+    outline-offset: 2px;
 }
 
 .note-form-wrapper .note-editor {

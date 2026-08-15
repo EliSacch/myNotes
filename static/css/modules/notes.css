@@ -36,9 +36,9 @@
 .note-body .note-todo-checkbox {
     appearance: none;
     -webkit-appearance: none;
-    width: 1em;
-    height: 1em;
-    margin-top: 0.25em;
+    width: 1.25em;
+    height: 1.25em;
+    margin-top: 0.15em;
     flex-shrink: 0;
     border: 1px solid var(--clr-dark);
     border-radius: 3px;

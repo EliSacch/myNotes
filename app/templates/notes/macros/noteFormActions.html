@@ -4,12 +4,12 @@
         {{ tooltip('<button type="button"
             aria-label="Cancel"
             class="note-form-button-cancel cancel-btn">
-            <i class="fa-solid fa-xmark"></i>
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
             </button>', 'Cancel', 'bottom') }}
     {{ tooltip('<button type="submit"
-        aria-label="Save"
+        aria-label="Save note"
         class="note-form-button-save save-btn">
-        <i class="fa-solid fa-floppy-disk"></i>
+        <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
         </button>', 'Save', 'bottom') }}
     </div>
 {% endmacro %}

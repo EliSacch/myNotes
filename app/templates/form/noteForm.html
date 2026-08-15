@@ -3,6 +3,7 @@
     {% set title_value = values.get("title", note.title if note else "") %}
     {% set storage_blocks = note.content_blocks if note and note.content_blocks is defined else [] %}
     {% set editor_id = "note-editor-" ~ (note.id if note else "new") %}
+    {% set title_id = "note-title-" ~ (note.id if note else "new") %}
     <div class="note-form-wrapper">
         <form class="note-form" action="{{ action }}" method="post">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}" required>
@@ -11,15 +12,19 @@
                     <li>{{ error }}</li>
                 {% endfor %}
             </ul>
-            <input label="title"
-                   type="text"
-                   name="title"
-                   class="note-title"
-                   placeholder="Add a new note"
-                   value="{{ title_value }}"
-                   required>
+            <div class="note-title-field">
+                <label class="visually-hidden" for="{{ title_id }}">Note title</label>
+                <input id="{{ title_id }}"
+                       type="text"
+                       name="title"
+                       class="note-title"
+                       placeholder="Add a new note"
+                       value="{{ title_value }}"
+                       required>
+            </div>
             <div id="{{ editor_id }}"
                  class="note-editor"
+                 aria-label="Note content"
                  data-placeholder="Type something..."
                  data-storage-blocks='{{ storage_blocks | tojson }}'></div>
             <input type="hidden"

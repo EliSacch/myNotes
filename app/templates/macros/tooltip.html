@@ -1,7 +1,7 @@
 {% macro tooltip(trigger, text, position="top", theme="default") %}
     <div class="tooltip-container {{ theme }}">
         {{ trigger | safe }}
-        <div class="tooltip-box {{ position }} {{ theme }}">
+        <div class="tooltip-box {{ position }} {{ theme }}" aria-hidden="true">
             <p>{{ text }}</p>
         </div>
     </div>

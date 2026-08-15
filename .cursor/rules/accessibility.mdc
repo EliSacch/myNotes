@@ -1,0 +1,39 @@
+---
+description: Accessibility standards for templates, CSS, and UI scripts
+globs: app/templates/**/*.{html,jinja2},static/css/**/*.css,static/scripts/**/*.js
+alwaysApply: false
+---
+
+# Accessibility (myNotes)
+
+Apply these when adding or changing UI.
+
+## Controls
+- Icon-only buttons need an `aria-label` (e.g. "Add note", "Logout").
+- Decorative icons: `aria-hidden="true"`.
+- Do not rely on hover tooltips as the only accessible name. Tooltips must also show on `:focus-within`.
+
+## Forms
+- Every input needs a real `<label for>` or `aria-label` — never placeholder-only, never a fake `label="..."` attribute.
+- Wire errors with `aria-invalid`, `aria-describedby`, and `role="alert"`.
+- On validation failure, move focus to the invalid field or the alert.
+
+## Dialogs & disclosures
+- Modals: `role="dialog"`, `aria-modal="true"`, `aria-labelledby`, `inert`/`aria-hidden` when closed, Escape closes, return focus to the trigger.
+- Use `<h2>` (not `<h1>`) for dialog titles.
+- Menus/toggles: `aria-expanded`, correct `aria-controls`, Escape closes, manage focus on open/close.
+
+## Focus
+- Keep visible `:focus-visible` outlines (do not remove with `outline: none` unless replaced).
+- After opening add/edit UI, focus the first field — defer until after layout/async init (e.g. Editor.js `autofocus: false`, then focus).
+- Do not leave a control "visually focused" but non-editable.
+
+## Feedback & motion
+- Flash/status messages: `role="status"` + `aria-live="polite"` (or `#a11y-status` for async failures).
+- Respect `prefers-reduced-motion` for open/close and transitions.
+- Prefer text + color for errors; don't use color alone.
+
+## Landmarks
+- One skip link to `#main-content`.
+- Label multiple `<nav>`s (`aria-label`).
+- Page has a single primary `<h1>`; keep `lang` on `<html>`.

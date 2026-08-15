@@ -27,6 +27,38 @@
     outline-offset: 2px;
 }
 
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.skip-link {
+    position: absolute;
+    top: var(--spacing-m);
+    left: var(--spacing-m);
+    z-index: 10000;
+    padding: var(--padding-m) var(--padding-l);
+    background-color: var(--clr-dark);
+    color: var(--clr-primary);
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    transform: translateY(-150%);
+    transition: transform 0.2s ease;
+}
+
+.skip-link:focus {
+    transform: translateY(0);
+    outline: var(--tab-outline-strong);
+    outline-offset: 2px;
+}
+
 * a {
     text-decoration: none;
     color: inherit;

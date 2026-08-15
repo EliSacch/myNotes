@@ -49,7 +49,9 @@ $(document).ready(function(){
 
         const $dashboardsList = $('#dashboards-list');
         if ($dashboardsList.is(':visible')) {
-            $('#dashboards-toggler').attr('aria-expanded', 'false');
+            $('#dashboards-toggler')
+                .attr('aria-expanded', 'false')
+                .attr('aria-label', 'Open dashboards');
             $dashboardsList
                 .hide()
                 .removeClass('dashboards-opening dashboards-closing');
@@ -329,6 +331,7 @@ $(document).ready(function(){
                 showFormErrors($form, (data && data.errors) || {
                     form: ['Something went wrong. Please try again.'],
                 });
+                focusFormErrors($form);
                 return;
             }
 
@@ -340,6 +343,7 @@ $(document).ready(function(){
             showFormErrors($form, {
                 form: ['Something went wrong. Please try again.'],
             });
+            focusFormErrors($form);
         } finally {
             setButtonLoading($confirmBtn, false);
         }
@@ -385,31 +389,155 @@ $(document).ready(function(){
         const $openModal = $('.overlay.visible').last();
         if ($openModal.length) {
             closeModal($openModal);
+            return;
+        }
+        if ($('#options-toggler').attr('aria-expanded') === 'true') {
+            closeOptionsMenu(true);
+            return;
+        }
+        if ($('#dashboards-toggler').attr('aria-expanded') === 'true') {
+            closeDashboardsMenu(true);
         }
     });
-    
+
     /**
-     * Options button
+     * Options / dashboards disclosures
      */
-    $('#options-toggler').click(() => {
+    function closeOptionsMenu(returnFocus) {
         const $toggler = $('#options-toggler');
         const $options = $('#options');
-        const isOpen = $toggler.attr('aria-expanded') === 'true';
+        if ($toggler.attr('aria-expanded') !== 'true') {
+            return;
+        }
 
-        $toggler.attr('aria-expanded', String(!isOpen));
+        $toggler.attr('aria-expanded', 'false');
+        $toggler.attr('aria-label', 'Open options');
+        $options.removeClass('options-opening');
 
-        if (isOpen) {
+        if (prefersReducedMotion) {
+            $options.hide().removeClass('options-closing');
+        } else {
             $options
-                .removeClass('options-opening')
                 .addClass('options-closing')
                 .one('animationend', () => {
                     $options.hide().removeClass('options-closing');
                 });
+        }
+
+        if (returnFocus) {
+            $toggler.trigger('focus');
+        }
+    }
+
+    function openOptionsMenu() {
+        const $toggler = $('#options-toggler');
+        const $options = $('#options');
+
+        $toggler.attr('aria-expanded', 'true');
+        $toggler.attr('aria-label', 'Close options');
+        $options
+            .show()
+            .removeClass('options-closing')
+            .addClass('options-opening');
+
+        const $firstAction = $options.find('button').first();
+        if ($firstAction.length) {
+            $firstAction.trigger('focus');
+        }
+    }
+
+    function closeDashboardsMenu(returnFocus) {
+        const $toggler = $('#dashboards-toggler');
+        const $list = $('#dashboards-list');
+        if ($toggler.attr('aria-expanded') !== 'true') {
+            return;
+        }
+
+        $toggler.attr('aria-expanded', 'false');
+        $toggler.attr('aria-label', 'Open dashboards');
+        $list.removeClass('dashboards-opening');
+
+        if (prefersReducedMotion) {
+            $list.hide().removeClass('dashboards-closing');
         } else {
-            $options
-                .show()
-                .removeClass('options-closing')
-                .addClass('options-opening');
+            $list
+                .addClass('dashboards-closing')
+                .one('animationend', () => {
+                    $list.hide().removeClass('dashboards-closing');
+                });
+        }
+
+        if (returnFocus) {
+            $toggler.trigger('focus');
+        }
+    }
+
+    function openDashboardsMenu() {
+        const $toggler = $('#dashboards-toggler');
+        const $list = $('#dashboards-list');
+
+        $toggler.attr('aria-expanded', 'true');
+        $toggler.attr('aria-label', 'Close dashboards');
+        $list
+            .show()
+            .removeClass('dashboards-closing')
+            .addClass('dashboards-opening');
+
+        const $firstLink = $list.find('a').first();
+        if ($firstLink.length) {
+            $firstLink.trigger('focus');
+        }
+    }
+
+    function focusNoteForm($form) {
+        if (!$form || !$form.length) {
+            return;
+        }
+        const title = $form.find('.note-title').get(0);
+        if (!title) {
+            return;
+        }
+        // Defer past the activating keyup/click and layout from un-hiding the form.
+        // Same-turn focus from a button often leaves the input visually focused but not editable.
+        window.requestAnimationFrame(function () {
+            window.requestAnimationFrame(function () {
+                title.focus({ preventScroll: true });
+                if (typeof title.setSelectionRange === 'function') {
+                    const len = title.value.length;
+                    title.setSelectionRange(len, len);
+                }
+            });
+        });
+    }
+
+    function focusFormErrors($form) {
+        if (!$form || !$form.length) {
+            return;
+        }
+        const $invalid = $form.find('[aria-invalid="true"]').first();
+        if ($invalid.length) {
+            $invalid.trigger('focus');
+            return;
+        }
+        const $alert = $form.find('.error-msg[role="alert"]:not([hidden]), .form-errors[role="alert"]:not([hidden])').first();
+        if ($alert.length) {
+            if (!$alert.attr('tabindex')) {
+                $alert.attr('tabindex', '-1');
+            }
+            $alert.trigger('focus');
+        }
+    }
+
+    /**
+     * Options button
+     */
+    $('#options-toggler').click(() => {
+        const isOpen = $('#options-toggler').attr('aria-expanded') === 'true';
+        if (isOpen) {
+            closeOptionsMenu(false);
+        } else {
+            closeDashboardsMenu(false);
+            openOptionsMenu();
         }
     });
 
@@ -417,24 +545,22 @@ $(document).ready(function(){
      * Dashboards toggler
      */
     $('#dashboards-toggler').click(() => {
-        const $toggler = $('#dashboards-toggler');
-        const $options = $('#dashboards-list');
-        const isOpen = $toggler.attr('aria-expanded') === 'true';
-
-        $toggler.attr('aria-expanded', String(!isOpen));
-
+        const isOpen = $('#dashboards-toggler').attr('aria-expanded') === 'true';
         if (isOpen) {
-            $options
-                .removeClass('dashboards-opening')
-                .addClass('dashboards-closing')
-                .one('animationend', () => {
-                    $options.hide().removeClass('dashboards-closing');
-                });
+            closeDashboardsMenu(false);
         } else {
-            $options
-                .show()
-                .removeClass('dashboards-closing')
-                .addClass('dashboards-opening');
+            closeOptionsMenu(false);
+            openDashboardsMenu();
+        }
+    });
+
+    $(document).on('click', function (event) {
+        const $target = $(event.target);
+        if (!$target.closest('#options-nav').length) {
+            closeOptionsMenu(false);
+        }
+        if (!$target.closest('#dashboards-nav').length) {
+            closeDashboardsMenu(false);
         }
     });
 
@@ -478,9 +604,14 @@ $(document).ready(function(){
         Promise.all([closeAddNoteForm(), closeAllNoteEdits()]).then(function () {
             $slot.find('.note-view').addClass('hidden-form');
             $slot.find('.note-edit').removeClass('hidden-form');
-            if (window.NoteEditor && typeof window.NoteEditor.init === 'function') {
-                window.NoteEditor.init($slot.find('.note-form'));
-            }
+            const $form = $slot.find('.note-form');
+            const initPromise =
+                window.NoteEditor && typeof window.NoteEditor.init === 'function'
+                    ? window.NoteEditor.init($form)
+                    : Promise.resolve();
+            return Promise.resolve(initPromise).then(function () {
+                focusNoteForm($form);
+            });
         });
     });
 
@@ -502,8 +633,10 @@ $(document).ready(function(){
             if ($slot.length) {
                 $slot.find('.note-edit').addClass('hidden-form');
                 $slot.find('.note-view').removeClass('hidden-form');
+                $slot.find('.edit-btn').first().trigger('focus');
             } else {
                 $('#addNoteForm').addClass('hidden-form');
+                $('#addNoteButton').trigger('focus');
             }
         });
     });
@@ -512,12 +645,18 @@ $(document).ready(function(){
      * Add note button
      */
     $('#addNoteButton').click( () => {
+        closeOptionsMenu(false);
         closeAllNoteEdits().then(function () {
             const $addForm = $('#addNoteForm');
             $addForm.removeClass('hidden-form');
-            if (window.NoteEditor && typeof window.NoteEditor.init === 'function') {
-                window.NoteEditor.init($addForm.find('.note-form'));
-            }
+            const $form = $addForm.find('.note-form');
+            const initPromise =
+                window.NoteEditor && typeof window.NoteEditor.init === 'function'
+                    ? window.NoteEditor.init($form)
+                    : Promise.resolve();
+            return Promise.resolve(initPromise).then(function () {
+                focusNoteForm($form);
+            });
         });
     });
 });

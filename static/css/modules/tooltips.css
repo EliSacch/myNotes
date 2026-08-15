@@ -44,7 +44,14 @@
     color: var(--clr-dark);
 }
 
-.tooltip-container:hover .tooltip-box {
+.tooltip-container:hover .tooltip-box,
+.tooltip-container:focus-within .tooltip-box {
     visibility: visible;
     opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tooltip-box {
+        transition: none;
+    }
 }

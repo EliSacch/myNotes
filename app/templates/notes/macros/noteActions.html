@@ -6,9 +6,9 @@
             class="delete-btn modal-trigger"
             data-modal="deleteNoteModal"
             data-form-action="' ~ url_for('notes.delete', dashboard_id=dashboard.id, note_id=note.id) ~ '"
-            aria-label="delete">
-            <i class="fa-solid fa-trash-can"></i>
+            aria-label="Delete note">
+            <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
             </button>', 'Delete', 'bottom') }}
-    {{ tooltip('<button type="button" class="edit-btn" aria-label="edit"><i class="fa-solid fa-pencil"></i></button>', 'Edit', 'bottom') }}
+    {{ tooltip('<button type="button" class="edit-btn" aria-label="Edit note"><i class="fa-solid fa-pencil" aria-hidden="true"></i></button>', 'Edit', 'bottom') }}
     </div>
 {% endmacro %}

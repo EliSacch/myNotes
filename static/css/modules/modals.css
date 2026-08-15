@@ -41,7 +41,7 @@
     margin-top: var(--spacing-xl);
 }
 
-.modal-header > h1 {
+.modal-header > h2 {
     font-weight: 400;
 }
 

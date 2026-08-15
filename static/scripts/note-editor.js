@@ -298,32 +298,32 @@
 
     function initNoteEditor($form) {
         if (!$form || !$form.length) {
-            return null;
+            return Promise.resolve(null);
         }
 
         const $holder = $form.find('.note-editor');
         if (!$holder.length) {
-            return null;
+            return Promise.resolve(null);
         }
 
         const holderId = $holder.attr('id');
         if (!holderId) {
-            return null;
+            return Promise.resolve(null);
         }
 
         if (editorsByHolderId.has(holderId)) {
-            return editorsByHolderId.get(holderId);
+            return Promise.resolve(editorsByHolderId.get(holderId));
         }
 
         if (typeof window.EditorJS !== 'function' || typeof window.Paragraph !== 'function') {
             console.error('Editor.js tools are not loaded.');
-            return null;
+            return Promise.resolve(null);
         }
 
         const ListTool = getListTool();
         if (typeof ListTool !== 'function') {
             console.error('Editor.js List tool is not loaded.');
-            return null;
+            return Promise.resolve(null);
         }
 
         const holder = $holder.get(0);
@@ -334,6 +334,7 @@
             holder: holder,
             placeholder: placeholder,
             data: initialData,
+            autofocus: false,
             minHeight: 50,
             tools: {
                 paragraph: {
@@ -352,14 +353,15 @@
         });
 
         editorsByHolderId.set(holderId, editor);
-        editor.isReady.then(function () {
-            bindDashShortcut(editor, holder);
-            bindChecklistAccessibility(holder);
-        }).catch(function () {
-            /* ignore */
-        });
-
-        return editor;
+        return editor.isReady
+            .then(function () {
+                bindDashShortcut(editor, holder);
+                bindChecklistAccessibility(holder);
+                return editor;
+            })
+            .catch(function () {
+                return editor;
+            });
     }
 
     async function destroyNoteEditor($form) {
@@ -410,10 +412,13 @@
             if (errorField.length) {
                 errorField
                     .prop('hidden', false)
+                    .attr('tabindex', '-1')
                     .html(errors.map(function (msg) {
                         return $('<li>').text(msg)[0].outerHTML;
                     }).join(''));
+                errorField.trigger('focus');
             }
+            $form.find('.note-title').attr('aria-invalid', 'true').first().trigger('focus');
             return;
         }
 
@@ -441,6 +446,17 @@
             });
     });
 
+    function announceStatus(message) {
+        const region = document.getElementById('a11y-status');
+        if (!region) {
+            return;
+        }
+        region.textContent = '';
+        window.setTimeout(function () {
+            region.textContent = message;
+        }, 50);
+    }
+
     $(document).on('change', '.note-todo-checkbox', function () {
         const $checkbox = $(this);
         const url = $checkbox.data('toggle-url');
@@ -462,6 +478,7 @@
             .done(function (response) {
                 if (!response || !response.ok) {
                     $checkbox.prop('checked', wasChecked);
+                    announceStatus('Could not update checklist item. Please try again.');
                     return;
                 }
                 $checkbox.prop('checked', Boolean(response.isChecked));
@@ -469,6 +486,7 @@
             })
             .fail(function () {
                 $checkbox.prop('checked', wasChecked);
+                announceStatus('Could not update checklist item. Please try again.');
             })
             .always(function () {
                 $checkbox.prop('disabled', false);

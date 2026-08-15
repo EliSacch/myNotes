@@ -58,7 +58,7 @@ header {
 
 #dashboards-toggler {
     background-color: transparent;
-    color: var(--color-primary);
+    color: var(--clr-primary);
     border: none;
     cursor: pointer;
     width: 50px;
@@ -227,7 +227,7 @@ header {
 
 #options button {
     background-color: var(--clr-quaternary);
-    color: var(--clr-primary);
+    color: var(--clr-quaternary-text);
     border: none;
     cursor: pointer;
     width: 50px;
@@ -261,5 +261,25 @@ header {
     to {
         opacity: 0;
         transform: translateY(10px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #options-toggler {
+        transition: none;
+    }
+
+    #options.options-opening,
+    #options.options-closing,
+    #dashboards-list.dashboards-opening,
+    #dashboards-list.dashboards-closing {
+        animation: none;
+    }
+
+    #dashboards-toggler[aria-expanded="true"] .dashboards-list-closed-icon,
+    #dashboards-toggler[aria-expanded="true"] .dashboards-list-expanded-icon,
+    #dashboards-toggler[aria-expanded="false"] .dashboards-list-closed-icon,
+    #dashboards-toggler[aria-expanded="false"] .dashboards-list-expanded-icon {
+        transition: none;
     }
 }

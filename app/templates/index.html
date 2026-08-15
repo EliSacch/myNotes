@@ -11,36 +11,41 @@
 {% block content %}
     {# Outside main so page-transition transforms do not break position:fixed #}
     {% if current_user.is_authenticated %}
-        <nav id="options-nav">
+        <nav id="options-nav" aria-label="Create">
             {{ tooltip('<button
+                type="button"
                 id="options-toggler"
                 aria-label="Open options"
                 aria-controls="options"
                 aria-expanded="false"
                 >
-                <i class="fa-solid fa-plus"></i>
+                <i class="fa-solid fa-plus" aria-hidden="true"></i>
                 </button>', 'Open options', 'top') }}
         <ul id="options">
             <li>
                 {{ tooltip('<button
+                    type="button"
                     class="center-items"
                     id="addNoteButton"
+                    aria-label="Add note"
                     >
-                    <i class="fa-regular fa-note-sticky"></i>
+                    <i class="fa-regular fa-note-sticky" aria-hidden="true"></i>
                     </button>', 'Add note', 'top') }}
         </li>
         <li>
             {{ tooltip('<button
+                type="button"
                 class="center-items modal-trigger"
                 data-modal="addDashboardModal"
+                aria-label="Add dashboard"
                 >
-                <i class="fa-regular fa-folder"></i>
+                <i class="fa-regular fa-folder" aria-hidden="true"></i>
                 </button>', 'Add dashboard', 'top') }}
         </li>
         </ul>
         </nav>
     {% endif %}
-    <main>
+    <main id="main-content">
         <section class="notes-list">
             {% if not notes %}
                 {{ noNotesNote() }}
