@@ -1,0 +1,10 @@
+{% macro checkbox_input(name, label) %}
+    <div class="form-control-wrapper">
+        <div class="form-control">
+            <input id="{{ name }}"
+                   name="{{ name }}"
+                   type="checkbox">
+            <label for="{{ name }}">{{ label }}</label>
+        </div>
+    </div>
+{% endmacro %}

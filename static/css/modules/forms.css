@@ -1,11 +1,19 @@
+/* --------------------------- Errors */
+
 .error-msg {
     color: var(--clr-error);
 }
 
+.form-control-wrapper .error-msg li {
+    color: var(--clr-error);
+}
+
+/* --------------------------- Page forms */
+
 .form-wrapper {
     width: 90%;
     max-width: 600px;
-    margin: var(--spacing-xl) auto;
+    margin: 0 auto;
     padding: var(--padding-xl);
     border-radius: 12px;
     background-color: var(--clr-secondary);
@@ -21,54 +29,12 @@
     color: var(--clr-ternary);
 }
 
-.form-control {
-    position: relative;
-    margin-top: var(--spacing-xl);
-}
-
-.form-control label {
-    font-size: 1em;
-    position: absolute;
-    bottom: var(--padding-m);
-    left: 0;
-    transition: bottom .3s, font-size .3s;
-}
-
-.form-control input:focus + label,
-.form-control input:not(:placeholder-shown) + label {
-    bottom: calc(100% + var(--spacing-m));
-    font-size: 0.8em;
-    color: var(--clr-dark);
-}
-
-.form-control.is-invalid li {
-    color: var(--clr-error);
-}
-
-.form-control.is-invalid input {
-    border-bottom: 1px solid var(--clr-error);
-}
-
-.form-control input {
-    width: 100%;
-    border: none;
-    border-bottom: 1px dotted var(--clr-dark);
-    padding: var(--padding-m);
-    background-color: transparent;
-}
-
-.form-control input:focus {
-    border-bottom: 1px solid var(--clr-dark);
-    outline: var(--tab-outline-strong);
-    outline-offset: 2px;
-}
-
 .form-wrapper form button {
     width: 100%;
     background-color: var(--clr-ternary);
     color: var(--clr-primary);
     border: none;
-    margin-top:1em;
+    margin-top: 1em;
     padding: .5em 1em;
     border-radius: var(--border-radius);
     cursor: pointer;
@@ -116,6 +82,57 @@
     background-color: var(--clr-ternary);
 }
 
+/* --------------------------- Fields */
+
+.form-control {
+    position: relative;
+    margin-top: var(--spacing-xl);
+}
+
+.form-control input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px dotted var(--clr-dark);
+    padding: var(--padding-m);
+    background-color: transparent;
+}
+
+.form-control input:focus {
+    border-bottom: 1px solid var(--clr-dark);
+    outline: var(--tab-outline-strong);
+    outline-offset: 2px;
+}
+
+.form-control input:is([type="text"], [type="password"], [type="email"]) + label {
+    font-size: 1em;
+    position: absolute;
+    bottom: var(--padding-m);
+    left: 0;
+    transition: bottom .3s, font-size .3s;
+}
+
+.form-control input:is([type="text"], [type="password"], [type="email"]):focus + label,
+.form-control input:is([type="text"], [type="password"], [type="email"]):not(:placeholder-shown) + label {
+    bottom: calc(100% + var(--spacing-m));
+    font-size: 0.8em;
+    color: var(--clr-dark);
+}
+
+.form-control input[type="checkbox"] {
+    width: fit-content;
+    margin-right: var(--spacing-m);
+}
+
+.form-control input[type="checkbox"]:checked {
+    accent-color: var(--clr-dark);
+}
+
+.form-control.is-invalid input {
+    border-bottom: 1px solid var(--clr-error);
+}
+
+/* --------------------------- Note forms */
+
 .hidden-form {
     display: none;
 }
@@ -126,7 +143,8 @@
     gap: var(--spacing-m);
 }
 
-.note-form-wrapper form input, .note-form-wrapper form textarea {
+.note-form-wrapper form input,
+.note-form-wrapper form textarea {
     width: 100%;
     border: none;
     border-bottom: 1px dotted var(--clr-dark);
@@ -212,11 +230,12 @@
 .note-action-buttons button.edit-btn:hover {
     color: var(--clr-quaternary);
 }
+
 .note-action-buttons button.save-btn:hover {
     color: var(--clr-ternary);
 }
+
 .note-action-buttons button.delete-btn:hover,
 .note-action-buttons button.cancel-btn:hover {
     color: var(--clr-error);
 }
-

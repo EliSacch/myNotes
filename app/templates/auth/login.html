@@ -1,6 +1,9 @@
 {% extends "form/formWrapper.html" %}
+
 {% from "form/inputs/textImput.html" import text_input %}
+{% from "form/inputs/checkbokInput.html" import checkbox_input %}
 {% from "macros/button.html" import button %}
+
 {% block formContent %}
     <form id="login" action="{{ action }}" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
@@ -28,6 +31,7 @@
             autocomplete="current-password",
             required=true,
             errors=errors.password) }}
+        {{ checkbox_input(name="remember", label="Remember me") }}
         {{ button('Login', 'Signing in...') }}
     </form>
     <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register</a></p>

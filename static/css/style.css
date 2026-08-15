@@ -22,11 +22,6 @@
     box-sizing: border-box;
 }
 
-*:focus-visible {
-    outline: var(--tab-outline);
-    outline-offset: 2px;
-}
-
 .visually-hidden {
     position: absolute;
     width: 1px;
@@ -73,6 +68,10 @@ body {
     color: var(--clr-dark);
     font-family: var(--font-basic);
     min-height: 100vh;
+}
+
+section {
+    margin-block: var(--spacing-xl);
 }
 
 .center-items {

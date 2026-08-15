@@ -115,11 +115,13 @@
             {{ flash_messages(messages=messages, category=category if category else "info") }}
         {% endwith %}
         {% block content %}{% endblock %}
-        {{ modal('logoutModal', 'Logout', 'Are you sure you want to logout?', confirm_action='logout') }}
+        
+        <!-- Accessibility status -->
         <div id="a11y-status"
              class="visually-hidden"
              role="status"
              aria-live="polite"
              aria-atomic="true"></div>
+        <!-- End of accessibility status -->
     </body>
 </html>

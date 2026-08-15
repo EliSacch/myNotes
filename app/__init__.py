@@ -1,5 +1,5 @@
 import os
-
+from datetime import timedelta
 from flask import Flask, flash, redirect, request, url_for, render_template, request
 from flask_limiter.errors import RateLimitExceeded
 
@@ -18,6 +18,7 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SESSION_COOKIE_HTTPONLY"] = True
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+    app.config["REMEMBER_COOKIE_DURATION"] = timedelta(days=7)
 
     db.init_app(app)
     login_manager.init_app(app)

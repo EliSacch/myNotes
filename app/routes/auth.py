@@ -167,6 +167,7 @@ def login():
     if request.method == "POST":
         email = (request.form.get("email") or "").strip().lower()
         password = request.form.get("password") or ""
+        remember = request.form.get("remember") == "on"
 
         submitted_token = request.form.get("csrf_token", "")
         stored_token = session.get("login_csrf_token", "")
@@ -187,7 +188,7 @@ def login():
                 db.select(User).where(func.lower(User.email) == email)
             )
             if user and check_password_hash(user.password_hash, password):
-                login_user(user)
+                login_user(user, remember=remember)
                 flash(f"Welcome back, {user.username}!", "success")
                 return redirect(url_for("main.index"))
             else:
