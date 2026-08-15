@@ -1,5 +1,6 @@
 from app.routes.auth import auth_bp
 from app.routes.dashboards import dashboards_bp
+from app.routes.main import main_bp
 from app.routes.notes import notes_bp
 
-__all__ = ["auth_bp", "dashboards_bp", "notes_bp"]
+__all__ = ["auth_bp", "dashboards_bp", "main_bp", "notes_bp"]

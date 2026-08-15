@@ -1,11 +1,7 @@
 import os
 
-from flask import Flask, flash, redirect, request, url_for, render_template, jsonify
+from flask import Flask, flash, redirect, request, url_for, render_template
 from flask_limiter.errors import RateLimitExceeded
-from app.models import Dashboard
-from sqlalchemy import text
-
-from flask_login import login_required, current_user
 
 from app.extensions import db, migrate, login_manager, limiter
 
@@ -30,8 +26,9 @@ def create_app():
     limiter.init_app(app)
 
     from app import models  # noqa: F401
-    from app.routes import auth_bp, dashboards_bp, notes_bp
+    from app.routes import auth_bp, dashboards_bp, main_bp, notes_bp
 
+    app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboards_bp)
     app.register_blueprint(notes_bp)
@@ -44,31 +41,5 @@ def create_app():
     @app.errorhandler(404)
     def handle_page_not_found(error):
         return render_template('404.html'), 404
-
-    @app.route("/health/db")
-    def handle_health_db_check():
-        try:
-            db.session.execute(text("SELECT 1"))
-            return jsonify({"db_status": "ok"}), 200
-        except Exception as e:
-            return jsonify({"db_status": "error", "detail": str(e)}), 500
-    
-    @app.route("/")
-    @login_required
-    def index():
-        from app.routes.dashboards import _dashboard_view_context
-
-        dashboards = list(
-            db.session.scalars(
-                db.select(Dashboard)
-                .where(Dashboard.owner_id == current_user.id)
-                .order_by(Dashboard.created_at.asc())
-            )
-        )
-        default_dashboard = next(
-            (dashboard for dashboard in dashboards if dashboard.is_default),
-            None,
-        )
-        return render_template("index.html", **_dashboard_view_context(default_dashboard))
 
     return app
