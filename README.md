@@ -12,6 +12,8 @@ A web app for your notes
 
 - [Features](#features)
 
+- [Security](#security)
+
 - [Accessibility](#accessibility)
 
 - [Testing](#testing)
@@ -39,11 +41,38 @@ A web app for your notes
 
 ## Architecture
 
-App built following the Application Factory Pattern
+The app uses Flask’s **application factory** (`create_app` in `app/__init__.py`). Extensions (SQLAlchemy, Migrate, Login, Limiter) are initialized there, then blueprints are registered:
+
+| Blueprint | Role |
+|-----------|------|
+| `main` | Health check and entry routing |
+| `auth` | Register, login, logout |
+| `dashboards` | Create and open note boards |
+| `notes` | Create, update, delete notes; toggle checklist items |
+
+Templates live under `app/templates/`. Static assets (CSS and JS) live under `static/`. Database models are in `app/models/`; schema changes are managed with Flask-Migrate / Alembic under `migrations/`.
+
+Note content is stored as a flat JSON list of **storage blocks** (`paragraph` / `todo` in `Notes.content_json`). The client maps those to and from Editor.js save JSON (`paragraph` + checklist `list` blocks) in `static/scripts/note-editor.js` and `app/routes/notes.py`.
 
 [Back to the top](#myNotes)
 
-## Features 
+## Features
+
+- **Authentication** — Register and log in with session-based auth (Flask-Login)
+- **Dashboards** — Organize notes into named dashboards and switch between them
+- **Notes** — Create, edit, and delete notes; title plus rich body content
+- **Editor.js editor** — Block editing for paragraphs and checklists (`--` shortcut to start a checklist item)
+- **Checklist todos** — Toggle items from the note view without a full page reload
+- **Modals** — Confirm logout, add a dashboard, and delete a note in accessible dialogs
+- **Flash messages** — Success and error feedback after actions
+
+[Back to the top](#myNotes)
+
+## Security
+
+- **CSRF** — State-changing forms include a CSRF token; requests without a valid token are rejected
+- **Rate limiting** — Auth routes are limited with Flask-Limiter to slow brute-force attempts
+- **Sessions** — Cookies use `HttpOnly` and `SameSite=Lax`; `SECRET_KEY` signs the session
 
 [Back to the top](#myNotes)
 
@@ -91,8 +120,8 @@ The live version of this program is available here.
 ### Local Deployment
   - For first time local deployment follow these steps:
     - Clone the repository
-    - Create a new vistual environment `python3 -m venv .`
-    - Activate virtual environment `source ./bin/activate`
+    - Create a new virtual environment `python3 -m venv .venv`
+    - Activate virtual environment `source .venv/bin/activate`
     - Install packages from requirements.txt `pip install -r requirements.txt`
     - Create a PostgreSQL database and configure its URL. Copy `.env.example` to a local `.env` file, then replace the `DATABASE_URL` and `SECRET_KEY` placeholder values.
     - Load both values into your terminal:
@@ -104,9 +133,9 @@ The live version of this program is available here.
     - Create or update the database schema with `flask --app run db upgrade`.
     - Run locally using `python run.py`
 
-  - For susequent runs simply:
-    - Start postgres `brew services stop postgresql@18`
-    - Activate virtual environment `source ./bin/activate`
+  - For subsequent runs simply:
+    - Start postgres `brew services start postgresql@18`
+    - Activate virtual environment `source .venv/bin/activate`
     - Load env vars into your terminal:
       ```bash
       export DATABASE_URL="$(grep '^DATABASE_URL=' .env | cut -d= -f2-)"
