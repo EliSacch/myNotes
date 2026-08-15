@@ -5,7 +5,7 @@
         {{ tooltip('<button type="button"
             class="delete-btn modal-trigger"
             data-modal="deleteNoteModal"
-            data-form-action="' ~ url_for('notes.delete', dashboard_id=dashboard.id, slug=dashboard.slug, note_id=note.id) ~ '"
+            data-form-action="' ~ url_for('notes.delete', dashboard_id=dashboard.id, note_id=note.id) ~ '"
             aria-label="delete">
             <i class="fa-solid fa-trash-can"></i>
             </button>', 'Delete', 'bottom') }}

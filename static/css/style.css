@@ -99,6 +99,29 @@ main {
     letter-spacing: 2px;
 }
 
+.note-body .note-paragraph {
+    margin: 0;
+    min-height: 1.2em;
+}
+
+.note-body .note-todo {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5em;
+    margin: 0.15em 0;
+    cursor: pointer;
+}
+
+.note-body .note-todo-checkbox {
+    margin-top: 0.25em;
+    flex-shrink: 0;
+}
+
+.note-body .note-todo.is-checked .note-todo-text {
+    text-decoration: line-through;
+    opacity: 0.65;
+}
+
 .note-footer {
     display: flex;
     border-top: 1px dotted var(--clr-dark);

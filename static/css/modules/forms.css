@@ -144,12 +144,23 @@
     color: var(--clr-dark);
 }
 
-.note-form-wrapper form textarea.note-content {
+.note-form-wrapper .note-editor {
+    min-height: 4.5em;
     font-size: 1em;
     font-family: var(--font-basic);
     color: var(--clr-dark);
-    field-sizing: content;
+    border-bottom: 1px dotted var(--clr-dark);
     padding-bottom: var(--padding-m);
+}
+
+.note-form-wrapper .note-editor .ce-block__content,
+.note-form-wrapper .note-editor .ce-toolbar__content {
+    max-width: 100%;
+    margin-left: 0;
+}
+
+.note-form-wrapper .note-editor .cdx-list {
+    padding-left: 0;
 }
 
 .note-action-buttons {

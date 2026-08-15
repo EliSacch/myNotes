@@ -439,21 +439,32 @@ $(document).ready(function(){
     });
 
     function closeAllNoteEdits() {
+        const destroyPromises = [];
         $('.note-slot').each(function () {
             const $slot = $(this);
             const $form = $slot.find('.note-form');
             $slot.find('.error-msg').html('');
+            if (window.NoteEditor && typeof window.NoteEditor.destroy === 'function') {
+                destroyPromises.push(window.NoteEditor.destroy($form));
+            }
             $form.trigger('reset');
             $slot.find('.note-edit').addClass('hidden-form');
             $slot.find('.note-view').removeClass('hidden-form');
         });
+        return Promise.all(destroyPromises);
     }
 
     function closeAddNoteForm() {
         const $addForm = $('#addNoteForm');
+        const $form = $addForm.find('.note-form');
         $addForm.find('.error-msg').html('');
-        $addForm.find('.note-form').trigger('reset');
+        let destroyPromise = Promise.resolve();
+        if (window.NoteEditor && typeof window.NoteEditor.destroy === 'function') {
+            destroyPromise = window.NoteEditor.destroy($form);
+        }
+        $form.trigger('reset');
         $addForm.addClass('hidden-form');
+        return destroyPromise;
     }
 
     /**
@@ -464,33 +475,16 @@ $(document).ready(function(){
         if (!$slot.length) {
             return;
         }
-        closeAddNoteForm();
-        closeAllNoteEdits();
-        $slot.find('.note-view').addClass('hidden-form');
-        $slot.find('.note-edit').removeClass('hidden-form');
-    });
-
-
-    /**
-     * Note form validation (add + edit)
-     */
-    $(document).on('submit', '.note-form', function (e) {
-        const $form = $(this);
-        const title = $form.find('.note-title').val();
-        const errorField = $form.find('.error-msg');
-        let errors = [];
-
-        if (title === "" || title === null) {
-            errors.push("A title is required.");
-        }
-        if (errors.length > 0) {
-            e.preventDefault();
-            errorField.html(errors.join('<br>'));
-        }
+        Promise.all([closeAddNoteForm(), closeAllNoteEdits()]).then(function () {
+            $slot.find('.note-view').addClass('hidden-form');
+            $slot.find('.note-edit').removeClass('hidden-form');
+            if (window.NoteEditor && typeof window.NoteEditor.init === 'function') {
+                window.NoteEditor.init($slot.find('.note-form'));
+            }
+        });
     });
 
     /**
-     * 
      * Cancel note form (add + edit)
      */
     $(document).on('click', '.note-form-button-cancel', function () {
@@ -498,22 +492,32 @@ $(document).ready(function(){
         const $slot = $(this).closest('.note-slot');
 
         $form.find('.error-msg').html('');
-        $form.trigger('reset');
+        const destroyPromise =
+            window.NoteEditor && typeof window.NoteEditor.destroy === 'function'
+                ? window.NoteEditor.destroy($form)
+                : Promise.resolve();
 
-        if ($slot.length) {
-            $slot.find('.note-edit').addClass('hidden-form');
-            $slot.find('.note-view').removeClass('hidden-form');
-        } else {
-            $('#addNoteForm').addClass('hidden-form');
-        }
+        destroyPromise.then(function () {
+            $form.trigger('reset');
+            if ($slot.length) {
+                $slot.find('.note-edit').addClass('hidden-form');
+                $slot.find('.note-view').removeClass('hidden-form');
+            } else {
+                $('#addNoteForm').addClass('hidden-form');
+            }
+        });
     });
 
     /**
-     * 
      * Add note button
      */
     $('#addNoteButton').click( () => {
-        closeAllNoteEdits();
-        $('#addNoteForm').removeClass('hidden-form');
+        closeAllNoteEdits().then(function () {
+            const $addForm = $('#addNoteForm');
+            $addForm.removeClass('hidden-form');
+            if (window.NoteEditor && typeof window.NoteEditor.init === 'function') {
+                window.NoteEditor.init($addForm.find('.note-form'));
+            }
+        });
     });
 });

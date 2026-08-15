@@ -1,5 +1,7 @@
 import hmac
 import secrets
+import json
+import re
 
 from flask import Blueprint, abort, flash, jsonify, redirect, request, session, url_for
 from flask_login import login_required, current_user
@@ -8,9 +10,11 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.extensions import db
 from app.models import Dashboard, Note
 
-notes_bp = Blueprint("notes", __name__, url_prefix="/dashboards/<int:dashboard_id>/<slug>/notes")
+notes_bp = Blueprint("notes", __name__, url_prefix="/dashboards/<int:dashboard_id>/notes")
 _NOTE_FORM_ERRORS_KEY = "note_form_errors"
 _NOTE_FORM_VALUES_KEY = "note_form_values"
+_HTML_TAG_RE = re.compile(r"<[^>]+>")
+_MAX_CONTENT_CHARS = 1000
 
 
 def _notes_csrf_token():
@@ -57,49 +61,116 @@ def _submitted_note_values():
     }
 
 
-def _get_owned_dashboard(dashboard_id, slug):
+def _strip_html(value):
+    if not isinstance(value, str):
+        return ""
+    return _HTML_TAG_RE.sub("", value).replace("&nbsp;", " ").strip()
+
+
+def _flatten_checklist_items(items):
+    flattened = []
+    if not isinstance(items, list):
+        return flattened
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        text = _strip_html(item.get("content") or item.get("text") or "")
+        meta = item.get("meta") if isinstance(item.get("meta"), dict) else {}
+        checked = bool(meta.get("checked", item.get("checked", False)))
+        flattened.append(
+            {
+                "type": "todo",
+                "text": text,
+                "isChecked": checked,
+            }
+        )
+        flattened.extend(_flatten_checklist_items(item.get("items") or []))
+    return flattened
+
+
+def _editor_data_to_content_blocks(raw_content):
+    """Map Editor.js save() JSON to storage blocks. Returns (blocks, error_message)."""
+    if not raw_content or not str(raw_content).strip():
+        return [], None
+
+    try:
+        payload = json.loads(raw_content)
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return None, "Invalid note content."
+
+    if isinstance(payload, dict):
+        editor_blocks = payload.get("blocks", [])
+    elif isinstance(payload, list):
+        editor_blocks = payload
+    else:
+        return None, "Invalid note content."
+
+    if not isinstance(editor_blocks, list):
+        return None, "Invalid note content."
+
+    blocks = []
+    for editor_block in editor_blocks:
+        if not isinstance(editor_block, dict):
+            continue
+        block_type = editor_block.get("type")
+        data = editor_block.get("data") if isinstance(editor_block.get("data"), dict) else {}
+
+        if block_type == "paragraph":
+            text = _strip_html(data.get("text", ""))
+            blocks.append({"type": "paragraph", "text": text})
+        elif block_type == "list" and data.get("style") == "checklist":
+            blocks.extend(_flatten_checklist_items(data.get("items") or []))
+        elif block_type == "checklist":
+            # Legacy @editorjs/checklist shape
+            for item in data.get("items") or []:
+                if not isinstance(item, dict):
+                    continue
+                blocks.append(
+                    {
+                        "type": "todo",
+                        "text": _strip_html(item.get("text", "")),
+                        "isChecked": bool(item.get("checked", False)),
+                    }
+                )
+
+    return blocks, None
+
+
+def _content_blocks_plain_text_length(blocks):
+    total = 0
+    for block in blocks:
+        if not isinstance(block, dict):
+            continue
+        total += len(block.get("text") or "")
+    return total
+
+
+def _get_owned_dashboard(dashboard_id):
     dashboard = db.session.get(Dashboard, dashboard_id)
     if not dashboard or dashboard.owner_id != current_user.id:
-        abort(404)
-    if dashboard.slug != slug:
         abort(404)
     return dashboard
 
 
-@notes_bp.route("/list")
-@login_required
-def list(dashboard_id, slug):
-    _get_owned_dashboard(dashboard_id, slug)
-    notes = db.session.scalars(
-        db.select(Note)
-        .where(Note.dashboard_id == dashboard_id)
-        .order_by(Note.created_at.asc())
-    )
-    return jsonify([note.to_dict() for note in notes])
-
-
-@notes_bp.route("/<int:note_id>")
-@login_required
-def get(dashboard_id, slug, note_id):
-    dashboard = _get_owned_dashboard(dashboard_id, slug)
-    note = db.session.get(Note, note_id)
-    if not note or note.owner_id != current_user.id or note.dashboard_id != dashboard.id:
-        abort(404)
-    return jsonify(note.to_dict())
-
-
 @notes_bp.route("/create", methods=["GET", "POST"])
 @login_required
-def create(dashboard_id, slug):
-    dashboard = _get_owned_dashboard(dashboard_id, slug)
+def create(dashboard_id):
+    dashboard = _get_owned_dashboard(dashboard_id)
     if request.method == "POST":
         errors = []
+        title = request.form.get("title", "")
+        content = request.form.get("content", "")
         if not _has_valid_notes_csrf_token():
             errors.append("Invalid form submission.")
-        if len(request.form.get("title", "")) > 50:
+        if len(title) > 50:
             errors.append("Title must be less than 50 characters.")
-        if len(request.form.get("content", "")) > 1000:
+
+        blocks, content_error = _editor_data_to_content_blocks(content)
+        if content_error:
+            errors.append(content_error)
+        elif blocks is not None and _content_blocks_plain_text_length(blocks) > _MAX_CONTENT_CHARS:
             errors.append("Content must be less than 1000 characters.")
+
         if errors:
             return _redirect_to_dashboard_with_errors(
                 dashboard,
@@ -109,8 +180,8 @@ def create(dashboard_id, slug):
             )
 
         new_note = Note(
-            title=request.form.get("title"),
-            content=request.form.get("content"),
+            title=title,
+            content_json=json.dumps(blocks),
             owner_id=current_user.id,
             dashboard_id=dashboard.id,
         )
@@ -132,22 +203,27 @@ def create(dashboard_id, slug):
 
 @notes_bp.route("/<int:note_id>/update", methods=["GET", "POST"])
 @login_required
-def update(dashboard_id, slug, note_id):
-    dashboard = _get_owned_dashboard(dashboard_id, slug)
+def update(dashboard_id, note_id):
+    dashboard = _get_owned_dashboard(dashboard_id)
     note = db.session.get(Note, note_id)
     if not note or note.owner_id != current_user.id or note.dashboard_id != dashboard.id:
         flash("You are not authorized to edit this note.", "error")
         return _redirect_to_dashboard(dashboard)
     if request.method == "POST":
         errors = []
+        title = request.form.get("title", "")
+        content = request.form.get("content", "")
         if not _has_valid_notes_csrf_token():
             errors.append("Invalid form submission.")
-        note.title = request.form.get("title", "")
-        note.content = request.form.get("content", "")
-        if len(note.title) > 50:
+        if len(title) > 50:
             errors.append("Title must be less than 50 characters.")
-        if len(note.content) > 1000:
+
+        blocks, content_error = _editor_data_to_content_blocks(content)
+        if content_error:
+            errors.append(content_error)
+        elif blocks is not None and _content_blocks_plain_text_length(blocks) > _MAX_CONTENT_CHARS:
             errors.append("Content must be less than 1000 characters.")
+
         if errors:
             return _redirect_to_dashboard_with_errors(
                 dashboard,
@@ -155,6 +231,8 @@ def update(dashboard_id, slug, note_id):
                 errors,
                 _submitted_note_values(),
             )
+        note.title = title
+        note.content_json = json.dumps(blocks)
         try:
             db.session.commit()
             session.pop("notes_csrf_token", None)
@@ -178,10 +256,67 @@ def _wants_json():
     )
 
 
+@notes_bp.route("/<int:note_id>/todos/<int:block_index>/toggle", methods=["POST"])
+@login_required
+def toggle_todo(dashboard_id, note_id, block_index):
+    dashboard = _get_owned_dashboard(dashboard_id)
+    note = db.session.get(Note, note_id)
+    if not note or note.owner_id != current_user.id or note.dashboard_id != dashboard.id:
+        if _wants_json():
+            return jsonify({"ok": False, "errors": {"form": ["You are not authorized to update this note."]}}), 403
+        flash("You are not authorized to update this note.", "error")
+        return _redirect_to_dashboard(dashboard)
+
+    if not _has_valid_notes_csrf_token():
+        if _wants_json():
+            return jsonify({"ok": False, "errors": {"form": ["Invalid form submission."]}}), 400
+        flash("Invalid form submission.", "error")
+        return _redirect_to_dashboard(dashboard)
+
+    blocks = list(note.content_blocks)
+    if block_index < 0 or block_index >= len(blocks):
+        if _wants_json():
+            return jsonify({"ok": False, "errors": {"form": ["Todo item not found."]}}), 404
+        flash("Todo item not found.", "error")
+        return _redirect_to_dashboard(dashboard)
+
+    block = blocks[block_index]
+    if not isinstance(block, dict) or block.get("type") != "todo":
+        if _wants_json():
+            return jsonify({"ok": False, "errors": {"form": ["Not a todo item."]}}), 400
+        flash("Not a todo item.", "error")
+        return _redirect_to_dashboard(dashboard)
+
+    block = dict(block)
+    block["isChecked"] = not bool(block.get("isChecked", False))
+    blocks[block_index] = block
+    note.content_json = json.dumps(blocks)
+
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        if _wants_json():
+            return jsonify(
+                {
+                    "ok": False,
+                    "errors": {
+                        "form": ["There was an error submitting this request. Please try again."]
+                    },
+                }
+            ), 500
+        flash("There was an error submitting this request. Please try again.", "error")
+        return _redirect_to_dashboard(dashboard)
+
+    if _wants_json():
+        return jsonify({"ok": True, "isChecked": block["isChecked"], "block_index": block_index})
+    return _redirect_to_dashboard(dashboard)
+
+
 @notes_bp.route("/<int:note_id>/delete", methods=["GET", "POST"])
 @login_required
-def delete(dashboard_id, slug, note_id):
-    dashboard = _get_owned_dashboard(dashboard_id, slug)
+def delete(dashboard_id, note_id):
+    dashboard = _get_owned_dashboard(dashboard_id)
     note = db.session.get(Note, note_id)
     if not note or note.owner_id != current_user.id or note.dashboard_id != dashboard.id:
         flash("You are not authorized to delete this note.", "error")

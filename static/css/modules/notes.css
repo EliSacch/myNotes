@@ -1,0 +1,71 @@
+.note {
+    position: relative;
+    max-width: 400px;
+    padding: 1em;
+    background-color: var(--clr-light);
+    isolation: isolate;
+    height: fit-content;
+}
+
+.note > * {
+    padding-block: .5em;
+}
+
+.note > h2 {
+    font-family: var(--font-decorative);
+    font-weight: 500;
+    letter-spacing: 2px;
+}
+
+.note-body .note-paragraph {
+    margin: 0;
+    min-height: 1.2em;
+}
+
+.note-body .note-todo {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5em;
+    margin: 0.15em 0;
+    cursor: pointer;
+}
+
+.note-body .note-todo-checkbox {
+    margin-top: 0.25em;
+    flex-shrink: 0;
+}
+
+.note-body .note-todo.is-checked .note-todo-text {
+    text-decoration: line-through;
+    opacity: 0.65;
+}
+
+.note-footer {
+    display: flex;
+    border-top: 1px dotted var(--clr-dark);
+}
+
+.note-footer > span {
+    margin-right: auto;
+    opacity: 0.6;
+}
+
+.note::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    top: 16px;
+    box-shadow: 5px 5px 5px rgb(0 0 0 / 0.2);
+    z-index: -1;
+}
+
+.note::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-width: 0 20px 20px 0;
+    border-style: solid;
+    border-color: var(--clr-ternary) var(--clr-primary);
+    box-shadow: -3px 3px 3px rgb(0 0 0 / 0.2);
+  }

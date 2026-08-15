@@ -58,7 +58,6 @@
                                 url_for(
                                 "notes.update",
                                 dashboard_id=dashboard.id,
-                                slug=dashboard.slug,
                                 note_id=note.id
                                 ),
                                 csrf_token,
@@ -80,8 +79,7 @@
                         "Form": noteForm(
                         url_for(
                         "notes.create",
-                        dashboard_id=dashboard.id,
-                        slug=dashboard.slug
+                        dashboard_id=dashboard.id
                         ),
                         csrf_token,
                         errors=create_errors,
