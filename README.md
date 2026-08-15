@@ -12,6 +12,8 @@ A web app for your notes
 
 - [Features](#features)
 
+- [Accessibility](#accessibility)
+
 - [Testing](#testing)
   - [Tests](#tests)
   - [Validator Testing](#validator-testing)
@@ -42,6 +44,25 @@ App built following the Application Factory Pattern
 [Back to the top](#myNotes)
 
 ## Features 
+
+[Back to the top](#myNotes)
+
+## Accessibility
+
+The UI is built with keyboard and screen-reader use in mind. Highlights:
+
+- **Landmarks** — `lang` on `<html>`, a skip link to `#main-content`, labelled `<nav>` regions, and a single primary page `<h1>`.
+- **Names** — Icon-only controls use `aria-label`; decorative Font Awesome icons use `aria-hidden="true"`. Tooltips are visual aids only and also show on `:focus-within`.
+- **Forms** — Inputs have real labels; validation uses `aria-invalid`, `aria-describedby`, and `role="alert"`, with focus moved to the error or invalid field.
+- **Dialogs** — Modals use `role="dialog"`, `aria-modal`, `aria-labelledby`, background `inert` while open, Escape to close, and focus return to the trigger. Dialog titles are `<h2>`.
+- **Menus** — Options and dashboards toggles expose `aria-expanded` / `aria-controls`, close on Escape (and outside click), and manage focus on open/close.
+- **Focus** — Global `:focus-visible` outlines. Opening add/edit note focuses the title after Editor.js is ready (`autofocus: false`) so the field is actually editable.
+- **Live updates** — Flash messages use `role="status"` / `aria-live`. Async checklist toggle failures announce via `#a11y-status`.
+- **Motion** — Page transitions, menus, and tooltips respect `prefers-reduced-motion`.
+
+Editor.js checklists are enhanced for keyboard use (Tab between items; Space/Enter on checkboxes).
+
+During development, Cursor loads project accessibility guidance from `.cursor/rules/accessibility.mdc`. For a full review, use the project skill in `.cursor/skills/accessibility-audit/` (e.g. ask the agent to run an accessibility audit).
 
 [Back to the top](#myNotes)
 
@@ -184,12 +205,14 @@ In Cursor/VS Code, install the djLint extension and set it as the default format
 ### Frontend
 
 - [Jinja2](https://jinja.palletsprojects.com/) — server-rendered templates
+- [Editor.js](https://editorjs.io/) — block-style note content editing (paragraphs and checklists)
 - [jQuery](https://jquery.com/) — client-side interactions (modals, forms, options menu)
 - [Font Awesome](https://fontawesome.com/) — icons
 - [Google Fonts](https://fonts.google.com/) — Mulish and Shadows Into Light
 
 ### Tooling
 
+- [Cursor](https://cursor.com/) — AI-assisted development (rules and skills for accessibility and workflows)
 - [djLint](https://djlint.com/) — Jinja/HTML template linting and formatting
 - Virtualenv — local Python environment
 
