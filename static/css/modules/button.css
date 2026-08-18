@@ -46,28 +46,28 @@
     color: var(--clr-info);
 }
 
-/* .base-button .btn-loading {
+.base-button .btn-loading {
     display: none;
     align-items: center;
     gap: var(--spacing-m);
-} */
+}
 
-/* .base-button.is-loading .btn-label {
+.base-button.is-loading .btn-label {
     display: none;
-} */
+}
 
-/* .base-button.is-loading .btn-loading {
+.base-button.is-loading .btn-loading {
     display: inline-flex;
-} */
+}
 
-/* .base-button.is-loading,
+.base-button.is-loading,
 .base-button:disabled {
     opacity: 0.8;
     cursor: wait;
     pointer-events: none;
-} */
+}
 
-/* .base-button.is-loading:hover,
+.base-button.is-loading:hover,
 .base-button:disabled:hover {
     background-color: var(--clr-ternary);
-} */
+}

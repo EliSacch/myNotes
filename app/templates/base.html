@@ -10,7 +10,7 @@
         <meta name="description" content="A web app for your notes">
         <meta name="keywords" content="notes todo">
         <meta name="author" content="Elisa S">
-        <title>My Notes - {{ page_title }}</title>
+        <title>My Notes - {% block title %}{% endblock %}</title>
         <script>
             (function () {
                 try {
@@ -115,7 +115,6 @@
             {{ flash_messages(messages=messages, category=category if category else "info") }}
         {% endwith %}
         {% block content %}{% endblock %}
-        
         <!-- Accessibility status -->
         <div id="a11y-status"
              class="visually-hidden"

@@ -8,6 +8,7 @@
 {% from "macros/tooltip.html" import tooltip %}
 {% from "macros/modal.html" import modal %}
 {% extends "base.html" %}
+{% block title %}Home{% endblock %}
 {% block content %}
     {# Outside main so page-transition transforms do not break position:fixed #}
     {% if current_user.is_authenticated %}

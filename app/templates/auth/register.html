@@ -1,6 +1,7 @@
 {% extends "form/formWrapper.html" %}
 {% from "form/inputs/textImput.html" import text_input %}
 {% from "macros/button.html" import button %}
+{% block title %}Register{% endblock %}
 {% block formContent %}
     <form id="register" action="{{ action }}" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
@@ -42,7 +43,7 @@
             errors=errors.confirm_password,
             autocomplete="new-password",
             required=true,) }}
-        {{ button('Register', 'Signing up...') }}
+        <div class="form-footer">{{ button('Register', 'Signing up...') }}</div>
     </form>
     <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
 {% endblock %}

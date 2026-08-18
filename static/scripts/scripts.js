@@ -128,24 +128,56 @@ $(document).ready(function(){
         navigateWithTransition(anchor.href);
     });
 
-    /**
-     * Auth form submit loading state
-     */
-    $(document).on('submit', '#register, #login', function () {
-        const $btn = $(this).find('.form-submit-btn');
-        if ($btn.prop('disabled')) {
+    function setButtonLoading($btn, isLoading) {
+        if (!$btn.length) {
+            return;
+        }
+
+        const $label = $btn.find('.btn-label');
+        const $loading = $btn.find('.btn-loading');
+
+        if (isLoading) {
+            const loadingText = $btn.data('loading-text') || 'Loading...';
+            $btn.find('.btn-loading-text').text(loadingText);
+            $label.attr('hidden', true);
+            $loading.removeAttr('hidden');
+            $btn
+                .prop('disabled', true)
+                .attr('aria-busy', 'true')
+                .addClass('is-loading');
+            return;
+        }
+
+        $label.removeAttr('hidden');
+        $loading.attr('hidden', true);
+        $btn
+            .prop('disabled', false)
+            .removeAttr('aria-busy')
+            .removeClass('is-loading');
+    }
+
+    function formSubmitButtons($form) {
+        return $form.find('button.base-button').filter(function () {
+            const type = (this.getAttribute('type') || 'submit').toLowerCase();
+            return type === 'submit';
+        });
+    }
+
+    $(document).on('submit', 'form', function (event) {
+        const $form = $(this);
+        const submitter = event.originalEvent && event.originalEvent.submitter;
+        let $btn = submitter ? $(submitter) : $();
+        if (!$btn.is('button.base-button')) {
+            $btn = formSubmitButtons($form);
+        }
+        if (!$btn.length) {
+            return;
+        }
+        if ($btn.filter(':disabled').length === $btn.length) {
             return false;
         }
 
-        const loadingText = $btn.data('loading-text');
-        if (loadingText) {
-            $btn.find('.btn-loading-text').text(loadingText);
-        }
-
-        $btn
-            .prop('disabled', true)
-            .attr('aria-busy', 'true')
-            .addClass('is-loading');
+        setButtonLoading($btn, true);
     });
 
     /**
@@ -216,29 +248,6 @@ $(document).ready(function(){
         }
 
         $lastModalTrigger = null;
-    }
-
-    function setButtonLoading($btn, isLoading) {
-        if (!$btn.length) {
-            return;
-        }
-
-        if (isLoading) {
-            const loadingText = $btn.data('loading-text');
-            if (loadingText) {
-                $btn.find('.btn-loading-text').text(loadingText);
-            }
-            $btn
-                .prop('disabled', true)
-                .attr('aria-busy', 'true')
-                .addClass('is-loading');
-            return;
-        }
-
-        $btn
-            .prop('disabled', false)
-            .removeAttr('aria-busy')
-            .removeClass('is-loading');
     }
 
     function clearFormErrors($form) {
@@ -332,6 +341,7 @@ $(document).ready(function(){
                     form: ['Something went wrong. Please try again.'],
                 });
                 focusFormErrors($form);
+                setButtonLoading($confirmBtn, false);
                 return;
             }
 
@@ -344,7 +354,6 @@ $(document).ready(function(){
                 form: ['Something went wrong. Please try again.'],
             });
             focusFormErrors($form);
-        } finally {
             setButtonLoading($confirmBtn, false);
         }
     }
@@ -366,12 +375,17 @@ $(document).ready(function(){
 
     $(document).on('click', '.modal-confirm', function () {
         const $confirmBtn = $(this);
+        if ($confirmBtn.prop('disabled')) {
+            return;
+        }
+
         const $modal = $confirmBtn.closest('.overlay');
         const action = $modal.data('confirm');
 
         if (action === 'submit-form') {
             submitModalForm($modal, $confirmBtn);
         } else if (action === 'logout') {
+            setButtonLoading($confirmBtn, true);
             window.location.href = '/logout';
         }
     });

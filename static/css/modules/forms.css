@@ -29,59 +29,6 @@
     color: var(--clr-ternary);
 }
 
-.form-wrapper form button {
-    width: 100%;
-    background-color: var(--clr-ternary);
-    color: var(--clr-primary);
-    border: none;
-    margin-top: 1em;
-    padding: .5em 1em;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: 600;
-    letter-spacing: 1px;
-    transition: .5s;
-}
-
-.form-wrapper form button:hover {
-    background-color: var(--clr-dark);
-}
-
-.form-wrapper form .form-submit-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-m);
-    min-height: 2.5em;
-}
-
-.form-wrapper form .form-submit-btn .btn-loading {
-    display: none;
-    align-items: center;
-    gap: var(--spacing-m);
-}
-
-.form-wrapper form .form-submit-btn.is-loading .btn-label {
-    display: none;
-}
-
-.form-wrapper form .form-submit-btn.is-loading .btn-loading {
-    display: inline-flex;
-}
-
-.form-wrapper form .form-submit-btn.is-loading,
-.form-wrapper form .form-submit-btn:disabled {
-    opacity: 0.8;
-    cursor: wait;
-    pointer-events: none;
-}
-
-.form-wrapper form .form-submit-btn.is-loading:hover,
-.form-wrapper form .form-submit-btn:disabled:hover {
-    background-color: var(--clr-ternary);
-}
-
 /* --------------------------- Fields */
 
 .form-control {
@@ -238,4 +185,12 @@
 .note-action-buttons button.delete-btn:hover,
 .note-action-buttons button.cancel-btn:hover {
     color: var(--clr-error);
+}
+
+.form-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-m);
+    margin-top: var(--spacing-xl);
 }

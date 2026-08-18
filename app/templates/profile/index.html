@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% from "macros/modal.html" import modal %}
-
 {% block title %}Profile{% endblock %}
-
 {% block content %}
     <main id="main-content" class="center-items column">
         <section class="profile-info center-items column">
@@ -11,21 +9,15 @@
         </section>
         <section>
             <a href="{{ url_for('auth.change_password') }}"
-                           class="base-button secondary"
-                           aria-label="Change Password">
-                            Change Password
-                        </a>
+               class="base-button secondary"
+               aria-label="Change Password">Change Password</a>
         </section>
         <section class="profile-footer center-items column">
             {% if user.is_authenticated %}
-                <button
-                    type="button"
-                    class="center-items modal-trigger base-button link"
-                    data-modal="logoutModal"
-                    aria-label="Logout"
-                    >
-                    Logout
-                </button>
+                <button type="button"
+                        class="center-items modal-trigger base-button link"
+                        data-modal="logoutModal"
+                        aria-label="Logout">Logout</button>
             {% endif %}
         </section>
         {{ modal('logoutModal', 'Logout', 'Are you sure you want to logout?', confirm_action='logout') }}
