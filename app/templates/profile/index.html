@@ -1,10 +1,20 @@
 {% extends "base.html" %}
 {% from "macros/modal.html" import modal %}
+
+{% block title %}Profile{% endblock %}
+
 {% block content %}
     <main id="main-content" class="center-items column">
         <section class="profile-info center-items column">
             <h1>{{ user.username }}</h1>
             <p>{{ user.email }}</p>
+        </section>
+        <section>
+            <a href="{{ url_for('auth.change_password') }}"
+                           class="base-button secondary"
+                           aria-label="Change Password">
+                            Change Password
+                        </a>
         </section>
         <section class="profile-footer center-items column">
             {% if user.is_authenticated %}

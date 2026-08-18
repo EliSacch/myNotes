@@ -10,13 +10,13 @@ from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.extensions import db, login_manager, limiter
+from app.helpers.password import collect_password_errors
 from app.models import Dashboard, User
 
 auth_bp = Blueprint("auth", __name__)
 
 USERNAME_PATTERN = re.compile(r"^[A-Za-z0-9_]+$")
 EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
-COMMON_PASSWORDS = {"password", "password123", "qwerty", "letmein", "12345678"}
 
 
 @login_manager.user_loader
@@ -56,6 +56,22 @@ def _login_context(errors=None, email=""):
         "title": "Login to your account",
     }
 
+def _change_password_context(errors=None, current_password="", new_password="", confirm_password=""):
+    csrf_token = session.get("change_password_csrf_token")
+    if not csrf_token:
+        csrf_token = secrets.token_urlsafe(32)
+        session["change_password_csrf_token"] = csrf_token
+
+    return {
+        "action": url_for("auth.change_password"),
+        "csrf_token": csrf_token,
+        "current_password": current_password,
+        "new_password": new_password,
+        "confirm_password": confirm_password,
+        "errors": errors or [],
+        "title": "Change your password",
+    }
+
 @auth_bp.route("/register", methods=["GET", "POST"])
 @limiter.limit("3 per minute; 10 per hour", methods=["POST"])
 def register():
@@ -89,25 +105,14 @@ def register():
         if len(email) > 100 or not EMAIL_PATTERN.fullmatch(email):
             errors["email"].append("Enter a valid email address.")
 
-        if not 12 <= len(password) <= 128:
-            errors["password"].append("Password must be between 12 and 128 characters.")
-        if password != confirm_password:
-            errors["confirm_password"].append("Passwords do not match.")
-        if password.casefold() in COMMON_PASSWORDS:
-            errors["password"].append("Choose a less common password.")
-        if password and not any(character.islower() for character in password):
-            errors["password"].append("Password must include a lowercase letter.")
-        if password and not any(character.isupper() for character in password):
-            errors["password"].append("Password must include an uppercase letter.")
-        if password and not any(character.isdigit() for character in password):
-            errors["password"].append("Password must include a number.")
-        if password and not any(not character.isalnum() for character in password):
-            errors["password"].append("Password must include a symbol.")
-        if username and username.casefold() in password.casefold():
-            errors["password"].append("Password must not contain your username.")
-        email_local_part = email.partition("@")[0]
-        if email_local_part and email_local_part.casefold() in password.casefold():
-            errors["password"].append("Password must not contain your email address.")
+        password_errors, confirm_password_errors = collect_password_errors(
+            password,
+            confirm_password,
+            username=username,
+            email=email,
+        )
+        errors["password"].extend(password_errors)
+        errors["confirm_password"].extend(confirm_password_errors)
 
         if not any(errors.values()):
             username_exists = db.session.scalar(
@@ -203,3 +208,58 @@ def logout():
     logout_user()
     flash("You have been logged out.", "success")
     return redirect(url_for("main.index"))
+
+@auth_bp.route("/change-password", methods=["GET", "POST"])
+@limiter.limit("50 per minute; 100 per hour", methods=["POST"])
+@login_required
+def change_password():
+    errors = {
+        "form": [],
+        "current_password": [],
+        "new_password": [],
+        "confirm_password": [],
+    }
+    if request.method == "POST":
+        current_password = request.form.get("current_password") or ""
+        new_password = request.form.get("new_password") or ""
+        confirm_password = request.form.get("confirm_password") or ""
+
+        submitted_token = request.form.get("csrf_token", "")
+        stored_token = session.get("change_password_csrf_token", "")
+        if not (
+            isinstance(submitted_token, str)
+            and isinstance(stored_token, str)
+            and hmac.compare_digest(submitted_token, stored_token)
+        ):
+            errors["form"].append("Your form has expired. Please try again.")
+        if not current_password:
+            errors["current_password"].append("Current password is required.")
+        password_errors, confirm_password_errors = collect_password_errors(
+            new_password,
+            confirm_password,
+            username=current_user.username,
+            email=current_user.email,
+        )
+        errors["new_password"].extend(password_errors)
+        errors["confirm_password"].extend(confirm_password_errors)
+        if not any(errors.values()):
+            if check_password_hash(current_user.password_hash, current_password):
+                current_user.password_hash = generate_password_hash(new_password)
+                try:
+                    db.session.commit()
+                    flash("Your password has been changed.", "success")
+                    return redirect(url_for("profile.index"))
+                except IntegrityError:
+                    db.session.rollback()
+                    errors["form"].append("Unable to change password.")
+            else:
+                errors["current_password"].append("Invalid current password.")
+
+        if any(errors.values()):
+            return render_template(
+                "auth/change_password.html",
+                **_change_password_context(
+                    errors, current_password, new_password, confirm_password
+                ),
+            )
+    return render_template("auth/change_password.html", **_change_password_context())
