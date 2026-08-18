@@ -187,6 +187,10 @@
     color: var(--clr-error);
 }
 
+.dashboard-header-actions i {
+    font-size: 1.5em;
+}
+
 .form-footer {
     display: flex;
     justify-content: center;

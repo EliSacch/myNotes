@@ -5,6 +5,7 @@
 {% from "form/dashboardForm.html" import dashboardForm %}
 {% from "form/noteForm.html" import noteForm %}
 {% from "form/deleteNoteForm.html" import deleteNoteForm %}
+{% from "form/deleteDashboardForm.html" import deleteDashboardForm %}
 {% from "macros/tooltip.html" import tooltip %}
 {% from "macros/modal.html" import modal %}
 {% extends "base.html" %}
@@ -107,7 +108,9 @@
             form_id='addDashboardForm'
         ) %}
         {% set deleteNoteFormHtml = deleteNoteForm(csrf_token) %}
+        {% set deleteDashboardFormHtml = deleteDashboardForm(dashboards_csrf_token) %}
         {{ modal('addDashboardModal', 'Add dashboard', addDashboardForm, confirm_action='submit-form') }}
+        {{ modal('deleteDashboardModal', 'Delete dashboard', deleteDashboardFormHtml, confirm_action='submit-form') }}
         {{ modal('deleteNoteModal', 'Delete note', deleteNoteFormHtml, confirm_action='submit-form') }}
     {% endif %}
 {% endblock %}

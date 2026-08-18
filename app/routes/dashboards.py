@@ -53,10 +53,15 @@ def _submitted_dashboard_values():
     }
 
 
-def _create_error_response(errors, values=None):
+def _create_error_response(errors, values=None, form_key="create", retryable=True):
     if _wants_json():
-        return jsonify({"ok": False, "errors": errors, "values": values or {}}), 400
-    return _redirect_to_index_with_errors("create", errors, values)
+        return jsonify({
+            "ok": False,
+            "errors": errors,
+            "values": values or {},
+            "retryable": retryable,
+        }), 400
+    return _redirect_to_index_with_errors(form_key, errors, values)
 
 
 def dashboard_view_context(dashboard):
@@ -239,25 +244,30 @@ def update(dashboard_id, slug):
 @dashboards_bp.route("/<int:dashboard_id>/delete", methods=["GET", "POST"])
 @login_required
 def delete(dashboard_id):
+    errors = {}
     dashboard = db.session.get(Dashboard, dashboard_id)
     if not dashboard or dashboard.owner_id != current_user.id:
-        flash("You are not authorized to delete this dashboard.", "error")
-        return redirect(url_for("main.index"))
+        errors.setdefault("form", []).append("You are not authorized to delete this dashboard.")
+        return _create_error_response(errors, form_key="delete", retryable=False)
     if dashboard.is_default:
-        flash("The default dashboard cannot be deleted.", "error")
+        errors.setdefault("form", []).append("You cannot delete the default dashboard.")
+        return _create_error_response(errors, form_key="delete", retryable=False)
+    if request.method != "POST":
         return redirect(url_for("main.index"))
-    if request.method == "POST":
-        if not _has_valid_dashboards_csrf_token():
-            flash("Invalid form submission.", "error")
-            return redirect(url_for("main.index"))
+    if not _has_valid_dashboards_csrf_token():
+        errors.setdefault("form", []).append("Invalid form submission.")
+        return _create_error_response(errors, form_key="delete")
 
-        db.session.delete(dashboard)
-        try:
-            db.session.commit()
-            session.pop("dashboards_csrf_token", None)
-        except SQLAlchemyError:
-            db.session.rollback()
-            flash("There was an error submitting this request. Please try again.", "error")
-            return redirect(url_for("main.index"))
-        return redirect(url_for("main.index"))
-    return redirect(url_for("main.index"))
+    db.session.delete(dashboard)
+    try:
+        db.session.commit()
+        session.pop("dashboards_csrf_token", None)
+    except SQLAlchemyError:
+        db.session.rollback()
+        errors.setdefault("form", []).append("There was an error submitting this request. Please try again.")
+        return _create_error_response(errors, form_key="delete")
+
+    redirect_url = url_for("main.index")
+    if _wants_json():
+        return jsonify({"ok": True, "redirect_url": redirect_url})
+    return redirect(redirect_url)

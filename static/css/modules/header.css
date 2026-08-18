@@ -15,7 +15,6 @@ header {
     font-family: var(--font-decorative);
     font-style: italic;
     letter-spacing: 3px;
-    margin-right: auto;
     padding: 0 1em;
     border-bottom: 1px solid var(--clr-primary);
 }
@@ -26,6 +25,14 @@ header {
     bottom: 0;
     font-size: 1.7em;
     opacity: .7;
+}
+
+.dashboard-header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+    margin-right: auto;
 }
 
 /** --------------------------------------------------

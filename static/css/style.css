@@ -24,6 +24,11 @@
     box-sizing: border-box;
 }
 
+*:focus-visible {
+    outline: var(--tab-outline);
+    outline-offset: 2px;
+}
+
 .visually-hidden {
     position: absolute;
     width: 1px;

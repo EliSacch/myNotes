@@ -4,7 +4,6 @@
 {% block title %}Profile{% endblock %}
 {% block content %}
     <main id="main-content" class="profile-page">
-        
         <section class="profile-info">
             <h2>Personal Information</h2>
             <div class="profile-info-item">
@@ -17,21 +16,20 @@
             </div>
             <div class="profile-info-item">
                 <span class="profile-info-item-label">Joined:</span>
-                <span class="profile-info-item-value">{{ user.created_at.strftime('%B %d, %Y') }}</span>
+                <span class="profile-info-item-value">{{ user.created_at.strftime("%B %d, %Y") }}</span>
             </div>
         </section>
         {% if user.email_verified != True %}
-        <section class="profile-email-verification">
-            {% call alert('Email not verified', 'Please verify your email to continue.', 'error') %}
-                <a href="" class="alert-action-btn">Verify</a>
-            {% endcall %}
-        </section>
+            <section class="profile-email-verification">
+                {% call alert('Email not verified', 'Please verify your email to continue.', 'error') %}
+                    <a href="" class="alert-action-btn">Verify</a>
+                {% endcall %}
+            </section>
         {% endif %}
         <section class="profile-actions">
             <a href="{{ url_for('auth.edit_profile') }}"
                class="base-button primary"
                aria-label="Edit profile">Edit profile</a>
-
             <a href="{{ url_for('auth.change_password') }}"
                class="base-button secondary"
                aria-label="Change Password">Change Password</a>

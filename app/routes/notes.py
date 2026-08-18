@@ -321,7 +321,11 @@ def delete(dashboard_id, note_id):
     if not note or note.owner_id != current_user.id or note.dashboard_id != dashboard.id:
         flash("You are not authorized to delete this note.", "error")
         if _wants_json():
-            return jsonify({"ok": False, "errors": {"form": ["You are not authorized to delete this note."]}}), 403
+            return jsonify({
+                "ok": False,
+                "retryable": False,
+                "errors": {"form": ["You are not authorized to delete this note."]},
+            }), 403
         return _redirect_to_dashboard(dashboard)
     if request.method == "POST":
         if not _has_valid_notes_csrf_token():

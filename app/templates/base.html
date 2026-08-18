@@ -1,6 +1,7 @@
 {% from "macros/flashMessage.html" import flash_messages %}
 {% from "macros/modal.html" import modal %}
 {% from "macros/tooltip.html" import tooltip %}
+{% from "dashboards/dashboardHeader.html" import dashboardHeader %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -72,17 +73,19 @@
                 </ul>
                 </nav>
             {% endif %}
-            <div id="logo">
-                <h1>
-                    {% if dashboard is defined and dashboard %}
-                        {{ dashboard.name }}
-                    {% elif request.endpoint == 'profile.index' %}
-                        {{ current_user.is_authenticated and current_user.username + "'s" }} Profile
-                    {% else %}
-                        {{ current_user.is_authenticated and current_user.username + "'s" or "My" }} Notes
-                    {% endif %}
-                </h1>
-            </div>
+            {% if dashboard is defined and dashboard %}
+                {{ dashboardHeader(dashboard) }}
+            {% else %}
+                <div id="logo">
+                    <h1>
+                        {% if request.endpoint == 'profile.index' %}
+                            {{ current_user.is_authenticated and current_user.username + "'s" }} Profile
+                        {% else %}
+                            {{ current_user.is_authenticated and current_user.username + "'s" or "My" }} Notes
+                        {% endif %}
+                    </h1>
+                </div>
+            {% endif %}
             {% if request.endpoint != 'profile.index' %}
                 <nav id="auth-nav" aria-label="Account">
                     {% set profile_tooltip %}

@@ -197,8 +197,25 @@ $(document).ready(function(){
         });
     }
 
+    function setModalTerminalState($modal, isTerminal) {
+        const $confirm = $modal.find('.modal-confirm');
+        const $cancelLabel = $modal.find('.modal-footer .modal-close .btn-label');
+
+        if (isTerminal) {
+            $modal.addClass('is-terminal').attr('role', 'alertdialog');
+            $confirm.prop('disabled', true);
+            $cancelLabel.text('Close');
+            return;
+        }
+
+        $modal.removeClass('is-terminal').attr('role', 'dialog');
+        $confirm.prop('disabled', false);
+        $cancelLabel.text('Cancel');
+    }
+
     function openModal($modal, $trigger) {
         $lastModalTrigger = $trigger || null;
+        setModalTerminalState($modal, false);
 
         if (!$modal.parent().is('body')) {
             $modal.appendTo(document.body);
@@ -247,6 +264,7 @@ $(document).ready(function(){
             $form.trigger('reset');
         }
 
+        setModalTerminalState($modal, false);
         $lastModalTrigger = null;
     }
 
@@ -306,7 +324,7 @@ $(document).ready(function(){
 
     async function submitModalForm($modal, $confirmBtn) {
         const $form = $modal.find('form').first();
-        if (!$form.length) {
+        if (!$form.length || $modal.hasClass('is-terminal')) {
             return;
         }
 
@@ -340,8 +358,11 @@ $(document).ready(function(){
                 showFormErrors($form, (data && data.errors) || {
                     form: ['Something went wrong. Please try again.'],
                 });
-                focusFormErrors($form);
                 setButtonLoading($confirmBtn, false);
+                if (data && data.retryable === false) {
+                    setModalTerminalState($modal, true);
+                }
+                focusFormErrors($form);
                 return;
             }
 

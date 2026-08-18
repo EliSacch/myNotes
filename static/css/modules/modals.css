@@ -69,3 +69,8 @@
     margin-top: var(--spacing-xl);
     gap: var(--spacing-m);
 }
+
+.overlay.is-terminal .modal-prompt,
+.overlay.is-terminal .modal-confirm {
+    display: none;
+}

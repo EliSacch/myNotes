@@ -1,0 +1,17 @@
+{% from "macros/tooltip.html" import tooltip %}
+{% macro dashboardHeader(dashboard) %}
+    <div id="logo">
+        <h1>{{ dashboard.name }}</h1>
+    </div>
+    <div class="dashboard-header-actions">
+        {% if dashboard.is_default != True %}
+            {{ tooltip('<button type="button"
+                class="base-button link-light modal-trigger"
+                data-modal="deleteDashboardModal"
+                data-form-action="' ~ url_for('dashboards.delete', dashboard_id=dashboard.id) ~ '"
+                aria-label="Delete dashboard">
+                <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                </button>', 'Delete', 'right', 'light') }}
+    {% endif %}
+    </div>
+{% endmacro %}
