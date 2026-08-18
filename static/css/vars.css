@@ -1,18 +1,20 @@
 :root {
     --clr-primary: rgb(248, 247, 243);
     --clr-secondary: rgb(238, 237, 229);
-    --clr-ternary: rgb(0, 145, 121);
-    --clr-quaternary: rgb(251, 205, 115);
-    --clr-quaternary-text: rgb(59, 58, 55);
+    --clr-tertiary: rgb(0, 145, 121);
+    --clr-quatertiary: rgb(251, 205, 115);
+    --clr-quatertiary-text: rgb(59, 58, 55);
     --clr-grey: rgb(90, 90, 90);
     --clr-dark: rgb(59, 58, 55);
     --clr-light: rgb(190, 225, 218);
 
     --clr-error: rgb(235, 59, 59);
-    --clr-error-bg: rgb(240, 116, 116);
-    --clr-success: rgb(153, 220, 209);
-    --clr-info: rgb(193, 206, 244);
-    --clr-warning: rgb(235, 224, 145);
+    --clr-error-bg: rgb(246, 188, 188);
+    --clr-success-bg: rgb(190, 233, 199);
+    --clr-info: rgb(35, 88, 248);
+    --clr-info-bg: rgb(193, 206, 244);
+    --clr-warning: rgb(250, 168, 38);
+    --clr-warning-bg: rgb(252, 225, 181);
 
     --font-basic: 'Mulish', sans-serif;
     --font-decorative: 'Shadows Into Light', cursive;
@@ -30,6 +32,6 @@
 
     --border-radius: 5px;
 
-    --tab-outline: 2px solid var(--clr-ternary);
-    --tab-outline-strong: 3px solid var(--clr-ternary);
+    --tab-outline: 2px solid var(--clr-tertiary);
+    --tab-outline-strong: 3px solid var(--clr-tertiary);
 }

@@ -26,7 +26,7 @@
 }
 
 .message {
-    background-color: var(--clr-warning);
+    background-color: var(--clr-warning-bg);
     color: var(--clr-dark);
     padding: var(--padding-l);
     padding-right: var(--spacing-xl);
@@ -37,15 +37,15 @@
 }
 
 .message.success {
-    background-color: var(--clr-success);
+    background-color: var(--clr-success-bg);
 }
 
 .message.info {
-    background-color: var(--clr-info);
+    background-color: var(--clr-info-bg);
 }
 
 .message.warning { 
-    background-color: var(--clr-warning);
+    background-color: var(--clr-warning-bg);
 }
 
 .message.error {

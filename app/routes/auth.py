@@ -263,3 +263,9 @@ def change_password():
                 ),
             )
     return render_template("auth/change_password.html", **_change_password_context())
+
+
+@auth_bp.route("/edit-profile", methods=["GET", "POST"])
+@login_required
+def edit_profile():
+    return render_template("profile/index.html", user=current_user)

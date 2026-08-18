@@ -17,7 +17,7 @@
 }
 
 .base-button.primary {
-    background-color: var(--clr-ternary);
+    background-color: var(--clr-tertiary);
     color: var(--clr-primary);
 }
 
@@ -26,9 +26,14 @@
     color: var(--clr-dark);
 }
 
+.base-button.tertiary {
+    background-color: var(--clr-quatertiary);
+    color: var(--clr-dark);
+}
+
 .base-button.link {
     background-color: transparent;
-    color: var(--clr-ternary);
+    color: var(--clr-tertiary);
 }
 
 .base-button.link-light {
@@ -41,9 +46,21 @@
     opacity: 0.8;
 }
 
+.base-button.secondary:hover,
+.base-button.secondary:focus {
+    background-color: var(--clr-primary);
+    color: var(--clr-tertiary);
+}
+
+.base-button:focus-visible,
+.base-button:focus {
+    outline: var(--tab-outline);
+    outline-offset: 2px;
+}
+
 .base-button.link:hover,
 .base-button.link:focus {
-    color: var(--clr-info);
+    color: var(--clr-info-bg);
 }
 
 .base-button .btn-loading {
@@ -69,5 +86,5 @@
 
 .base-button.is-loading:hover,
 .base-button:disabled:hover {
-    background-color: var(--clr-ternary);
+    background-color: var(--clr-tertiary);
 }

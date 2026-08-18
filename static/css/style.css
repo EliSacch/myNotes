@@ -13,6 +13,8 @@
 @import url('modules/tooltips.css');
 @import url('modules/page-transitions.css');
 @import url('modules/notes.css');
+@import url('modules/profile.css');
+@import url('modules/alerts.css');
 
 /* --------------------------- General */
 
@@ -110,6 +112,24 @@ main {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1em;
+}
+
+/* --------------------------- Icons */
+
+i.error {
+    color: var(--clr-error);
+}
+
+i.success {
+    color: var(--clr-tertiary);
+}
+
+i.info {
+    color: var(--clr-info);
+}
+
+i.warning {
+    color: var(--clr-warning);
 }
 
 /* --------------------------- Media queries */

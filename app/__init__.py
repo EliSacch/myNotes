@@ -27,7 +27,10 @@ def create_app():
     limiter.init_app(app)
 
     from app import models  # noqa: F401
+    from app.helpers.alerts import alert_icon
     from app.routes import auth_bp, dashboards_bp, main_bp, notes_bp, profile_bp
+
+    app.jinja_env.globals["alert_icon"] = alert_icon
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)

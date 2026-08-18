@@ -40,11 +40,7 @@ header {
 }
 
 #auth-nav i {
-    font-size: 1.2em;
-}
-
-#auth-nav a:focus {
-    color: var(--clr-info);
+    font-size: 1.5em;
 }
 
 /** --------------------------------------------------
@@ -194,7 +190,7 @@ header {
     border-radius: 50%;
     cursor: pointer;
     color: var(--clr-primary);
-    background-color: var(--clr-ternary);
+    background-color: var(--clr-tertiary);
     transition: .5s;
     border: none;
     font-weight: bold;
@@ -226,8 +222,8 @@ header {
 }
 
 #options button {
-    background-color: var(--clr-quaternary);
-    color: var(--clr-quaternary-text);
+    background-color: var(--clr-quatertiary);
+    color: var(--clr-quatertiary-text);
     border: none;
     cursor: pointer;
     width: 50px;

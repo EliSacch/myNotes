@@ -26,7 +26,7 @@
 }
 
 .form-wrapper a {
-    color: var(--clr-ternary);
+    color: var(--clr-tertiary);
 }
 
 /* --------------------------- Fields */
@@ -46,7 +46,7 @@
 
 .form-control input:focus {
     border-bottom: 1px solid var(--clr-dark);
-    outline: var(--tab-outline-strong);
+    outline: var(--tab-outline);
     outline-offset: 2px;
 }
 
@@ -111,7 +111,7 @@
 }
 
 .note-form-wrapper form input.note-title:focus-visible {
-    outline: var(--tab-outline-strong);
+    outline: var(--tab-outline);
     outline-offset: 2px;
 }
 
@@ -170,16 +170,16 @@
 }
 
 .note-action-buttons button:focus-visible {
-    outline: var(--tab-outline-strong);
+    outline: var(--tab-outline);
     outline-offset: 2px;
 }
 
 .note-action-buttons button.edit-btn:hover {
-    color: var(--clr-quaternary);
+    color: var(--clr-quatertiary);
 }
 
 .note-action-buttons button.save-btn:hover {
-    color: var(--clr-ternary);
+    color: var(--clr-tertiary);
 }
 
 .note-action-buttons button.delete-btn:hover,
