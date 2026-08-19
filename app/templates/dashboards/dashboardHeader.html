@@ -7,11 +7,18 @@
         {% if dashboard.is_default != True %}
             {{ tooltip('<button type="button"
                 class="base-button link-light modal-trigger"
+                data-modal="editDashboardModal"
+                data-form-action="' ~ url_for('dashboards.update', dashboard_id=dashboard.id) ~ '"
+                aria-label="Edit dashboard">
+                <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+                </button>', 'Edit', 'right', 'light') }}
+            {{ tooltip('<button type="button"
+                class="base-button link-light modal-trigger"
                 data-modal="deleteDashboardModal"
                 data-form-action="' ~ url_for('dashboards.delete', dashboard_id=dashboard.id) ~ '"
                 aria-label="Delete dashboard">
                 <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
                 </button>', 'Delete', 'right', 'light') }}
-    {% endif %}
+        {% endif %}
     </div>
 {% endmacro %}

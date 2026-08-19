@@ -140,7 +140,7 @@ def register():
             password_hash=generate_password_hash(password),
         )
         new_user.dashboards.append(
-            Dashboard(name="My Dashboard", is_default=True)
+            Dashboard(name="Home", is_default=True)
         )
         db.session.add(new_user)
         try:

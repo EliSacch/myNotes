@@ -387,6 +387,14 @@ $(document).ready(function(){
         }
     });
 
+    const $modalWithErrors = $('.overlay').filter(function () {
+        return $(this).find('.error-msg[role="alert"]:not([hidden]), .form-errors[role="alert"]:not([hidden])').length;
+    }).first();
+    if ($modalWithErrors.length) {
+        openModal($modalWithErrors);
+        focusFormErrors($modalWithErrors.find('form').first());
+    }
+
     $(document).on('click', '.modal-close', function () {
         const $overlay = $(this).closest('.overlay');
         if ($overlay.length) {

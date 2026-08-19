@@ -39,12 +39,20 @@ def _wants_json():
     )
 
 
-def _redirect_to_index_with_errors(form_key, errors, values=None):
+def _dashboard_url(dashboard):
+    return url_for(
+        "dashboards.get",
+        dashboard_id=dashboard.id,
+        slug=dashboard.slug,
+    )
+
+
+def _redirect_with_form_errors(form_key, errors, values=None, redirect_url=None):
     form_key = str(form_key)
     session[_DASHBOARD_FORM_ERRORS_KEY] = {form_key: errors}
     if values is not None:
         session[_DASHBOARD_FORM_VALUES_KEY] = {form_key: values}
-    return redirect(url_for("main.index"))
+    return redirect(redirect_url or url_for("main.index"))
 
 
 def _submitted_dashboard_values():
@@ -53,7 +61,13 @@ def _submitted_dashboard_values():
     }
 
 
-def _create_error_response(errors, values=None, form_key="create", retryable=True):
+def _create_error_response(
+    errors,
+    values=None,
+    form_key="create",
+    retryable=True,
+    redirect_url=None,
+):
     if _wants_json():
         return jsonify({
             "ok": False,
@@ -61,7 +75,7 @@ def _create_error_response(errors, values=None, form_key="create", retryable=Tru
             "values": values or {},
             "retryable": retryable,
         }), 400
-    return _redirect_to_index_with_errors(form_key, errors, values)
+    return _redirect_with_form_errors(form_key, errors, values, redirect_url)
 
 
 def dashboard_view_context(dashboard):
@@ -101,6 +115,8 @@ def dashboard_view_context(dashboard):
         "dashboards_csrf_token": _dashboards_csrf_token(),
         "errors": session.pop(_NOTE_FORM_ERRORS_KEY, {}),
         "form_values": session.pop(_NOTE_FORM_VALUES_KEY, {}),
+        "dashboard_errors": session.pop(_DASHBOARD_FORM_ERRORS_KEY, {}),
+        "dashboard_form_values": session.pop(_DASHBOARD_FORM_VALUES_KEY, {}),
     }
 
 
@@ -190,55 +206,68 @@ def create():
     return redirect(url_for("main.index"))
 
 
-@dashboards_bp.route("/<int:dashboard_id>/<slug>/update", methods=["GET", "POST"])
+@dashboards_bp.route("/<int:dashboard_id>/update", methods=["GET", "POST"])
 @login_required
-def update(dashboard_id, slug):
+def update(dashboard_id):
     dashboard = db.session.get(Dashboard, dashboard_id)
     if not dashboard or dashboard.owner_id != current_user.id:
         abort(404)
-    if dashboard.slug != slug:
-        abort(404)
-    if request.method == "POST":
-        errors = {}
-        name = (request.form.get("name") or "").strip()
-        values = _submitted_dashboard_values()
+    if request.method != "POST":
+        return redirect(_dashboard_url(dashboard))
 
-        if not _has_valid_dashboards_csrf_token():
-            errors.setdefault("form", []).append("Invalid form submission.")
-        if not name:
-            errors.setdefault("name", []).append("Name is required.")
-        elif len(name) > 50:
-            errors.setdefault("name", []).append("Name must be less than 50 characters.")
-        if errors:
-            return _create_error_response(errors, values)
+    errors = {}
+    name = (request.form.get("name") or "").strip()
+    values = _submitted_dashboard_values()
+    error_redirect = _dashboard_url(dashboard)
 
-        dashboard.name = name
-        try:
-            db.session.commit()
-            session.pop("dashboards_csrf_token", None)
-        except IntegrityError:
-            db.session.rollback()
-            return _create_error_response(
-                {"name": ["You already have a dashboard with this name."]},
-                values,
-            )
-        except SQLAlchemyError:
-            db.session.rollback()
-            return _create_error_response(
-                {"form": ["There was an error submitting this request. Please try again."]},
-                values,
-            )
-
-        flash("Dashboard updated successfully.", "success")
-        redirect_url = url_for(
-            "dashboards.get",
-            dashboard_id=dashboard.id,
-            slug=dashboard.slug,
+    if dashboard.is_default:
+        return _create_error_response(
+            {"form": ["You cannot rename the default dashboard."]},
+            values,
+            form_key="update",
+            retryable=False,
+            redirect_url=error_redirect,
         )
-        if _wants_json():
-            return jsonify({"ok": True, "redirect_url": redirect_url})
-        return redirect(redirect_url)
-    return redirect(url_for("main.index"))
+    if not _has_valid_dashboards_csrf_token():
+        errors.setdefault("form", []).append("Invalid form submission.")
+    if not name:
+        errors.setdefault("name", []).append("Name is required.")
+    elif len(name) > 50:
+        errors.setdefault("name", []).append("Name must be less than 50 characters.")
+    if errors:
+        return _create_error_response(
+            errors,
+            values,
+            form_key="update",
+            redirect_url=error_redirect,
+        )
+
+    dashboard.name = name
+    try:
+        db.session.commit()
+        session.pop("dashboards_csrf_token", None)
+    except IntegrityError:
+        db.session.rollback()
+        return _create_error_response(
+            {"name": ["You already have a dashboard with this name."]},
+            values,
+            form_key="update",
+            redirect_url=error_redirect,
+        )
+    except SQLAlchemyError:
+        db.session.rollback()
+        return _create_error_response(
+            {"form": ["There was an error submitting this request. Please try again."]},
+            values,
+            form_key="update",
+            redirect_url=error_redirect,
+        )
+
+    flash("Dashboard updated successfully.", "success")
+    redirect_url = _dashboard_url(dashboard)
+    if _wants_json():
+        return jsonify({"ok": True, "redirect_url": redirect_url})
+    return redirect(redirect_url)
 
 
 @dashboards_bp.route("/<int:dashboard_id>/delete", methods=["GET", "POST"])
