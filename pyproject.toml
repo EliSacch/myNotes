@@ -1,3 +1,7 @@
 [tool.djlint]
 profile = "jinja"
 files = ["app/templates"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

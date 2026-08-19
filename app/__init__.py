@@ -6,7 +6,7 @@ from flask_limiter.errors import RateLimitExceeded
 from app.extensions import db, migrate, login_manager, limiter
 
 
-def create_app():
+def create_app(config_overrides=None):
     app = Flask(
         __name__,
         template_folder="./templates",
@@ -19,6 +19,8 @@ def create_app():
     app.config["SESSION_COOKIE_HTTPONLY"] = True
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
     app.config["REMEMBER_COOKIE_DURATION"] = timedelta(days=7)
+    if config_overrides:
+        app.config.update(config_overrides)
 
     db.init_app(app)
     login_manager.init_app(app)

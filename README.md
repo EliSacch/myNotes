@@ -122,7 +122,7 @@ The live version of this program is available here.
     - Clone the repository
     - Create a new virtual environment `python3 -m venv .venv`
     - Activate virtual environment `source .venv/bin/activate`
-    - Install packages from requirements.txt `pip install -r requirements.txt`
+    - Install packages with `pip install -r requirements-dev.txt` (includes the runtime packages in `requirements.txt`, plus local tools such as djLint). Production and hosting should install only `pip install -r requirements.txt`.
     - Create a PostgreSQL database and configure its URL. Copy `.env.example` to a local `.env` file, then replace the `DATABASE_URL` and `SECRET_KEY` placeholder values.
     - Load both values into your terminal:
       ```bash
@@ -189,7 +189,7 @@ The app requires `DATABASE_URL` to connect to PostgreSQL and `SECRET_KEY` to sec
 
 ### Formatting templates
 
-Jinja templates are linted and formatted with [djLint](https://djlint.com/). Defaults live in `pyproject.toml` (`profile = "jinja"`, `files = ["app/templates"]`).
+Jinja templates are linted and formatted with [djLint](https://djlint.com/). Defaults live in `pyproject.toml` (`profile = "jinja"`, `files = ["app/templates"]`). djLint is a development dependency: install it with `pip install -r requirements-dev.txt`.
 
 With the virtual environment activated:
 
@@ -242,8 +242,10 @@ In Cursor/VS Code, install the djLint extension and set it as the default format
 ### Tooling
 
 - [Cursor](https://cursor.com/) — AI-assisted development (rules and skills for accessibility and workflows)
-- [djLint](https://djlint.com/) — Jinja/HTML template linting and formatting
+- [djLint](https://djlint.com/) — Jinja/HTML template linting and formatting (listed in `requirements-dev.txt`)
 - Virtualenv — local Python environment
+- `requirements.txt` — runtime packages for running and deploying the app
+- `requirements-dev.txt` — runtime packages plus local development tools
 
 ### Hosting
 
