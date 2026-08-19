@@ -1,8 +1,7 @@
-from datetime import datetime
-
 from flask_login import UserMixin
 
 from app.extensions import db
+from app.helpers.time import UTCDateTime, format_utc, utc_now
 
 
 class User(UserMixin, db.Model):
@@ -14,20 +13,20 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     notes = db.relationship("Note", back_populates="owner", cascade="all, delete-orphan")
     dashboards = db.relationship("Dashboard", back_populates="owner", cascade="all, delete-orphan")
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(UTCDateTime, default=utc_now)
     updated_at = db.Column(
-        db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        UTCDateTime,
+        default=utc_now,
+        onupdate=utc_now,
     )
 
     @property
     def formatted_updated_at(self):
-        return self.updated_at.strftime("%Y-%m-%d %H:%M")
+        return format_utc(self.updated_at)
 
     @property
     def formatted_created_at(self):
-        return self.created_at.strftime("%Y-%m-%d %H:%M")
+        return format_utc(self.created_at)
 
     def __repr__(self):
         return f"<User {self.username}>"
