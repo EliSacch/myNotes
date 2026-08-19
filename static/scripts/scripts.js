@@ -4,7 +4,7 @@ $(document).ready(function(){
      */
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const PAGE_EXIT_MS = 280;
-    const PAGE_TRANSITION_KEY = 'mynotes-page-transition';
+    const PAGE_TRANSITION_KEY = 'pinit-page-transition';
 
     function markPageTransitionTargets() {
         $('main, .form-wrapper, .error-page').addClass('page-transition-target');

@@ -4,7 +4,7 @@ globs: app/templates/**/*.{html,jinja2},static/css/**/*.css,static/scripts/**/*.
 alwaysApply: false
 ---
 
-# Accessibility (myNotes)
+# Accessibility (PinIt)
 
 Apply these when adding or changing UI.
 

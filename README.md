@@ -1,4 +1,4 @@
-# myNotes
+# PinIt
 A web app for your notes
 
 [Link to live site]()
@@ -54,7 +54,7 @@ Templates live under `app/templates/`. Static assets (CSS and JS) live under `st
 
 Note content is stored as a flat JSON list of **storage blocks** (`paragraph` / `todo` in `Notes.content_json`). The client maps those to and from Editor.js save JSON (`paragraph` + checklist `list` blocks) in `static/scripts/note-editor.js` and `app/routes/notes.py`.
 
-[Back to the top](#myNotes)
+[Back to the top](#PinIt)
 
 ## Features
 
@@ -66,7 +66,7 @@ Note content is stored as a flat JSON list of **storage blocks** (`paragraph` / 
 - **Modals** — Confirm logout, add a dashboard, and delete a note in accessible dialogs
 - **Flash messages** — Success and error feedback after actions
 
-[Back to the top](#myNotes)
+[Back to the top](#PinIt)
 
 ## Security
 
@@ -74,7 +74,7 @@ Note content is stored as a flat JSON list of **storage blocks** (`paragraph` / 
 - **Rate limiting** — Auth routes are limited with Flask-Limiter to slow brute-force attempts
 - **Sessions** — Cookies use `HttpOnly` and `SameSite=Lax`; `SECRET_KEY` signs the session
 
-[Back to the top](#myNotes)
+[Back to the top](#PinIt)
 
 ## Accessibility
 
@@ -93,7 +93,7 @@ Editor.js checklists are enhanced for keyboard use (Tab between items; Space/Ent
 
 During development, Cursor loads project accessibility guidance from `.cursor/rules/accessibility.mdc`. For a full review, use the project skill in `.cursor/skills/accessibility-audit/` (e.g. ask the agent to run an accessibility audit).
 
-[Back to the top](#myNotes)
+[Back to the top](#PinIt)
 
 ## Testing 
 
@@ -106,7 +106,7 @@ During development, Cursor loads project accessibility guidance from `.cursor/ru
 
 - There are no known unfixed bugs.
 
-[Back to the top](#myNotes)
+[Back to the top](#PinIt)
 
 ## Deployment
 
@@ -157,12 +157,12 @@ The live version of this program is available here.
   - List users `\du+`
   - Login with admin role `/opt/homebrew/opt/postgresql@18/bin/psql -d postgres`
   - Check current user `SELECT current_user;`
-  - Create new user `CREATE ROLE mynotes_user LOGIN PASSWORD 'choose-a-new-password';`
-  - Create a db `CREATE DATABASE mynotes OWNER mynotes_user;`
+  - Create new user `CREATE ROLE pinitt_user LOGIN PASSWORD 'choose-a-new-password';`
+  - Create a db `CREATE DATABASE pinit OWNER pinit_user;`
   - Exit `\q`
   - Restore secure local authentication in `/opt/homebrew/var/postgresql@18/pg_hba.conf` by changing both trust values back to `scram-sha-256`
   - then restart `brew services restart postgresql@18`
-  - Login with new user `/opt/homebrew/opt/postgresql@18/bin/psql -U mynotes_user -d mynotes -W`
+  - Login with new user `/opt/homebrew/opt/postgresql@18/bin/psql -U pinit_user -d pinit -W`
 
 
 ### Database migrations
@@ -208,7 +208,7 @@ The `-` source is required when `files` is set in the config; djLint then uses `
 
 In Cursor/VS Code, install the djLint extension and set it as the default formatter for Jinja/HTML files if you want format-on-save.
 
-[Back to the top](#myNotes)
+[Back to the top](#PinIt)
 
 ## Technologies used
 

@@ -2,7 +2,7 @@
 name: accessibility-audit
 description: >-
   Audit the app for accessibility (a11y) issues against WCAG-oriented checklist
-  and myNotes UI patterns. Produces a severity-ranked report with file references
+  and PinIt UI patterns. Produces a severity-ranked report with file references
   and fix guidance. Use when the user asks for an accessibility audit, a11y
   review, WCAG check, screen-reader review, keyboard-navigation review, or
   accessibility report.
