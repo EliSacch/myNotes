@@ -433,6 +433,43 @@
         }
         $form.find('.error-msg').prop('hidden', true).empty().removeAttr('tabindex');
         $form.find('.note-title').removeAttr('aria-invalid aria-describedby');
+        setNoteSaveBusy($form, false);
+    }
+
+    function setNoteSaveBusy($form, isBusy) {
+        const $btn = $form.find('.save-btn');
+        if (!$btn.length) {
+            return;
+        }
+
+        const $label = $btn.find('.btn-label');
+        const $loading = $btn.find('.btn-loading');
+        const idleLabel = $btn.attr('data-idle-label') || $btn.attr('aria-label') || 'Save note';
+        const loadingText = $btn.data('loading-text') || 'Saving note...';
+
+        if (!$btn.attr('data-idle-label')) {
+            $btn.attr('data-idle-label', idleLabel);
+        }
+
+        if (isBusy) {
+            $btn.find('.btn-loading-text').text(loadingText);
+            $label.attr('hidden', true);
+            $loading.removeAttr('hidden');
+            $btn
+                .prop('disabled', true)
+                .attr('aria-busy', 'true')
+                .attr('aria-label', loadingText)
+                .addClass('is-loading');
+            return;
+        }
+
+        $label.removeAttr('hidden');
+        $loading.attr('hidden', true);
+        $btn
+            .prop('disabled', false)
+            .removeAttr('aria-busy')
+            .attr('aria-label', $btn.attr('data-idle-label') || idleLabel)
+            .removeClass('is-loading');
     }
 
     function showNoteTitleErrors($form, messages) {
@@ -469,6 +506,7 @@
         if (errors.length > 0) {
             event.preventDefault();
             event.stopImmediatePropagation();
+            setNoteSaveBusy($form, false);
             showNoteTitleErrors($form, errors);
             return;
         }
@@ -480,6 +518,11 @@
         }
 
         event.preventDefault();
+        if ($form.find('.save-btn').attr('aria-busy') === 'true') {
+            return;
+        }
+
+        setNoteSaveBusy($form, true);
         editor
             .save()
             .then(function (output) {
@@ -489,6 +532,7 @@
                 HTMLFormElement.prototype.submit.call($form.get(0));
             })
             .catch(function () {
+                setNoteSaveBusy($form, false);
                 if ($errorField.length) {
                     $errorField
                         .prop('hidden', false)

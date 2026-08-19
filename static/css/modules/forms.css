@@ -157,12 +157,37 @@
 }
 
 .note-action-buttons button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    min-height: 32px;
+    padding: var(--padding-m);
     color: var(--clr-grey);
     background-color: transparent;
     border: none;
     cursor: pointer;
     font-size: 1.2em;
     transition: .3s;
+}
+
+.note-action-buttons button .btn-loading {
+    display: none;
+}
+
+.note-action-buttons button.is-loading .btn-label {
+    display: none;
+}
+
+.note-action-buttons button.is-loading .btn-loading {
+    display: inline-flex !important;
+}
+
+.note-action-buttons button.is-loading,
+.note-action-buttons button:disabled {
+    cursor: wait;
+    opacity: 0.8;
+    pointer-events: none;
 }
 
 .note-action-buttons button:hover i {

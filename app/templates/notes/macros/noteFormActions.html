@@ -8,8 +8,15 @@
             </button>', 'Cancel', 'bottom') }}
     {{ tooltip('<button type="submit"
         aria-label="Save note"
-        class="note-form-button-save save-btn">
-        <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+        class="note-form-button-save save-btn"
+        data-loading-text="Saving note...">
+        <span class="btn-label">
+            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+        </span>
+        <span class="btn-loading" hidden>
+            <i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>
+            <span class="btn-loading-text visually-hidden">Saving note...</span>
+        </span>
         </button>', 'Save', 'bottom') }}
     </div>
 {% endmacro %}

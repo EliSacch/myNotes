@@ -9,14 +9,20 @@
 }
 
 #messages .close-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    min-height: 32px;
+    padding: var(--padding-m);
     background-color: transparent;
     color: var(--clr-dark);
     border: none;
     font-size: 1.2em;
     cursor: pointer;
     position: absolute;
-    top: var(--spacing-s);
-    right: var(--spacing-m);
+    top: 0;
+    right: 0;
     opacity: .5;
     transition: .5s;
 }
@@ -29,7 +35,7 @@
     background-color: var(--clr-warning-bg);
     color: var(--clr-dark);
     padding: var(--padding-l);
-    padding-right: var(--spacing-xl);
+    padding-right: calc(32px + var(--padding-m));
     border-radius: var(--border-radius);
     font-weight: 500;
     position: relative;
