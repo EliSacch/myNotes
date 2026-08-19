@@ -128,6 +128,22 @@ $(document).ready(function(){
         navigateWithTransition(anchor.href);
     });
 
+    $(document).on('click', '.skip-link', function (event) {
+        const targetId = (this.hash || '').replace(/^#/, '');
+        const target = targetId && document.getElementById(targetId);
+        if (!target) {
+            return;
+        }
+        event.preventDefault();
+        if (!target.hasAttribute('tabindex')) {
+            target.setAttribute('tabindex', '-1');
+        }
+        target.focus({ preventScroll: false });
+        if (typeof target.scrollIntoView === 'function') {
+            target.scrollIntoView();
+        }
+    });
+
     function setButtonLoading($btn, isLoading) {
         if (!$btn.length) {
             return;
@@ -233,10 +249,30 @@ $(document).ready(function(){
             .attr('aria-hidden', 'false')
             .addClass('visible');
 
-        const $focusTarget = $modal.find('.modal-close, button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])').filter(':visible').first();
+        const $focusTarget = getModalFocusTarget($modal);
         if ($focusTarget.length) {
             $focusTarget.trigger('focus');
         }
+    }
+
+    function getModalFocusTarget($modal) {
+        const $field = $modal
+            .find('.modal-body input:not([type="hidden"]), .modal-body select, .modal-body textarea')
+            .filter(':visible')
+            .first();
+        if ($field.length) {
+            return $field;
+        }
+
+        const $cancel = $modal.find('.modal-footer .modal-close').filter(':visible').first();
+        if ($cancel.length) {
+            return $cancel;
+        }
+
+        return $modal
+            .find('.modal-close, button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+            .filter(':visible')
+            .first();
     }
 
     function closeModal($modal) {
@@ -300,23 +336,26 @@ $(document).ready(function(){
                 return;
             }
 
-            const $input = $form.find(`[name="${field}"]`);
+            const $input = $form.find(`[name="${field}"]`).first();
             if (!$input.length) {
                 $form.find('.form-errors').html(html).prop('hidden', false);
                 return;
             }
 
-            const errorId = `${field}-errors`;
+            const $wrapper = $input.closest('.form-control-wrapper');
+            let $error = $wrapper.find('.error-msg').first();
+            const errorId = $error.attr('id') || `${$input.attr('id') || field}-errors`;
             $input
                 .attr('aria-invalid', 'true')
                 .attr('aria-describedby', errorId)
                 .closest('.form-control')
                 .addClass('is-invalid');
 
-            let $error = $form.find(`#${errorId}`);
             if (!$error.length) {
                 $error = $('<div class="error-msg" role="alert"></div>').attr('id', errorId);
-                $input.closest('.form-control-wrapper').append($error);
+                $wrapper.append($error);
+            } else if (!$error.attr('id')) {
+                $error.attr('id', errorId);
             }
             $error.html(html).prop('hidden', false);
         });
@@ -393,6 +432,15 @@ $(document).ready(function(){
     if ($modalWithErrors.length) {
         openModal($modalWithErrors);
         focusFormErrors($modalWithErrors.find('form').first());
+    } else {
+        const $formWithErrors = $('main form').filter(function () {
+            return $(this).find(
+                '[aria-invalid="true"], .error-msg[role="alert"]:not([hidden]), .form-errors[role="alert"]:not([hidden])'
+            ).length;
+        }).first();
+        if ($formWithErrors.length) {
+            focusFormErrors($formWithErrors);
+        }
     }
 
     $(document).on('click', '.modal-close', function () {
@@ -607,12 +655,34 @@ $(document).ready(function(){
         }
     });
 
+    function closeDisclosureOnFocusLeave($nav, closeFn) {
+        $nav.on('focusout', function (event) {
+            const next = event.relatedTarget;
+            if (next && this.contains(next)) {
+                return;
+            }
+            closeFn(false);
+        });
+    }
+
+    closeDisclosureOnFocusLeave($('#options-nav'), closeOptionsMenu);
+    closeDisclosureOnFocusLeave($('#dashboards-nav'), closeDashboardsMenu);
+
+    function clearNoteErrors($form) {
+        if (window.NoteEditor && typeof window.NoteEditor.clearErrors === 'function') {
+            window.NoteEditor.clearErrors($form);
+            return;
+        }
+        $form.find('.error-msg').prop('hidden', true).empty();
+        $form.find('.note-title').removeAttr('aria-invalid aria-describedby');
+    }
+
     function closeAllNoteEdits() {
         const destroyPromises = [];
         $('.note-slot').each(function () {
             const $slot = $(this);
             const $form = $slot.find('.note-form');
-            $slot.find('.error-msg').html('');
+            clearNoteErrors($form);
             if (window.NoteEditor && typeof window.NoteEditor.destroy === 'function') {
                 destroyPromises.push(window.NoteEditor.destroy($form));
             }
@@ -626,7 +696,7 @@ $(document).ready(function(){
     function closeAddNoteForm() {
         const $addForm = $('#addNoteForm');
         const $form = $addForm.find('.note-form');
-        $addForm.find('.error-msg').html('');
+        clearNoteErrors($form);
         let destroyPromise = Promise.resolve();
         if (window.NoteEditor && typeof window.NoteEditor.destroy === 'function') {
             destroyPromise = window.NoteEditor.destroy($form);
@@ -665,7 +735,7 @@ $(document).ready(function(){
         const $form = $(this).closest('.note-form');
         const $slot = $(this).closest('.note-slot');
 
-        $form.find('.error-msg').html('');
+        clearNoteErrors($form);
         const destroyPromise =
             window.NoteEditor && typeof window.NoteEditor.destroy === 'function'
                 ? window.NoteEditor.destroy($form)

@@ -9,6 +9,12 @@ header {
     z-index: 1;
 }
 
+header :is(a, button):focus,
+header :is(a, button):focus-visible {
+    outline: var(--tab-outline-on-dark);
+    outline-offset: 2px;
+}
+
 #logo {
     height: 99%;
     position: relative;
@@ -17,6 +23,11 @@ header {
     letter-spacing: 3px;
     padding: 0 1em;
     border-bottom: 1px solid var(--clr-primary);
+}
+
+#logo > p.site-title {
+    font-size: 2em;
+    font-weight: bold;
 }
 
 #logo > i {
@@ -210,6 +221,12 @@ header {
 #options-toggler[aria-expanded="true"] {
     transform: rotate(45deg);
     background-color: var(--clr-error-bg);
+    color: var(--clr-dark);
+}
+
+#options-toggler[aria-expanded="true"]:hover,
+#options-toggler[aria-expanded="true"]:focus {
+    opacity: 1;
 }
 
 #options {

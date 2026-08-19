@@ -254,11 +254,40 @@
             }
         }, true);
 
+        let checklistLabelSeq = 0;
+
+        function ensureContentId(content) {
+            if (!content.id) {
+                checklistLabelSeq += 1;
+                content.id = `${holder.id || 'note-editor'}-item-${checklistLabelSeq}`;
+            }
+            return content.id;
+        }
+
+        function itemText(content) {
+            return ((content && (content.innerText || content.textContent)) || '')
+                .replace(/\u00a0/g, ' ')
+                .trim();
+        }
+
+        function syncCheckboxName(el) {
+            const item = el.closest('.cdx-list__item');
+            const content = item && item.querySelector('.cdx-list__item-content');
+            if (content && itemText(content)) {
+                el.setAttribute('aria-labelledby', ensureContentId(content));
+                el.removeAttribute('aria-label');
+                return;
+            }
+            el.removeAttribute('aria-labelledby');
+            el.setAttribute('aria-label', 'Checklist item');
+        }
+
         function syncCheckboxAria(el) {
             el.setAttribute(
                 'aria-checked',
                 el.classList.contains('cdx-list__checkbox--checked') ? 'true' : 'false'
             );
+            syncCheckboxName(el);
         }
 
         function enhanceCheckbox(el) {
@@ -287,6 +316,7 @@
         }
 
         enhanceAll();
+        holder.addEventListener('input', enhanceAll);
         const observer = new MutationObserver(enhanceAll);
         observer.observe(holder, {
             childList: true,
@@ -397,9 +427,38 @@
         return holderId ? editorsByHolderId.get(holderId) : null;
     }
 
+    function clearNoteFormErrors($form) {
+        if (!$form || !$form.length) {
+            return;
+        }
+        $form.find('.error-msg').prop('hidden', true).empty().removeAttr('tabindex');
+        $form.find('.note-title').removeAttr('aria-invalid aria-describedby');
+    }
+
+    function showNoteTitleErrors($form, messages) {
+        const $errorField = $form.find('.error-msg').first();
+        const $title = $form.find('.note-title').first();
+        if (!$errorField.length) {
+            return;
+        }
+
+        $errorField
+            .prop('hidden', false)
+            .html((messages || []).map(function (msg) {
+                return $('<li>').text(msg)[0].outerHTML;
+            }).join(''));
+
+        const errorId = $errorField.attr('id');
+        $title.attr('aria-invalid', 'true');
+        if (errorId) {
+            $title.attr('aria-describedby', errorId);
+        }
+        $title.trigger('focus');
+    }
+
     $(document).on('submit', '.note-form', function (event) {
         const $form = $(this);
-        const errorField = $form.find('.error-msg');
+        const $errorField = $form.find('.error-msg');
         const title = $form.find('.note-title').val();
         const errors = [];
 
@@ -409,16 +468,8 @@
 
         if (errors.length > 0) {
             event.preventDefault();
-            if (errorField.length) {
-                errorField
-                    .prop('hidden', false)
-                    .attr('tabindex', '-1')
-                    .html(errors.map(function (msg) {
-                        return $('<li>').text(msg)[0].outerHTML;
-                    }).join(''));
-                errorField.trigger('focus');
-            }
-            $form.find('.note-title').attr('aria-invalid', 'true').first().trigger('focus');
+            event.stopImmediatePropagation();
+            showNoteTitleErrors($form, errors);
             return;
         }
 
@@ -438,10 +489,12 @@
                 HTMLFormElement.prototype.submit.call($form.get(0));
             })
             .catch(function () {
-                if (errorField.length) {
-                    errorField
+                if ($errorField.length) {
+                    $errorField
                         .prop('hidden', false)
+                        .attr('tabindex', '-1')
                         .html('<li>Could not save note content. Please try again.</li>');
+                    $errorField.trigger('focus');
                 }
             });
     });
@@ -508,5 +561,6 @@
         init: initNoteEditor,
         destroy: destroyNoteEditor,
         destroyAll: destroyAllNoteEditors,
+        clearErrors: clearNoteFormErrors,
     };
 })(window, window.jQuery);

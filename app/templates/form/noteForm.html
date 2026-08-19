@@ -7,7 +7,11 @@
     <div class="note-form-wrapper">
         <form class="note-form" action="{{ action }}" method="post">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}" required>
-            <ul class="error-msg" role="alert"{% if not errors %} hidden{% endif %}>
+            {% set error_id = title_id ~ "-errors" %}
+            <ul class="error-msg"
+                id="{{ error_id }}"
+                role="alert"
+                {% if not errors %} hidden{% endif %}>
                 {% for error in errors %}
                     <li>{{ error }}</li>
                 {% endfor %}
@@ -20,10 +24,12 @@
                        class="note-title"
                        placeholder="Add a new note"
                        value="{{ title_value }}"
-                       required>
+                       required
+                       {% if errors %}aria-invalid="true" aria-describedby="{{ error_id }}"{% endif %}>
             </div>
             <div id="{{ editor_id }}"
                  class="note-editor"
+                 role="group"
                  aria-label="Note content"
                  data-placeholder="Type something..."
                  data-storage-blocks='{{ storage_blocks | tojson }}'></div>

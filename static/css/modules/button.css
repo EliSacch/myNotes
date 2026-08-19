@@ -46,6 +46,12 @@
     opacity: 0.8;
 }
 
+.base-button.primary:hover,
+.base-button.primary:focus {
+    opacity: 1;
+    background-color: var(--clr-tertiary-hover);
+}
+
 .base-button.secondary:hover,
 .base-button.secondary:focus {
     background-color: var(--clr-primary);
@@ -59,8 +65,13 @@
 }
 
 .base-button.link:hover,
-.base-button.link:focus {
-    color: var(--clr-info-bg);
+.base-button.link:focus-visible {
+    color: var(--clr-dark);
+}
+
+.base-button.link-light:focus-visible,
+.base-button.link-light:focus {
+    outline: var(--tab-outline-on-dark);
 }
 
 .base-button .btn-loading {

@@ -22,6 +22,7 @@
             value=values.name if values else '',
             type="text",
             required=true,
-            errors=field_errors.get('name', []),) }}
+            errors=field_errors.get('name', []),
+            field_id=(form_id ~ '-name') if form_id else 'name') }}
     </form>
 {% endmacro %}

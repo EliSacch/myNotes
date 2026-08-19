@@ -45,7 +45,7 @@
               href="{{ url_for('static', filename='css/style.css') }}">
     </head>
     <body>
-        <a class="skip-link" href="#main-content">Skip to main content</a>
+        <a class="skip-link" href="{% block skip_href %}#main-content{% endblock %}">Skip to main content</a>
         <header>
             {% if dashboards is defined and dashboards %}
                 <nav id="dashboards-nav"
@@ -76,14 +76,17 @@
             {% if dashboard is defined and dashboard %}
                 {{ dashboardHeader(dashboard) }}
             {% else %}
+                {% if request.endpoint == 'profile.index' %}
+                    {% set logo_text %}{{ current_user.is_authenticated and current_user.username + "'s" }} Profile{% endset %}
+                {% else %}
+                    {% set logo_text %}{{ current_user.is_authenticated and current_user.username + "'s" or "My" }} Notes{% endset %}
+                {% endif %}
                 <div id="logo">
-                    <h1>
-                        {% if request.endpoint == 'profile.index' %}
-                            {{ current_user.is_authenticated and current_user.username + "'s" }} Profile
-                        {% else %}
-                            {{ current_user.is_authenticated and current_user.username + "'s" or "My" }} Notes
-                        {% endif %}
-                    </h1>
+                    {% if request.endpoint in ['auth.login', 'auth.register', 'auth.change_password'] %}
+                        <p class="site-title">{{ logo_text }}</p>
+                    {% else %}
+                        <h1>{{ logo_text }}</h1>
+                    {% endif %}
                 </div>
             {% endif %}
             {% if request.endpoint != 'profile.index' %}

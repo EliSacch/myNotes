@@ -12,7 +12,18 @@
             </div>
             <div class="profile-info-item">
                 <span class="profile-info-item-label">Email:</span>
-                <span class="profile-info-item-value">{{ user.email }} <span class="text-muted">{% if user.email_verified == True %}<i class="fa-solid fa-circle-check success" aria-hidden="true"></i>{% else %}<i class="fa-solid fa-circle-xmark error" aria-hidden="true"></i>{% endif %}</span></span>
+                <span class="profile-info-item-value">
+                    {{ user.email }}
+                    <span class="profile-email-status">
+                        {% if user.email_verified == True %}
+                            <i class="fa-solid fa-circle-check success" aria-hidden="true"></i>
+                            <span class="visually-hidden">Verified</span>
+                        {% else %}
+                            <i class="fa-solid fa-circle-xmark error" aria-hidden="true"></i>
+                            <span class="visually-hidden">Not verified</span>
+                        {% endif %}
+                    </span>
+                </span>
             </div>
             <div class="profile-info-item">
                 <span class="profile-info-item-label">Joined:</span>

@@ -1,8 +1,9 @@
 {% macro text_input(name, label, value='', type='text', errors=[], required=false,
-    pattern=none, autocomplete=none) %}
+    pattern=none, autocomplete=none, field_id=none) %}
+    {% set input_id = field_id if field_id else name %}
     <div class="form-control-wrapper">
         <div class="form-control{% if errors %} is-invalid{% endif %}">
-            <input id="{{ name }}"
+            <input id="{{ input_id }}"
                    name="{{ name }}"
                    value="{{ value }}"
                    type="{{ type }}"
@@ -10,11 +11,11 @@
                    {% if required %}required{% endif %}
                    {% if pattern %}pattern="{{ pattern }}"{% endif %}
                    {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
-                   {% if errors %}aria-invalid="true" aria-describedby="{{ name }}-errors"{% endif %}>
-            <label for="{{ name }}">{{ label }}</label>
+                   {% if errors %}aria-invalid="true" aria-describedby="{{ input_id }}-errors"{% endif %}>
+            <label for="{{ input_id }}">{{ label }}</label>
         </div>
         <div class="error-msg"
-             id="{{ name }}-errors"
+             id="{{ input_id }}-errors"
              role="alert"
              {% if not errors %} hidden{% endif %}>
             {% if errors %}

@@ -1,7 +1,8 @@
 :root {
     --clr-primary: rgb(248, 247, 243);
     --clr-secondary: rgb(238, 237, 229);
-    --clr-tertiary: rgb(0, 145, 121);
+    --clr-tertiary: rgb(0, 118, 98);
+    --clr-tertiary-hover: rgb(0, 100, 83);
     --clr-quatertiary: rgb(251, 205, 115);
     --clr-quatertiary-text: rgb(59, 58, 55);
     --clr-grey: rgb(90, 90, 90);
@@ -34,4 +35,6 @@
 
     --tab-outline: 2px solid var(--clr-tertiary);
     --tab-outline-strong: 3px solid var(--clr-tertiary);
+    --tab-outline-on-dark: 2px solid var(--clr-primary);
+    --tab-outline-on-dark-strong: 3px solid var(--clr-primary);
 }

@@ -10,8 +10,11 @@
 {% from "macros/modal.html" import modal %}
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
+{% block skip_href %}#create-and-notes{% endblock %}
 {% block content %}
-    {# Outside main so page-transition transforms do not break position:fixed #}
+    {# FAB stays outside main so page-transition transforms do not break position:fixed. #}
+    {# Skip target wraps both so Skip to main content does not jump past Create. #}
+    <div id="create-and-notes" class="skip-target" tabindex="-1">
     {% if current_user.is_authenticated %}
         <nav id="options-nav" aria-label="Create">
             {{ tooltip('<button
@@ -97,6 +100,7 @@
             {% endif %}
         </section>
     </main>
+    </div>
     {# Overlay must be a direct body child so setBackgroundInert does not make it inert. #}
     {% if current_user.is_authenticated and dashboards_csrf_token is defined %}
         {% set dashboard_errors = dashboard_errors|default({}) %}

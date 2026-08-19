@@ -57,8 +57,12 @@
 
 .skip-link:focus {
     transform: translateY(0);
-    outline: var(--tab-outline-strong);
+    outline: var(--tab-outline-on-dark-strong);
     outline-offset: 2px;
+}
+
+.skip-target:focus {
+    outline: none;
 }
 
 * a {
