@@ -20,6 +20,8 @@ def app():
                 "connect_args": {"check_same_thread": False},
                 "poolclass": StaticPool,
             },
+            "MAIL_BACKEND": "locmem",
+            "MAIL_DEFAULT_SENDER": "PinIt <noreply@example.com>",
         }
     )
     limiter.enabled = False
