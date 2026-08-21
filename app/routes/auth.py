@@ -1,15 +1,26 @@
 import hmac
 import re
 import secrets
+import smtplib
 
-
-from flask import Blueprint, redirect, render_template, request, session, url_for, flash
+from flask import (
+    Blueprint,
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 from flask_login import login_user, login_required, current_user, logout_user
+from flask_mailman import EmailMessage
 from sqlalchemy import func, text
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.extensions import db, login_manager, limiter
+from app.helpers.email_verification import generate_email_token, load_email_token
 from app.helpers.password import collect_password_errors
 from app.models import Dashboard, User
 
@@ -71,6 +82,30 @@ def _change_password_context(errors=None, current_password="", new_password="", 
         "errors": errors or [],
         "title": "Change your password",
     }
+
+def send_verification_email(user):
+    token = generate_email_token(user)
+    confirm_url = url_for("auth.verify_email", token=token, _external=True)
+    msg = EmailMessage(
+        subject="Verify your PinIt email",
+        body=f"Hi {user.username},\n\nConfirm your address:\n{confirm_url}\n",
+        to=[user.email],
+    )
+    msg.send()
+
+
+def resend_verification_csrf_token():
+    csrf_token = session.get("resend_verification_csrf_token")
+    if not csrf_token:
+        csrf_token = secrets.token_urlsafe(32)
+        session["resend_verification_csrf_token"] = csrf_token
+    return csrf_token
+
+
+def _verify_email_redirect():
+    if current_user.is_authenticated:
+        return redirect(url_for("profile.index"))
+    return redirect(url_for("auth.login"))
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 @limiter.limit("3 per minute; 10 per hour", methods=["POST"])
@@ -155,6 +190,18 @@ def register():
                     email=email,
                 ),
             )
+        
+        try:
+            send_verification_email(new_user)
+        except (OSError, smtplib.SMTPException):
+            current_app.logger.exception("Failed to send verification email")
+            flash(
+                "Your account was created, but we could not send the verification email. "
+                "You can resend it from your profile.",
+                "warning",
+            )
+        else:
+            flash("Please check your email for a verification link.", "info")
 
         session.pop("register_csrf_token", None)
         login_user(new_user)
@@ -265,7 +312,78 @@ def change_password():
     return render_template("auth/change_password.html", **_change_password_context())
 
 
+@auth_bp.route("/verify-email/resend", methods=["POST"])
+@limiter.limit("5 per minute; 10 per hour")
+@login_required
+def resend_verification_email():
+    submitted_token = request.form.get("csrf_token", "")
+    stored_token = session.get("resend_verification_csrf_token", "")
+    if not (
+        isinstance(submitted_token, str)
+        and isinstance(stored_token, str)
+        and hmac.compare_digest(submitted_token, stored_token)
+    ):
+        flash("Your form has expired. Please try again.", "warning")
+        return redirect(url_for("profile.index"))
+
+    session.pop("resend_verification_csrf_token", None)
+
+    if current_user.email_verified:
+        flash("Your email is already verified.", "info")
+        return redirect(url_for("profile.index"))
+
+    try:
+        send_verification_email(current_user)
+    except (OSError, smtplib.SMTPException) as e:
+        print(e)
+        current_app.logger.exception("Failed to resend verification email")
+        flash(
+            "We could not send the verification email. Please try again later.",
+            "warning",
+        )
+    else:
+        flash("Please check your email for a verification link.", "info")
+
+    return redirect(url_for("profile.index"))
+
+
+@auth_bp.route("/verify-email/<token>", methods=["GET"])
+def verify_email(token):
+    data = load_email_token(token)
+    if data == "expired":
+        flash(
+            "This verification link has expired. Request a new one from your profile.",
+            "warning",
+        )
+        return _verify_email_redirect()
+    if not isinstance(data, dict):
+        flash("This verification link is invalid.", "warning")
+        return _verify_email_redirect()
+
+    user = db.session.get(User, data.get("user_id"))
+    if user is None or user.email != data.get("email"):
+        flash("This verification link is invalid.", "warning")
+        return _verify_email_redirect()
+
+    if not user.email_verified:
+        user.email_verified = True
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash("Unable to verify your email. Please try again.", "warning")
+            return _verify_email_redirect()
+
+    flash("Your email has been verified.", "success")
+    login_user(user)
+    return redirect(url_for("profile.index"))
+
+
 @auth_bp.route("/edit-profile", methods=["GET", "POST"])
 @login_required
 def edit_profile():
-    return render_template("profile/index.html", user=current_user)
+    return render_template(
+        "profile/index.html",
+        user=current_user,
+        csrf_token=resend_verification_csrf_token(),
+    )

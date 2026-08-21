@@ -3,7 +3,7 @@ from datetime import timedelta
 from flask import Flask, flash, redirect, request, url_for, render_template, request
 from flask_limiter.errors import RateLimitExceeded
 
-from app.extensions import db, migrate, login_manager, limiter
+from app.extensions import db, mail, migrate, login_manager, limiter
 
 
 def create_app(config_overrides=None):
@@ -19,12 +19,22 @@ def create_app(config_overrides=None):
     app.config["SESSION_COOKIE_HTTPONLY"] = True
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
     app.config["REMEMBER_COOKIE_DURATION"] = timedelta(days=7)
+
+    app.config["MAIL_SERVER"] = os.environ.get("MAIL_SERVER")
+    app.config["MAIL_PORT"] = int(os.environ.get("MAIL_PORT", "587"))
+    app.config["MAIL_USE_TLS"] = os.environ.get("MAIL_USE_TLS", "true").lower() in ("1", "true", "yes")
+    app.config["MAIL_USERNAME"] = os.environ.get("MAIL_USERNAME")
+    app.config["MAIL_PASSWORD"] = os.environ.get("MAIL_PASSWORD")
+    app.config["MAIL_DEFAULT_SENDER"] = os.environ.get("MAIL_DEFAULT_SENDER")
+    app.config["MAIL_BACKEND"] = os.environ.get("MAIL_BACKEND")
+
     if config_overrides:
         app.config.update(config_overrides)
 
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
+    mail.init_app(app)
     migrate.init_app(app, db)
     limiter.init_app(app)
 

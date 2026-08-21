@@ -11,7 +11,7 @@
         <meta name="description" content="A web app for your notes">
         <meta name="keywords" content="notes todo">
         <meta name="author" content="Elisa S">
-        <title>My Notes - {% block title %}{% endblock %}</title>
+        <title>Pin It - {% block title %}{% endblock %}</title>
         <script>
             (function () {
                 try {
@@ -45,7 +45,8 @@
               href="{{ url_for('static', filename='css/style.css') }}">
     </head>
     <body>
-        <a class="skip-link" href="{% block skip_href %}#main-content{% endblock %}">Skip to main content</a>
+        <a class="skip-link"
+           href="{%- block skip_href -%}#main-content{%- endblock -%}">Skip to main content</a>
         <header>
             {% if dashboards is defined and dashboards %}
                 <nav id="dashboards-nav"
@@ -78,55 +79,55 @@
             {% else %}
                 {% if request.endpoint == 'profile.index' %}
                     {% set logo_text %}{{ current_user.is_authenticated and current_user.username + "'s" }} Profile{% endset %}
-                {% else %}
-                    {% set logo_text %}{{ current_user.is_authenticated and current_user.username + "'s" or "My" }} Notes{% endset %}
-                {% endif %}
-                <div id="logo">
-                    {% if request.endpoint in ['auth.login', 'auth.register', 'auth.change_password'] %}
-                        <p class="site-title">{{ logo_text }}</p>
                     {% else %}
-                        <h1>{{ logo_text }}</h1>
+                        {% set logo_text %}{{ current_user.is_authenticated and current_user.username + "'s" or "My" }} Notes{% endset %}
+                        {% endif %}
+                        <div id="logo">
+                            {% if request.endpoint in ['auth.login', 'auth.register', 'auth.change_password'] %}
+                                <p class="site-title">{{ logo_text }}</p>
+                            {% else %}
+                                <h1>{{ logo_text }}</h1>
+                            {% endif %}
+                        </div>
                     {% endif %}
-                </div>
-            {% endif %}
-            {% if request.endpoint != 'profile.index' %}
-                <nav id="auth-nav" aria-label="Account">
-                    {% set profile_tooltip %}
-                        <a href="{{ url_for('profile.index') }}"
-                           class="base-button link-light"
-                           aria-label="Profile">
-                            <i class="fa-solid fa-user" aria-hidden="true"></i>
-                        </a>
-                    {% endset %}
-                    {% if current_user.is_authenticated %}
-                        {{ tooltip(profile_tooltip, 'Profile', 'left', 'light') }}
+                    {% if request.endpoint != 'profile.index' %}
+                        <nav id="auth-nav" aria-label="Account">
+                            {% set profile_tooltip %}
+                                <a href="{{ url_for('profile.index') }}"
+                                   class="base-button link-light"
+                                   aria-label="Profile">
+                                    <i class="fa-solid fa-user" aria-hidden="true"></i>
+                                </a>
+                            {% endset %}
+                            {% if current_user.is_authenticated %}
+                                {{ tooltip(profile_tooltip, 'Profile', 'left', 'light') }}
+                            {% endif %}
+                        </nav>
+                    {% elif request.endpoint == 'profile.index' %}
+                        <nav id="auth-nav" aria-label="Home">
+                            {% set profile_tooltip %}
+                                <a href="{{ url_for('main.index') }}"
+                                   class="base-button link-light"
+                                   aria-label="Home">
+                                    <i class="fa-solid fa-house" aria-hidden="true"></i>
+                                </a>
+                            {% endset %}
+                            {% if current_user.is_authenticated %}
+                                {{ tooltip(profile_tooltip, 'Home', 'left', 'light') }}
+                            {% endif %}
+                        </nav>
                     {% endif %}
-                </nav>
-            {% elif request.endpoint == 'profile.index' %}
-                <nav id="auth-nav" aria-label="Home">
-                    {% set profile_tooltip %}
-                        <a href="{{ url_for('main.index') }}"
-                           class="base-button link-light"
-                           aria-label="Home">
-                            <i class="fa-solid fa-house" aria-hidden="true"></i>
-                        </a>
-                    {% endset %}
-                    {% if current_user.is_authenticated %}
-                        {{ tooltip(profile_tooltip, 'Home', 'left', 'light') }}
-                    {% endif %}
-                </nav>
-            {% endif %}
-        </header>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {{ flash_messages(messages=messages, category=category if category else "info") }}
-        {% endwith %}
-        {% block content %}{% endblock %}
-        <!-- Accessibility status -->
-        <div id="a11y-status"
-             class="visually-hidden"
-             role="status"
-             aria-live="polite"
-             aria-atomic="true"></div>
-        <!-- End of accessibility status -->
-    </body>
-</html>
+                    </header>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {{ flash_messages(messages=messages, category=category if category else "info") }}
+                    {% endwith %}
+                    {% block content %}{% endblock %}
+                    <!-- Accessibility status -->
+                    <div id="a11y-status"
+                         class="visually-hidden"
+                         role="status"
+                         aria-live="polite"
+                         aria-atomic="true"></div>
+                    <!-- End of accessibility status -->
+                    </body>
+                    </html>

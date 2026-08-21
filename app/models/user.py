@@ -10,6 +10,9 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False, index=True)
+    email_verified = db.Column(
+        db.Boolean, default=False, server_default=db.false(), nullable=False
+    )
     password_hash = db.Column(db.String(255), nullable=False)
     notes = db.relationship("Note", back_populates="owner", cascade="all, delete-orphan")
     dashboards = db.relationship("Dashboard", back_populates="owner", cascade="all, delete-orphan")

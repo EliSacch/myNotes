@@ -33,7 +33,11 @@
         {% if user.email_verified != True %}
             <section class="profile-email-verification">
                 {% call alert('Email not verified', 'Please verify your email to continue.', 'error') %}
-                    <a href="" class="alert-action-btn">Verify</a>
+                    <form action="{{ url_for('auth.resend_verification_email') }}"
+                          method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                        <button type="submit" class="alert-action-btn">Resend verification email</button>
+                    </form>
                 {% endcall %}
             </section>
         {% endif %}

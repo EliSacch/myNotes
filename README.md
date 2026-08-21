@@ -47,6 +47,7 @@ The app uses Flask’s **application factory** (`create_app` in `app/__init__.py
 |-----------|------|
 | `main` | Health check and entry routing |
 | `auth` | Register, login, logout |
+| `profile` | View, Edit profile |
 | `dashboards` | Create and open note boards |
 | `notes` | Create, update, delete notes; toggle checklist items |
 
@@ -59,6 +60,7 @@ Note content is stored as a flat JSON list of **storage blocks** (`paragraph` / 
 ## Features
 
 - **Authentication** — Register and log in with session-based auth (Flask-Login)
+- **Email verification** — Verify email address (Flask-Mailman)
 - **Dashboards** — Organize notes into named dashboards and switch between them
 - **Notes** — Create, edit, and delete notes; title plus rich body content
 - **Editor.js editor** — Block editing for paragraphs and checklists (`--` shortcut to start a checklist item)
@@ -99,13 +101,6 @@ During development, Cursor loads project accessibility guidance from `.cursor/ru
 
 ### Validator Testing
 
-### Fixed Bugs
-
-
-### Unfixed Bugs
-
-- There are no known unfixed bugs.
-
 [Back to the top](#PinIt)
 
 ## Deployment
@@ -122,25 +117,14 @@ The live version of this program is available here.
     - Clone the repository
     - Create a new virtual environment `python3 -m venv .venv`
     - Activate virtual environment `source .venv/bin/activate`
-    - Install packages with `pip install -r requirements-dev.txt` (includes the runtime packages in `requirements.txt`, plus local tools such as djLint). Production and hosting should install only `pip install -r requirements.txt`.
-    - Create a PostgreSQL database and configure its URL. Copy `.env.example` to a local `.env` file, then replace the `DATABASE_URL` and `SECRET_KEY` placeholder values.
-    - Load both values into your terminal:
-      ```bash
-      export DATABASE_URL="$(grep '^DATABASE_URL=' .env | cut -d= -f2-)"
-      export SECRET_KEY="$(grep '^SECRET_KEY=' .env | cut -d= -f2-)"
-      ```
-    - Alternatively, set `DATABASE_URL` and `SECRET_KEY` directly in your terminal. The database URL format is `postgresql+psycopg2://USERNAME:PASSWORD@HOST:5432/DATABASE_NAME`.
+    - Install packages with `pip install -r requirements-dev.txt` (includes the runtime packages in `requirements.txt`, plus local tools such as djLint and python-dotenv). Production and hosting should install only `pip install -r requirements.txt`.
+    - Create a PostgreSQL database and configure its URL. Copy `.env.example` to a local `.env` file, then replace the placeholder values. The database URL format is `postgresql+psycopg2://USERNAME:PASSWORD@HOST:5432/DATABASE_NAME`.
     - Create or update the database schema with `flask --app run db upgrade`.
     - Run locally using `python run.py`
 
   - For subsequent runs simply:
     - Start postgres `brew services start postgresql@18`
     - Activate virtual environment `source .venv/bin/activate`
-    - Load env vars into your terminal:
-      ```bash
-      export DATABASE_URL="$(grep '^DATABASE_URL=' .env | cut -d= -f2-)"
-      export SECRET_KEY="$(grep '^SECRET_KEY=' .env | cut -d= -f2-)"
-      ```
     - Run locally using `python run.py`
 
 
@@ -167,7 +151,7 @@ The live version of this program is available here.
 
 ### Database migrations
 
-Database schema changes are tracked with Flask-Migrate and Alembic. Run all migration commands after loading `DATABASE_URL` and `SECRET_KEY`.
+Database schema changes are tracked with Flask-Migrate and Alembic.
 
 1. Update the SQLAlchemy model(s).
 2. Generate a migration:
@@ -185,7 +169,11 @@ Never edit an already-applied migration. Create a new migration for every later 
 
 ### Environment variables
 
-The app requires `DATABASE_URL` to connect to PostgreSQL and `SECRET_KEY` to securely sign sessions and CSRF tokens. Store both in the hosting provider's secret/configuration settings when deploying; never commit an actual connection URL, password, or secret key. The committed `.env.example` only documents the required format.
+The app requires `DATABASE_URL` to connect to PostgreSQL and `SECRET_KEY` to securely sign sessions and CSRF tokens. Optional mail settings (`MAIL_*`) and `FLASK_DEBUG` are listed in `.env.example`.
+
+Locally, copy `.env.example` to `.env` and fill in real values. `run.py` calls `load_dotenv()` before creating the app, so `python run.py` and `flask --app run …` read that file. python-dotenv is a development dependency (`requirements-dev.txt`); it does not override variables that are already set in the shell.
+
+When deploying, set the same names in the hosting provider's secret/configuration settings. The committed `.env.example` only documents the required format.
 
 ### Formatting templates
 
@@ -243,6 +231,7 @@ In Cursor/VS Code, install the djLint extension and set it as the default format
 
 - [Cursor](https://cursor.com/) — AI-assisted development (rules and skills for accessibility and workflows)
 - [djLint](https://djlint.com/) — Jinja/HTML template linting and formatting (listed in `requirements-dev.txt`)
+- [python-dotenv](https://github.com/theskumar/python-dotenv) — loads local `.env` in `run.py` (listed in `requirements-dev.txt`)
 - Virtualenv — local Python environment
 - `requirements.txt` — runtime packages for running and deploying the app
 - `requirements-dev.txt` — runtime packages plus local development tools
