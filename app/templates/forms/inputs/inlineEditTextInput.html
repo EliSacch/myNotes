@@ -1,10 +1,12 @@
 {% from "macros/formActions.html" import formActions %}
 {% macro inline_edit_text_input(name, label, value='', type='text', errors=[],
-    pattern=none, autocomplete=none, field_id=none) %}
+    pattern=none, autocomplete=none, field_id=none,
+    save_aria_label='Save', loading_text='Saving...') %}
     {% set input_id = field_id if field_id else name %}
     <div class="form-control-wrapper">
         <div class="form-control-inline-edit{% if errors %} is-invalid{% endif %}">
-            <label class="form-control-inline-edit-label visually-hidden" for="{{ input_id }}">{{ label }}</label>
+            <label class="form-control-inline-edit-label visually-hidden"
+                   for="{{ input_id }}">{{ label }}</label>
             <input id="{{ input_id }}"
                    name="{{ name }}"
                    value="{{ value }}"
@@ -15,7 +17,7 @@
                    {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
                    {% if errors %}aria-invalid="true" aria-describedby="{{ input_id }}-errors"{% endif %}>
         </div>
-        {{ formActions("Save username", "Saving username...") }}
+        {{ formActions(save_aria_label, loading_text) }}
         <div class="error-msg"
              id="{{ input_id }}-errors"
              role="alert"

@@ -161,5 +161,5 @@ def test_profile_renders_username_field_errors(client, user):
     html = response.get_data(as_text=True)
     assert "Username must be between 3 and 50 characters." in html
     assert 'value="ab"' in html
-    assert 'profile-inline-view hidden-form' in html
-    assert 'profile-inline-edit hidden-form' not in html
+    assert 'aria-controls="update-username-form"' in html
+    assert 'id="update-username-form"' in html

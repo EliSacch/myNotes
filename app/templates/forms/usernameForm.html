@@ -11,17 +11,19 @@
             value=values.username if values else '',
             type="text",
             errors=field_errors.get('username', []),
-            field_id=(form_id ~ '-username') if form_id else 'username') }}
+            field_id=(form_id ~ '-username') if form_id else 'username',
+            save_aria_label='Save username',
+            loading_text='Saving username...') }}
     </form>
     <div class="form-errors error-msg"
-             role="alert"
-             {% if not field_errors.get('form') %} hidden{% endif %}>
-            {% if field_errors.get('form') %}
-                <ul>
-                    {% for error in field_errors.form %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
+         role="alert"
+         {% if not field_errors.get('form') %} hidden{% endif %}>
+        {% if field_errors.get('form') %}
+            <ul>
+                {% for error in field_errors.form %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
 {% endmacro %}

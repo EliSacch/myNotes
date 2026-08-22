@@ -755,7 +755,7 @@ $(document).ready(function(){
     });
 
     /**
-     * Inline profile field edit (username)
+     * Inline profile field edit
      */
     function closeProfileInlineEditor($item) {
         const $form = $item.find('form');

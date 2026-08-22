@@ -28,7 +28,7 @@
 }
 
 .profile-inline-edit:not(.hidden-form),
-.profile-inline-edit:not(.hidden-form) .username-form,
+.profile-inline-edit:not(.hidden-form) form,
 .profile-inline-edit:not(.hidden-form) .form-control-wrapper {
     display: contents;
 }
