@@ -1,14 +1,36 @@
 {% extends "base.html" %}
-{% from "macros/modal.html" import modal %}
 {% from "macros/alert.html" import alert %}
+{% from "forms/usernameForm.html" import usernameForm %}
+{% from "forms/emailForm.html" import emailForm %}
+
 {% block title %}Profile{% endblock %}
 {% block content %}
     <main id="main-content" class="profile-page">
         <section class="profile-info">
             <h2>Personal Information</h2>
-            <div class="profile-info-item">
+            <div class="profile-info-item" data-inline-editor>
                 <span class="profile-info-item-label">Username:</span>
-                <span class="profile-info-item-value">{{ user.username }}</span>
+                <div class="profile-inline-view{% if username_errors %} hidden-form{% endif %}">
+                    <span class="profile-info-item-value">
+                        {{ user.username }}
+                        {{ tooltip('<button type="button"
+                            class="base-button link profile-inline-edit-btn"
+                            aria-label="Edit username"
+                            aria-expanded="' ~ ('true' if username_errors else 'false') ~ '"
+                            aria-controls="update-username-form">
+                            <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+                            </button>', 'Edit username', 'right') }}
+                    </span>
+                </div>
+                <div class="profile-inline-edit{% if not username_errors %} hidden-form{% endif %}">
+                    {{ usernameForm(
+                        url_for('profile.update_username', user_id=user.id),
+                        profile_csrf_token,
+                        errors=username_errors,
+                        values=username_values,
+                        form_id='update-username-form'
+                    ) }}
+                </div>
             </div>
             <div class="profile-info-item">
                 <span class="profile-info-item-label">Email:</span>
@@ -23,6 +45,11 @@
                             <span class="visually-hidden">Not verified</span>
                         {% endif %}
                     </span>
+                    {{ tooltip('<button type="button"
+                        class="base-button link"
+                        aria-label="Edit email">
+                        <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+                        </button>', 'Edit email', 'right') }}
                 </span>
             </div>
             <div class="profile-info-item">
@@ -42,9 +69,6 @@
             </section>
         {% endif %}
         <section class="profile-actions">
-            <a href="{{ url_for('auth.edit_profile') }}"
-               class="base-button primary"
-               aria-label="Edit profile">Edit profile</a>
             <a href="{{ url_for('auth.change_password') }}"
                class="base-button secondary"
                aria-label="Change Password">Change Password</a>

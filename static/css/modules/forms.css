@@ -36,7 +36,14 @@
     margin-top: var(--spacing-xl);
 }
 
-.form-control input {
+.form-control-inline-edit {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+}
+
+.form-control input,
+.form-control-inline-edit input {
     width: 100%;
     border: none;
     border-bottom: 1px dotted var(--clr-dark);
@@ -144,6 +151,7 @@
     outline-offset: 3px;
 }
 
+.form-action-buttons,
 .note-action-buttons {
     display: flex;
     justify-content: flex-end;
@@ -156,6 +164,7 @@
     display: contents;
 }
 
+.form-action-buttons button,
 .note-action-buttons button {
     display: inline-flex;
     align-items: center;
@@ -171,18 +180,23 @@
     transition: .3s;
 }
 
+.form-action-buttons button .btn-loading,
 .note-action-buttons button .btn-loading {
     display: none;
 }
 
+.form-action-buttons button.is-loading .btn-label,
 .note-action-buttons button.is-loading .btn-label {
     display: none;
 }
 
+.form-action-buttons button.is-loading .btn-loading,
 .note-action-buttons button.is-loading .btn-loading {
     display: inline-flex !important;
 }
 
+.form-action-buttons button.is-loading,
+.form-action-buttons button:disabled,
 .note-action-buttons button.is-loading,
 .note-action-buttons button:disabled {
     cursor: wait;
@@ -190,10 +204,12 @@
     pointer-events: none;
 }
 
+.form-action-buttons button:hover i,
 .note-action-buttons button:hover i {
     transform: scale(1.1);
 }
 
+.form-action-buttons button:focus-visible,
 .note-action-buttons button:focus-visible {
     outline: var(--tab-outline);
     outline-offset: 2px;
@@ -203,10 +219,12 @@
     color: var(--clr-quatertiary);
 }
 
+.form-action-buttons button.save-btn:hover,
 .note-action-buttons button.save-btn:hover {
     color: var(--clr-tertiary);
 }
 
+.form-action-buttons button.cancel-btn:hover,
 .note-action-buttons button.delete-btn:hover,
 .note-action-buttons button.cancel-btn:hover {
     color: var(--clr-error);

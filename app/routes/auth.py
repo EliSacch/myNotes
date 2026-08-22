@@ -1,5 +1,4 @@
 import hmac
-import re
 import secrets
 import smtplib
 
@@ -20,14 +19,13 @@ from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.extensions import db, login_manager, limiter
+from app.helpers.email import collect_email_errors
 from app.helpers.email_verification import generate_email_token, load_email_token
 from app.helpers.password import collect_password_errors
+from app.helpers.username import collect_username_errors
 from app.models import Dashboard, User
 
 auth_bp = Blueprint("auth", __name__)
-
-USERNAME_PATTERN = re.compile(r"^[A-Za-z0-9_]+$")
-EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
 @login_manager.user_loader
@@ -132,13 +130,8 @@ def register():
         ):
             errors["form"].append("Your form has expired. Please try again.")
 
-        if not 3 <= len(username) <= 50:
-            errors["username"].append("Username must be between 3 and 50 characters.")
-        elif not USERNAME_PATTERN.fullmatch(username):
-            errors["username"].append("Username may contain only letters, numbers, and underscores.")
-
-        if len(email) > 100 or not EMAIL_PATTERN.fullmatch(email):
-            errors["email"].append("Enter a valid email address.")
+        errors["username"].extend(collect_username_errors(username))
+        errors["email"].extend(collect_email_errors(email))
 
         password_errors, confirm_password_errors = collect_password_errors(
             password,
@@ -233,8 +226,7 @@ def login():
             errors["email"].append("Email is required.")
         if not password:
             errors["password"].append("Password is required.")
-        if not EMAIL_PATTERN.fullmatch(email):
-            errors["email"].append("Enter a valid email address.")
+        errors["email"].extend(collect_email_errors(email))
         if not any(errors.values()):
             user = db.session.scalar(
                 db.select(User).where(func.lower(User.email) == email)
@@ -377,13 +369,3 @@ def verify_email(token):
     flash("Your email has been verified.", "success")
     login_user(user)
     return redirect(url_for("profile.index"))
-
-
-@auth_bp.route("/edit-profile", methods=["GET", "POST"])
-@login_required
-def edit_profile():
-    return render_template(
-        "profile/index.html",
-        user=current_user,
-        csrf_token=resend_verification_csrf_token(),
-    )

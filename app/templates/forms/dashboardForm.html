@@ -1,4 +1,4 @@
-{% from "form/inputs/textImput.html" import text_input %}
+{% from "forms/inputs/textImput.html" import text_input %}
 {% macro dashboardForm(action, csrf_token, errors={}, values={}, form_id=None) %}
     {% set field_errors = errors if errors is mapping else {"name": errors} %}
     <form {% if form_id %}id="{{ form_id }}" {% endif %}class="dashboard-form"

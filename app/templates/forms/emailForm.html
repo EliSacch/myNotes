@@ -1,0 +1,30 @@
+{% from "forms/inputs/textImput.html" import text_input %}
+{% macro emailForm(action, csrf_token, errors={}, values={}, form_id=None) %}
+    {% set field_errors = errors if errors is mapping else {"email": errors} %}
+    <form {% if form_id %}id="{{ form_id }}" {% endif %}class="email-form"
+          action="{{ action }}"
+          method="post"
+          novalidate>
+        <div class="form-errors error-msg"
+             role="alert"
+             {% if not field_errors.get('form') %} hidden{% endif %}>
+            {% if field_errors.get('form') %}
+                <ul>
+                    {% for error in field_errors.form %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        {{ text_input(name="email",
+            label="Email",
+            value=values.email if values else '',
+            type="email",
+            pattern="[^@\s]+@[^@\s]+\.[^@\s]+",
+            autocomplete="email",
+            required=true,
+            errors=field_errors.get('email', []),
+            field_id=(form_id ~ '-email') if form_id else 'email') }}
+    </form>
+{% endmacro %}

@@ -1,4 +1,4 @@
-{% from "notes/macros/noteFormActions.html" import noteFormActions %}
+{% from "macros/formActions.html" import formActions %}
 {% macro noteForm(action, csrf_token, note=None, errors=[], values={}) %}
     {% set title_value = values.get("title", note.title if note else "") %}
     {% set storage_blocks = note.content_blocks if note and note.content_blocks is defined else [] %}
@@ -37,7 +37,7 @@
                    name="content"
                    class="note-content-json"
                    value="{{ values.get('content', '') }}">
-            {{ noteFormActions() }}
+            {{ formActions("Save note", "Saving note...") }}
         </form>
     </div>
 {% endmacro %}

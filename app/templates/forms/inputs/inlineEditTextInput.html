@@ -1,0 +1,32 @@
+{% from "macros/formActions.html" import formActions %}
+{% macro inline_edit_text_input(name, label, value='', type='text', errors=[],
+    pattern=none, autocomplete=none, field_id=none) %}
+    {% set input_id = field_id if field_id else name %}
+    <div class="form-control-wrapper">
+        <div class="form-control-inline-edit{% if errors %} is-invalid{% endif %}">
+            <label class="form-control-inline-edit-label visually-hidden" for="{{ input_id }}">{{ label }}</label>
+            <input id="{{ input_id }}"
+                   name="{{ name }}"
+                   value="{{ value }}"
+                   type="{{ type }}"
+                   placeholder=" "
+                   required
+                   {% if pattern %}pattern="{{ pattern }}"{% endif %}
+                   {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
+                   {% if errors %}aria-invalid="true" aria-describedby="{{ input_id }}-errors"{% endif %}>
+        </div>
+        {{ formActions("Save username", "Saving username...") }}
+        <div class="error-msg"
+             id="{{ input_id }}-errors"
+             role="alert"
+             {% if not errors %} hidden{% endif %}>
+            {% if errors %}
+                <ul>
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+{% endmacro %}
